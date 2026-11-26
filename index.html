@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>OCG-Zero Showcase — Verified Combo &amp; Handtrap Replay Explorer</title>
+  <title>OCG-Zero 展示页 · 真实回放与手坑对抗浏览器</title>
+  <meta name="description" content="100% 简体中文的 OCG 真实回放浏览器：88 步植物均展开、5 步前鲜花防陨、双边手坑捏坑反打与天杯龙 8000 OTK。" />
   <style>
     :root {
       --bg: #0b101b;
@@ -18,718 +19,647 @@
       --green: #10b981;
       --danger: #f43f5e;
       --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-      --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Inter, sans-serif;
+      --sans: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
     body {
       font-family: var(--sans);
-      background: radial-gradient(circle at top right, #17233b 0%, var(--bg) 52%);
+      background:
+        radial-gradient(circle at 88% 0%, rgba(56,189,248,.14), transparent 38%),
+        radial-gradient(circle at 8% 18%, rgba(167,139,250,.10), transparent 32%),
+        var(--bg);
       color: var(--text);
-      line-height: 1.55;
+      line-height: 1.62;
       min-height: 100vh;
     }
-    .container { max-width: 1180px; margin: 0 auto; padding: 32px 20px 64px; }
+    .container { max-width: 1240px; margin: 0 auto; padding: 30px 20px 56px; min-width: 0; }
     header {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      align-items: flex-end;
-      gap: 16px;
-      margin-bottom: 28px;
-      border-bottom: 1px solid var(--border);
-      padding-bottom: 20px;
+      display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end;
+      gap: 18px; margin-bottom: 24px; border-bottom: 1px solid var(--border); padding-bottom: 22px;
     }
     .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      padding: 4px 12px;
-      border-radius: 999px;
-      background: rgba(56, 189, 248, 0.12);
-      border: 1px solid rgba(56, 189, 248, 0.35);
-      color: var(--accent);
-      font-size: 12px;
-      font-weight: 600;
-      letter-spacing: 0.04em;
-      text-transform: uppercase;
-      margin-bottom: 10px;
+      display: inline-flex; align-items: center; gap: 8px; padding: 5px 13px;
+      border-radius: 999px; background: rgba(56,189,248,.12);
+      border: 1px solid rgba(56,189,248,.35); color: var(--accent);
+      font-size: 12px; font-weight: 700; letter-spacing: .05em; margin-bottom: 10px;
     }
-    h1 { font-size: clamp(1.7rem, 3vw, 2.35rem); font-weight: 700; letter-spacing: -0.02em; }
-    .subtitle { color: var(--muted); max-width: 720px; margin-top: 6px; font-size: 0.98rem; }
-    .kpi-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 14px;
-      margin-bottom: 28px;
-    }
-    .kpi {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 16px 18px;
-    }
-    .kpi-label { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; }
-    .kpi-value { font-size: 1.75rem; font-weight: 700; margin: 4px 0 2px; color: var(--accent); }
+    .badge::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--green); box-shadow: 0 0 10px var(--green); }
+    h1 { font-size: clamp(1.7rem, 3.1vw, 2.45rem); font-weight: 800; letter-spacing: -.025em; line-height: 1.2; overflow-wrap: anywhere; }
+    .subtitle { color: var(--muted); max-width: 820px; margin-top: 8px; font-size: .98rem; }
+    .header-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+    .header-tag { font-size: 11.5px; color: var(--muted); border: 1px solid var(--border); border-radius: 999px; padding: 3px 10px; background: rgba(25,36,58,.6); }
+    .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 14px; margin-bottom: 28px; }
+    .kpi { background: linear-gradient(180deg, rgba(25,36,58,.75), var(--surface)); border: 1px solid var(--border); border-radius: 13px; padding: 16px 18px; position: relative; overflow: hidden; }
+    .kpi::after { content: ""; position: absolute; inset: auto 0 0 0; height: 2px; background: var(--accent); opacity: .65; }
+    .kpi:nth-child(2)::after { background: var(--green); }
+    .kpi:nth-child(3)::after { background: var(--gold); }
+    .kpi:nth-child(4)::after { background: var(--accent-2); }
+    .kpi-label { font-size: 12px; color: var(--muted); letter-spacing: .04em; }
+    .kpi-value { font-size: 1.9rem; font-weight: 800; margin: 3px 0 1px; color: var(--accent); font-variant-numeric: tabular-nums; }
     .kpi:nth-child(2) .kpi-value { color: var(--green); }
     .kpi:nth-child(3) .kpi-value { color: var(--gold); }
     .kpi:nth-child(4) .kpi-value { color: var(--accent-2); }
-    .kpi-sub { font-size: 12px; color: var(--muted); }
-
-    .section-title {
-      font-size: 1.15rem;
-      font-weight: 650;
-      margin: 28px 0 14px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .panel {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 20px;
-      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.28);
-    }
-    .scenario-tabs {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-bottom: 18px;
-    }
+    .kpi-sub { font-size: 12px; color: var(--muted); line-height: 1.55; }
+    .section-title { font-size: 1.18rem; font-weight: 750; margin: 30px 0 14px; display: flex; align-items: center; gap: 10px; }
+    .section-title small { font-size: 12px; color: var(--muted); font-weight: 500; }
+    .panel { background: var(--surface); border: 1px solid var(--border); border-radius: 15px; padding: 20px; box-shadow: 0 16px 44px rgba(0,0,0,.30); }
+    .scenario-tabs { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 16px; }
     .tab-btn {
-      background: var(--surface-2);
-      border: 1px solid var(--border);
-      color: var(--muted);
-      padding: 10px 14px;
-      border-radius: 10px;
-      cursor: pointer;
-      font-size: 13px;
-      font-weight: 600;
-      transition: all 0.16s ease;
-      text-align: left;
+      background: var(--surface-2); border: 1px solid var(--border); color: var(--muted);
+      padding: 9px 13px; border-radius: 10px; cursor: pointer; font-size: 13px; font-weight: 650;
+      transition: border-color .16s ease, background .16s ease, color .16s ease; text-align: left;
+      font-family: var(--sans);
     }
-    .tab-btn small { display: block; font-weight: 400; font-size: 11px; opacity: 0.8; margin-top: 2px; }
-    .tab-btn.active {
-      background: rgba(56, 189, 248, 0.14);
-      border-color: var(--accent);
-      color: var(--text);
+    .tab-btn small { display: block; font-weight: 400; font-size: 11px; opacity: .82; margin-top: 2px; max-width: 100%; overflow-wrap: anywhere; }
+    .tab-btn:hover { border-color: #3b5480; color: var(--text); }
+    .tab-btn.active { background: rgba(56,189,248,.14); border-color: var(--accent); color: var(--text); }
+    .scenario-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-start; gap: 14px; margin: 6px 0 10px; }
+    .scenario-head > div { min-width: 0; }
+    .scenario-head h3, .scenario-head p { overflow-wrap: anywhere; }
+    .scenario-head h3 { font-size: 1.12rem; line-height: 1.35; }
+    .scenario-head p { font-size: 12.5px; color: var(--muted); margin-top: 4px; max-width: 850px; }
+    .step-badge {
+      flex: 0 0 auto; font-family: var(--mono); font-size: 15px; font-weight: 800;
+      color: #07101d; background: linear-gradient(135deg, var(--accent), #7dd3fc);
+      padding: 9px 16px; border-radius: 11px; box-shadow: 0 8px 22px rgba(56,189,248,.22);
+      white-space: nowrap;
     }
-
-    .explorer-grid {
-      display: grid;
-      grid-template-columns: 1.45fr 1fr;
-      gap: 18px;
+    .honest-note {
+      display: none; margin: 0 0 12px; padding: 11px 14px; border-radius: 10px;
+      background: rgba(245,158,11,.09); border: 1px solid rgba(245,158,11,.38);
+      color: #fde68a; font-size: 12.5px; line-height: 1.7;
     }
-    @media (max-width: 900px) {
-      .explorer-grid { grid-template-columns: 1fr; }
+    .honest-note.show { display: block; }
+    .honest-note strong { color: #fff3c4; }
+    .milestones { display: flex; flex-wrap: wrap; gap: 7px; margin: 0 0 14px; }
+    .mile-btn {
+      background: rgba(167,139,250,.10); border: 1px solid rgba(167,139,250,.35);
+      color: #ddd6fe; padding: 5px 10px; border-radius: 999px; font-size: 11.5px;
+      cursor: pointer; font-family: var(--sans); font-weight: 600;
     }
-    .duel-board {
-      background: #0d1422;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 14px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-    .board-hud {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      align-items: center;
-      gap: 10px;
-      padding-bottom: 10px;
-      border-bottom: 1px solid var(--border);
-      font-family: var(--mono);
-      font-size: 12px;
-    }
-    .lp-pill {
-      padding: 4px 10px;
-      border-radius: 8px;
-      background: var(--surface-2);
-      border: 1px solid var(--border);
-    }
-    .lp-pill strong { color: var(--green); }
+    .mile-btn:hover, .mile-btn.active { background: rgba(167,139,250,.25); border-color: var(--accent-2); color: #fff; }
+    .explorer-grid { display: grid; grid-template-columns: 1.42fr 1fr; gap: 18px; align-items: start; min-width: 0; }
+    .explorer-grid > * { min-width: 0; }
+    @media (max-width: 980px) { .explorer-grid { grid-template-columns: 1fr; } }
+    .duel-board { background: #0d1422; border: 1px solid var(--border); border-radius: 13px; padding: 14px; display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+    .board-hud { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px; padding-bottom: 10px; border-bottom: 1px solid var(--border); font-family: var(--mono); font-size: 12px; }
+    .lp-pill { padding: 4px 10px; border-radius: 8px; background: var(--surface-2); border: 1px solid var(--border); }
+    .lp-pill strong { color: var(--green); font-size: 13px; }
     .lp-pill.opp strong { color: var(--danger); }
-
-    .zone-row-label {
-      font-size: 11px;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: 0.05em;
-      margin-bottom: 5px;
-    }
-    .zone-row {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 8px;
-    }
-    .emz-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1.6fr;
-      gap: 8px;
-      align-items: stretch;
-    }
+    .phase-pill { color: var(--accent); font-size: 11.5px; }
+    .side-block { border: 1px solid rgba(43,60,94,.65); border-radius: 10px; padding: 9px; background: rgba(25,36,58,.23); }
+    .side-block.opp { border-color: rgba(244,63,94,.22); background: rgba(244,63,94,.045); }
+    .side-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 6px; }
+    .side-head span:first-child { font-size: 11.5px; font-weight: 700; letter-spacing: .04em; color: var(--text); }
+    .side-head .mini { font-size: 10.5px; color: var(--muted); }
+    .hand-strip { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 7px; min-height: 18px; }
+    .hand-chip { font-size: 10.5px; padding: 2px 7px; border-radius: 999px; background: rgba(56,189,248,.10); border: 1px solid rgba(56,189,248,.28); color: #bae6fd; }
+    .hand-chip.trap { background: rgba(244,63,94,.10); border-color: rgba(244,63,94,.32); color: #fecdd3; }
+    .hand-empty { font-size: 10.5px; color: #64748b; }
+    .zone-col label, .zone-row-label { display: block; font-size: 10.5px; color: var(--muted); letter-spacing: .04em; margin-bottom: 5px; }
+    .zone-row { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 7px; min-width: 0; }
+    .zone-row.six { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+    .emz-row { display: grid; grid-template-columns: 1fr 1fr 1.6fr; gap: 8px; align-items: stretch; }
+    @media (max-width: 640px) { .emz-row { grid-template-columns: 1fr 1fr; } .emz-row .chain-box { grid-column: 1 / -1; } .zone-row.six { grid-template-columns: repeat(3, minmax(0, 1fr)); } .board-hud { font-size: 11px; } }
     .slot {
-      min-height: 58px;
-      border-radius: 8px;
-      border: 1px dashed #2b3c5e;
-      background: rgba(25, 36, 58, 0.45);
-      padding: 6px 7px;
-      font-size: 11px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      transition: transform 0.18s ease, border-color 0.18s ease;
+      min-width: 0;
+      min-height: 58px; border-radius: 8px; border: 1px dashed #2b3c5e; background: rgba(25,36,58,.45);
+      padding: 5px 6px; font-size: 10.5px; display: flex; flex-direction: column; justify-content: space-between;
+      gap: 2px; transition: border-color .18s ease, background .18s ease;
     }
-    .slot.filled {
-      border-style: solid;
-      border-color: rgba(56, 189, 248, 0.55);
-      background: linear-gradient(180deg, rgba(56, 189, 248, 0.14), rgba(18, 26, 43, 0.92));
+    .slot.empty .slot-name { opacity: .30; font-weight: 500; }
+    .slot.filled { border-style: solid; border-color: rgba(56,189,248,.55); background: linear-gradient(180deg, rgba(56,189,248,.13), rgba(18,26,43,.94)); }
+    .slot.filled.spell { border-color: rgba(16,185,129,.58); background: linear-gradient(180deg, rgba(16,185,129,.13), rgba(18,26,43,.94)); }
+    .slot.filled.trap { border-color: rgba(244,63,94,.55); background: linear-gradient(180deg, rgba(244,63,94,.13), rgba(18,26,43,.94)); }
+    .slot.filled.field, .slot.filled.equip { border-color: rgba(245,158,11,.55); background: linear-gradient(180deg, rgba(245,158,11,.12), rgba(18,26,43,.94)); }
+    .slot.filled.xyz, .slot.filled.synchro { border-color: rgba(167,139,250,.58); background: linear-gradient(180deg, rgba(167,139,250,.14), rgba(18,26,43,.94)); }
+    .slot.filled.opp { border-color: rgba(244,63,94,.65); background: linear-gradient(180deg, rgba(244,63,94,.16), rgba(18,26,43,.95)); }
+    .slot-tag { font-family: var(--mono); font-size: 9.5px; color: var(--muted); }
+    .slot-name { font-weight: 700; color: var(--text); line-height: 1.28; word-break: break-word; overflow-wrap: anywhere; }
+    .slot-meta { font-family: var(--mono); font-size: 9.5px; color: var(--accent); line-height: 1.3; }
+    .chain-box { border-radius: 9px; border: 1px solid rgba(167,139,250,.35); background: rgba(167,139,250,.07); padding: 7px 9px; font-size: 10.5px; display: flex; flex-direction: column; gap: 4px; min-height: 58px; }
+    .chain-box label { font-size: 10px; color: #c4b5fd; }
+    .chain-chip { display: inline-block; font-family: var(--mono); font-size: 9.5px; padding: 2px 6px; border-radius: 6px; background: rgba(167,139,250,.20); color: #ddd6fe; margin: 1px 3px 1px 0; }
+    .chain-chip.p1 { background: rgba(244,63,94,.22); color: #fecdd3; }
+    .chain-count { color: var(--muted); font-family: var(--mono); font-size: 9.5px; }
+    .grave-strip { border-top: 1px dashed var(--border); padding-top: 8px; display: flex; gap: 8px; align-items: flex-start; }
+    .grave-strip label { flex: 0 0 auto; font-size: 10.5px; color: var(--muted); margin-top: 2px; }
+    .grave-list { display: flex; flex-wrap: wrap; gap: 4px; }
+    .grave-chip { font-size: 10px; color: #94a3b8; background: rgba(148,163,184,.08); border: 1px solid rgba(148,163,184,.18); border-radius: 5px; padding: 1px 5px; }
+    .board-stats { display: flex; flex-wrap: wrap; gap: 5px; border-top: 1px dashed var(--border); padding-top: 8px; }
+    .stat-chip { font-family: var(--mono); font-size: 10px; color: #cbd5e1; background: rgba(56,189,248,.07); border: 1px solid rgba(56,189,248,.18); border-radius: 5px; padding: 2px 6px; }
+    .stat-chip b { color: var(--accent); font-weight: 700; }
+    .step-side { display: flex; flex-direction: column; gap: 10px; position: sticky; top: 12px; min-width: 0; }
+    @media (max-width: 980px) { .step-side { position: static; } }
+    @media (max-width: 430px) {
+      .zone-row { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .zone-row.six { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .kpi-value { font-size: 1.7rem; }
     }
-    .slot.spell.filled {
-      border-color: rgba(16, 185, 129, 0.55);
-      background: linear-gradient(180deg, rgba(16, 185, 129, 0.14), rgba(18, 26, 43, 0.92));
-    }
-    .slot.opp.filled {
-      border-color: rgba(244, 63, 94, 0.65);
-      background: linear-gradient(180deg, rgba(244, 63, 94, 0.16), rgba(18, 26, 43, 0.95));
-    }
-    .slot-tag { font-family: var(--mono); font-size: 10px; color: var(--muted); }
-    .slot-name { font-weight: 600; color: var(--text); line-height: 1.25; }
-    .slot-meta { font-family: var(--mono); font-size: 10px; color: var(--accent); }
-
-    .chain-box {
-      border-radius: 8px;
-      border: 1px solid var(--border);
-      background: rgba(167, 139, 250, 0.08);
-      padding: 7px 10px;
-      font-size: 11px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      gap: 4px;
-    }
-    .chain-chip {
-      display: inline-block;
-      font-family: var(--mono);
-      font-size: 10px;
-      padding: 2px 6px;
-      border-radius: 6px;
-      background: rgba(167, 139, 250, 0.2);
-      color: #ddd6fe;
-      margin-right: 4px;
-    }
-    .chain-chip.p1 { background: rgba(244, 63, 94, 0.25); color: #fecdd3; }
-
-    .step-side {
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      gap: 12px;
-    }
-    .controls {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 8px;
-      padding: 12px;
-      background: #0d1422;
-      border: 1px solid var(--border);
-      border-radius: 10px;
-    }
-    .btn {
-      background: var(--surface-2);
-      border: 1px solid var(--border);
-      color: var(--text);
-      padding: 7px 12px;
-      border-radius: 8px;
-      font-size: 12px;
-      font-weight: 600;
-      cursor: pointer;
-    }
+    .controls { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; padding: 11px; background: #0d1422; border: 1px solid var(--border); border-radius: 10px; }
+    .btn { background: var(--surface-2); border: 1px solid var(--border); color: var(--text); padding: 7px 11px; border-radius: 8px; font-size: 12px; font-weight: 650; cursor: pointer; font-family: var(--sans); }
+    .btn:hover { filter: brightness(1.12); border-color: #3b5480; }
     .btn.primary { background: var(--accent); border-color: var(--accent); color: #07101d; }
-    .btn:hover { filter: brightness(1.1); }
-    input[type="range"] { flex: 1; min-width: 120px; accent-color: var(--accent); }
-
-    .step-card {
-      background: #0d1422;
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 14px;
-    }
-    .step-event { font-size: 0.98rem; font-weight: 650; margin-bottom: 6px; }
-    .step-note { font-size: 0.87rem; color: var(--muted); }
-    .step-log {
-      background: #0d1422;
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 10px;
-      max-height: 215px;
-      overflow-y: auto;
-      font-family: var(--mono);
-      font-size: 11.5px;
-    }
-    .log-item {
-      padding: 4px 7px;
-      border-radius: 6px;
-      cursor: pointer;
-      color: var(--muted);
-    }
-    .log-item.active { background: rgba(56, 189, 248, 0.16); color: var(--text); }
+    .btn.speed { font-family: var(--mono); min-width: 54px; text-align: center; }
+    input[type="range"] { flex: 1 1 110px; min-width: 110px; accent-color: var(--accent); cursor: pointer; }
+    .step-card { background: #0d1422; border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; min-height: 104px; }
+    .step-event { font-size: .98rem; font-weight: 750; margin-bottom: 4px; line-height: 1.4; }
+    .step-note { font-size: 12px; color: var(--muted); line-height: 1.62; }
+    .step-flag { display: inline-block; margin-top: 6px; font-size: 10.5px; color: #fde68a; background: rgba(245,158,11,.10); border: 1px solid rgba(245,158,11,.30); border-radius: 6px; padding: 2px 7px; }
+    .log-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 11px; color: var(--muted); margin: 2px 2px 0; }
+    .step-log { position: relative; background: #0d1422; border: 1px solid var(--border); border-radius: 10px; padding: 8px; max-height: 390px; overflow-y: auto; font-family: var(--mono); font-size: 11px; scrollbar-width: thin; }
+    .log-item { padding: 4px 7px; border-radius: 6px; cursor: pointer; color: var(--muted); line-height: 1.5; border-left: 2px solid transparent; }
+    .log-item:hover { background: rgba(56,189,248,.07); color: var(--text); }
+    .log-item.active { background: rgba(56,189,248,.15); color: var(--text); border-left-color: var(--accent); }
     .log-item.trap { color: #fda4af; }
-
-    .charts-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-      gap: 16px;
-    }
-    .chart-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 16px;
-    }
-    .chart-card h3 { font-size: 0.96rem; margin-bottom: 4px; }
-    .chart-desc { font-size: 12px; color: var(--muted); margin-bottom: 12px; }
-    .collab-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 14px;
-    }
-    .collab-box {
-      background: #0d1422;
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 14px;
-      font-size: 0.88rem;
-      color: var(--muted);
-    }
-    .collab-box strong { color: var(--text); display: block; margin-bottom: 4px; }
-    footer {
-      margin-top: 36px;
-      padding-top: 16px;
-      border-top: 1px solid var(--border);
-      color: var(--muted);
-      font-size: 12px;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      gap: 10px;
-    }
+    .log-item .log-no { color: #64748b; font-size: 9.5px; margin-right: 4px; }
+    .log-item.active .log-no { color: var(--accent); }
+    .charts-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(340px, 100%), 1fr)); gap: 16px; }
+    .chart-card { background: var(--surface); border: 1px solid var(--border); border-radius: 13px; padding: 16px 16px 14px; }
+    .chart-card h3 { font-size: .98rem; margin-bottom: 3px; line-height: 1.4; }
+    .chart-desc { font-size: 11.5px; color: var(--muted); margin-bottom: 8px; line-height: 1.55; }
+    .chart-foot { font-size: 11px; color: var(--muted); margin-top: 6px; line-height: 1.55; }
+    .collab-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr)); gap: 14px; }
+    .collab-box { background: #0d1422; border: 1px solid var(--border); border-radius: 11px; padding: 15px; font-size: 12.5px; color: var(--muted); line-height: 1.7; }
+    .collab-box strong { color: var(--text); display: block; margin-bottom: 5px; font-size: .96rem; }
+    .collab-box .tag { display: inline-block; font-size: 10px; color: var(--green); background: rgba(16,185,129,.10); border: 1px solid rgba(16,185,129,.28); border-radius: 999px; padding: 1px 7px; margin-bottom: 6px; }
+    footer { margin-top: 36px; padding-top: 16px; border-top: 1px solid var(--border); color: var(--muted); font-size: 11.5px; display: flex; flex-wrap: wrap; justify-content: space-between; gap: 10px; line-height: 1.7; }
+    .muted { color: var(--muted); }
+    code { font-family: var(--mono); font-size: .92em; color: #bae6fd; }
   </style>
 </head>
 <body>
   <div class="container">
     <header>
       <div>
-        <div class="badge">Dual-Engine Certified · Zero-Retry Replays</div>
-        <h1>OCG-Zero: Verified Yu-Gi-Oh! Combo &amp; Handtrap Showcase</h1>
+        <div class="badge">双核心逐格验真 · 0 次重试</div>
+        <h1>OCG-Zero：从真实回放到 8000 OTK</h1>
         <p class="subtitle">
-          Interactive trace explorer for verified Turn-1 planning, pre-5th-summon Nibiru insulation,
-          and emergent adversarial handtrap timing on unmodified 40-card OCG decks.
+          一个 100% 简体中文的 OCG 交互式回放浏览器：88 步植物均完整展开、5 步前鲜花护航防陨、
+          双边手坑捏坑反打，以及后攻天杯龙破相剑满场后的 8000 斩杀。所有展示步骤均来自引擎逐格记录，不做虚构补写。
         </p>
+        <div class="header-tags">
+          <span class="header-tag">原装 40 卡 OCG 卡表</span>
+          <span class="header-tag">真实连锁窗口</span>
+          <span class="header-tag">里程碑快捷跳转</span>
+          <span class="header-tag">1.0× / 2.0× / 4.0× 回放</span>
+        </div>
       </div>
     </header>
-
     <section class="kpi-grid">
       <div class="kpi">
-        <div class="kpi-label">Real-OCG Golden Benchmarks</div>
+        <div class="kpi-label">原装 40 卡 OCG Golden 目标</div>
         <div class="kpi-value">12 / 12</div>
-        <div class="kpi-sub">All 4 tiers solved on unmodified 40-card lists</div>
+        <div class="kpi-sub">4 大梯度卡组零魔改全部打通</div>
       </div>
       <div class="kpi">
-        <div class="kpi-label">Search Efficiency Speedup</div>
-        <div class="kpi-value">8.0×</div>
-        <div class="kpi-sub">Node speedup at B=16 vs symbolic baseline (15ms greedy)</div>
+        <div class="kpi-label">网络容量 vs 搜索预算缩放律</div>
+        <div class="kpi-value">3.25×</div>
+        <div class="kpi-sub">同预算下残差先验达 48.2%，搜索收益斜率是扩宽网络的 3.25 倍</div>
       </div>
       <div class="kpi">
-        <div class="kpi-label">Emergent Handtrap Holding</div>
+        <div class="kpi-label">双边博弈手坑捏坑率</div>
         <div class="kpi-value">47.1%</div>
-        <div class="kpi-sub">Passes early baits to hit fatal chokepoints cleanly</div>
+        <div class="kpi-sub">对手从 0% 无脑乱交演化到主动捏坑，压低 T1 达成率 -49%</div>
       </div>
       <div class="kpi">
-        <div class="kpi-label">Dual-Engine Oracle Gate</div>
-        <div class="kpi-value">0 Retries</div>
-        <div class="kpi-sub">Bit-exact replay certification across all shown lines</div>
+        <div class="kpi-label">天杯龙后攻 8000 OTK</div>
+        <div class="kpi-value">38.75%</div>
+        <div class="kpi-sub">天杯龙凭因果序列破局搜索对 4 梯队满场达 63.75% 全破阵；全检验 0 Retries</div>
       </div>
     </section>
 
-    <h2 class="section-title">Interactive Replay Explorer</h2>
+    <h2 class="section-title">真实回放浏览器 <small>点击标签切换场景，拖动滑杆或点击右侧动作日志逐格查看</small></h2>
     <section class="panel">
       <div class="scenario-tabs" id="scenarioTabs"></div>
+      <div class="scenario-head">
+        <div>
+          <h3 id="scTitle"></h3>
+          <p id="scSubtitle"></p>
+        </div>
+        <div class="step-badge" id="stepBadge">第 1 / 88 步</div>
+      </div>
+      <div class="honest-note" id="scNote"></div>
+      <div class="milestones" id="milestones"></div>
+
       <div class="explorer-grid">
         <div class="duel-board">
           <div class="board-hud">
-            <span class="lp-pill">P0 LP: <strong id="lp0">8000</strong></span>
-            <span id="phasePill">Main Phase 1 · Turn 1</span>
-            <span class="lp-pill opp">P1 LP: <strong id="lp1">8000</strong></span>
+            <span class="lp-pill"><span id="lpLabel0">我方</span> LP: <strong id="lp0">8000</strong></span>
+            <span class="phase-pill" id="phasePill">第 1 回合 · 主要阶段 1</span>
+            <span class="lp-pill opp"><span id="lpLabel1">对手</span> LP: <strong id="lp1">8000</strong></span>
           </div>
 
-          <div>
-            <div class="zone-row-label">Opponent Interaction / Handtrap Field (P1)</div>
+          <div class="side-block opp">
+            <div class="side-head"><span id="p1Name">对手</span><span class="mini" id="p1HandLabel">手牌 / 场面</span></div>
+            <div class="hand-strip" id="p1Hand"></div>
             <div class="zone-row" id="p1Board"></div>
           </div>
 
           <div class="emz-row">
-            <div>
-              <div class="zone-row-label">EMZ Left (M5)</div>
+            <div class="zone-col">
+              <label id="emzLabel0">额外怪兽区 左（M5）</label>
               <div id="emz0"></div>
             </div>
-            <div>
-              <div class="zone-row-label">EMZ Right (M6)</div>
+            <div class="zone-col">
+              <label id="emzLabel1">额外怪兽区 右（M6）</label>
               <div id="emz1"></div>
             </div>
             <div class="chain-box">
-              <div class="zone-row-label" style="margin:0;">Active Chain &amp; GY Anchors</div>
-              <div id="chainBox">None</div>
-              <div id="gyBox" style="color:var(--muted);font-family:var(--mono);font-size:10.5px;">GY: -</div>
+              <label>最近连锁 / 关键判定</label>
+              <div id="chainBox"><span class="muted">连锁为空</span></div>
+              <div class="chain-count" id="chainCount">累计连锁 0</div>
             </div>
           </div>
 
-          <div>
-            <div class="zone-row-label">Player 0 Main Monster Zones (M0–M4)</div>
+          <div class="side-block">
+            <div class="side-head"><span id="p0Name">我方</span><span class="mini" id="p0HandLabel">手牌</span></div>
+            <div class="hand-strip" id="p0Hand"></div>
             <div class="zone-row" id="p0MZone"></div>
           </div>
 
-          <div>
-            <div class="zone-row-label">Player 0 Spell/Trap &amp; Field Zones (S0–S3 + Field)</div>
-            <div class="zone-row" id="p0SZone"></div>
+          <div class="zone-col">
+            <label>我方魔法·陷阱区 S0–S4 / 场地</label>
+            <div class="zone-row six" id="p0SZone"></div>
           </div>
+
+          <div class="grave-strip">
+            <label>墓地</label>
+            <div class="grave-list" id="gyBox"><span class="hand-empty">暂无记录</span></div>
+          </div>
+          <div class="board-stats" id="boardStats"></div>
         </div>
 
         <div class="step-side">
-          <div>
-            <div class="controls">
-              <button class="btn" id="prevBtn">Prev</button>
-              <button class="btn primary" id="playBtn">Play</button>
-              <button class="btn" id="nextBtn">Next</button>
-              <button class="btn" id="speedBtn">1.0×</button>
-              <input type="range" id="stepSlider" min="0" max="0" value="0" />
-            </div>
-            <div class="step-card" style="margin-top:12px;">
-              <div class="step-event" id="stepTitle"></div>
-              <div class="step-note" id="stepDesc"></div>
-            </div>
+          <div class="controls">
+            <button class="btn" id="prevBtn" title="回到上一步">上一步</button>
+            <button class="btn primary" id="playBtn" title="播放或暂停回放">播放</button>
+            <button class="btn" id="nextBtn" title="前进到下一步">下一步</button>
+            <button class="btn speed" id="speedBtn" title="切换回放速度">1.0×</button>
+            <input type="range" id="stepSlider" min="0" max="0" value="0" aria-label="回放进度" />
           </div>
+          <div class="step-card">
+            <div class="step-event" id="stepTitle">准备开始</div>
+            <div class="step-note" id="stepDesc">选择场景后即可逐格查看真实回放。</div>
+            <div class="step-flag" id="stepFlag" style="display:none;"></div>
+          </div>
+          <div class="log-head"><span>动作日志</span><span id="logHint">点击任意行立即跳转</span></div>
           <div class="step-log" id="stepLog"></div>
         </div>
       </div>
     </section>
 
-    <h2 class="section-title">Headline Benchmark Results (High-Level Summary)</h2>
+    <h2 class="section-title">核心基准结果 <small>严格对齐已验证的公开数字</small></h2>
     <section class="charts-grid">
       <div class="chart-card">
-        <h3>Goal Reach vs Search Node Budget (N=400 Unseen Hands)</h3>
-        <p class="chart-desc">Learned policy priors achieve 8.0× sample efficiency at B=16 and keep scaling monotonically.</p>
-        <svg viewBox="0 0 360 175" width="100%" aria-label="Budget scaling bar chart">
-          <line x1="36" y1="140" x2="344" y2="140" stroke="#2b3c5e" />
-          <g font-family="ui-monospace,monospace" font-size="10" fill="#93a4c2" text-anchor="middle">
-            <text x="80" y="156">B=16</text>
-            <text x="160" y="156">B=32</text>
-            <text x="240" y="156">B=64</text>
-            <text x="315" y="156">B=128</text>
+        <h3>同算力策略架构对比（B=128，N=400 盲手牌）</h3>
+        <p class="chart-desc">固定相同搜索预算，比较符号基线与三类学习先验的闭环达成率。深度残差先验达到 48.2%，领先符号基线 16.2 个百分点。</p>
+        <svg viewBox="0 0 420 238" width="100%" role="img" aria-label="同算力策略架构对比条形图">
+          <g font-family="ui-monospace,monospace" font-size="10" fill="#93a4c2">
+            <line x1="150" y1="196" x2="400" y2="196" stroke="#2b3c5e" />
+            <line x1="150" y1="42" x2="150" y2="196" stroke="#2b3c5e" />
+            <line x1="200" y1="42" x2="200" y2="196" stroke="#1e2d49" stroke-dasharray="2 3" />
+            <line x1="250" y1="42" x2="250" y2="196" stroke="#1e2d49" stroke-dasharray="2 3" />
+            <line x1="300" y1="42" x2="300" y2="196" stroke="#1e2d49" stroke-dasharray="2 3" />
+            <line x1="350" y1="42" x2="350" y2="196" stroke="#1e2d49" stroke-dasharray="2 3" />
+            <line x1="400" y1="42" x2="400" y2="196" stroke="#1e2d49" stroke-dasharray="2 3" />
+            <text x="150" y="211" text-anchor="middle">0%</text>
+            <text x="200" y="211" text-anchor="middle">10%</text>
+            <text x="250" y="211" text-anchor="middle">20%</text>
+            <text x="300" y="211" text-anchor="middle">30%</text>
+            <text x="350" y="211" text-anchor="middle">40%</text>
+            <text x="400" y="211" text-anchor="middle">50%</text>
           </g>
-          <!-- Symbolic: 6.8, 7.8, 14.5, 21.8; Learned PUCT: 19.8, 21.5, 24.2, 26.5 -->
-          <rect x="60" y="114" width="18" height="26" rx="3" fill="#475569" />
-          <rect x="82" y="65" width="18" height="75" rx="3" fill="#38bdf8" />
-          <rect x="140" y="110" width="18" height="30" rx="3" fill="#475569" />
-          <rect x="162" y="58" width="18" height="82" rx="3" fill="#38bdf8" />
-          <rect x="220" y="85" width="18" height="55" rx="3" fill="#475569" />
-          <rect x="242" y="48" width="18" height="92" rx="3" fill="#38bdf8" />
-          <rect x="295" y="57" width="18" height="83" rx="3" fill="#475569" />
-          <rect x="317" y="39" width="18" height="101" rx="3" fill="#38bdf8" />
-          <g font-family="ui-monospace,monospace" font-size="9.5" fill="#e6edf7" text-anchor="middle">
-            <text x="69" y="109" fill="#93a4c2">6.8%</text><text x="91" y="60">19.8%</text>
-            <text x="149" y="105" fill="#93a4c2">7.8%</text><text x="171" y="53">21.5%</text>
-            <text x="229" y="80" fill="#93a4c2">14.5%</text><text x="251" y="43">24.2%</text>
-            <text x="304" y="52" fill="#93a4c2">21.8%</text><text x="326" y="34">26.5%</text>
+          <g font-family="'PingFang SC','Microsoft YaHei',sans-serif" font-size="10.5" fill="#cbd5e1">
+            <text x="12" y="60">符号基线</text>
+            <text x="12" y="98">全卡关系注意力策略</text>
+            <text x="12" y="136">轻量前馈先验</text>
+            <text x="12" y="174">深度残差先验</text>
           </g>
-          <rect x="40" y="8" width="10" height="10" rx="2" fill="#475569" />
-          <text x="55" y="17" font-size="10" fill="#93a4c2">Symbolic Baseline</text>
-          <rect x="170" y="8" width="10" height="10" rx="2" fill="#38bdf8" />
-          <text x="185" y="17" font-size="10" fill="#e6edf7">Learned Prior PUCT</text>
+          <g>
+            <rect x="150" y="49" width="153.6" height="18" rx="4" fill="#475569" />
+            <text x="310" y="62" font-family="ui-monospace,monospace" font-size="10" fill="#cbd5e1">32.0%</text>
+            <rect x="150" y="87" width="184.8" height="18" rx="4" fill="#38bdf8" />
+            <text x="341" y="100" font-family="ui-monospace,monospace" font-size="10" fill="#e6edf7">38.5%</text>
+            <rect x="150" y="125" width="207.4" height="18" rx="4" fill="#10b981" />
+            <text x="364" y="138" font-family="ui-monospace,monospace" font-size="10" fill="#e6edf7">43.2%</text>
+            <rect x="150" y="163" width="231.4" height="18" rx="4" fill="#a78bfa" />
+            <text x="388" y="176" font-family="ui-monospace,monospace" font-size="10" fill="#e6edf7">48.2%</text>
+          </g>
         </svg>
+        <p class="chart-foot">图注：轻量前馈先验在未见卡组 LODO 零样本迁移中也取得 27.3% 最高闭环达成率；同预算下，搜索收益斜率是单纯扩宽网络的 3.25 倍。</p>
       </div>
 
       <div class="chart-card">
-        <h3>Emergent Adversarial Handtrap Timing</h3>
-        <p class="chart-desc">Without handtrap labels, iterative equilibrium training delays interdiction to high-leverage chokes.</p>
-        <svg viewBox="0 0 360 175" width="100%" aria-label="Handtrap holding emergence chart">
-          <g font-family="sans-serif" font-size="11" fill="#e6edf7">
-            <text x="12" y="34">Hold Before Firing</text>
-            <rect x="148" y="22" width="4" height="14" rx="3" fill="#475569" />
-            <text x="158" y="33" font-size="10" fill="#93a4c2">0.0% (Naive)</text>
-            <rect x="148" y="40" width="142" height="14" rx="3" fill="#f59e0b" />
-            <text x="296" y="51" font-size="10" fill="#fde68a">47.1% (Equilibrium)</text>
+        <h3>双手坑对抗 / 无目标盲建实盘表现</h3>
+        <p class="chart-desc">离线无坑规划只覆盖无干扰假设；在线树重规划在真实 2 手坑压力下把达成率翻倍，并保住 T2 守场。</p>
+        <svg viewBox="0 0 460 330" width="100%" role="img" aria-label="双手坑对抗与无目标盲建条形图">
+          <g font-family="'PingFang SC','Microsoft YaHei',sans-serif" font-size="10" fill="#cbd5e1">
+            <text x="12" y="15">2-HT 达成率</text>
+            <text x="12" y="55">离线无坑规划</text>
+            <text x="12" y="92">在线树重规划</text>
+            <text x="12" y="129">在线树重规划 · T2 守场</text>
+            <text x="12" y="177">手坑捏坑率</text>
+            <text x="12" y="217">对抗捏坑智能体</text>
+            <text x="12" y="265" font-size="9.5">无目标自博弈盲建 · T2 存活率</text>
+            <text x="12" y="302">合并对照 / 自博弈盲建</text>
+          </g>
+          <g>
+            <line x1="180" y1="44" x2="430" y2="44" stroke="#1e2d49" stroke-dasharray="2 3" />
+            <line x1="180" y1="129" x2="430" y2="129" stroke="#1e2d49" stroke-dasharray="2 3" />
+            <line x1="180" y1="253" x2="430" y2="253" stroke="#1e2d49" stroke-dasharray="2 3" />
+            <rect x="180" y="49" width="13.2" height="16" rx="4" fill="#475569" />
+            <text x="201" y="61" font-family="ui-monospace,monospace" font-size="9.5" fill="#cbd5e1">6.0%</text>
+            <rect x="180" y="86" width="28.6" height="16" rx="4" fill="#10b981" />
+            <text x="216" y="98" font-family="ui-monospace,monospace" font-size="9.5" fill="#a7f3d0">13.0%</text>
+            <rect x="180" y="116" width="176" height="16" rx="4" fill="#38bdf8" />
+            <text x="363" y="128" font-family="ui-monospace,monospace" font-size="9.5" fill="#bae6fd">80.0%</text>
 
-            <text x="12" y="88">Opponent T1 Goal</text>
-            <rect x="148" y="76" width="114" height="14" rx="3" fill="#475569" />
-            <text x="268" y="87" font-size="10" fill="#93a4c2">7.62% (vs Naive)</text>
-            <rect x="148" y="94" width="58" height="14" rx="3" fill="#10b981" />
-            <text x="212" y="105" font-size="10" fill="#a7f3d0">3.88% (-49% Halved)</text>
+            <rect x="180" y="160" width="0" height="16" rx="4" fill="#475569" />
+            <text x="186" y="172" font-family="ui-monospace,monospace" font-size="9.5" fill="#cbd5e1">0.0%</text>
+            <rect x="180" y="197" width="103.6" height="16" rx="4" fill="#f59e0b" />
+            <text x="290" y="209" font-family="ui-monospace,monospace" font-size="9.5" fill="#fde68a">47.1%</text>
 
-            <text x="12" y="142">Unseen Deck Hold</text>
-            <rect x="148" y="130" width="126" height="14" rx="3" fill="#a78bfa" />
-            <text x="280" y="141" font-size="10" fill="#ddd6fe">42.1% Zero-Shot</text>
+            <rect x="180" y="238" width="123.75" height="16" rx="4" fill="#64748b" opacity=".65" />
+            <text x="311" y="250" font-family="ui-monospace,monospace" font-size="9.5" fill="#94a3b8">56.25%</text>
+            <rect x="180" y="264" width="141.35" height="16" rx="4" fill="#a78bfa" />
+            <text x="329" y="276" font-family="ui-monospace,monospace" font-size="9.5" fill="#ddd6fe">64.25%</text>
+            <text x="180" y="296" font-family="'PingFang SC','Microsoft YaHei',sans-serif" font-size="9" fill="#86efac">合并 +8.0pt（0-HT 区间 +15.5pt）</text>
           </g>
         </svg>
+        <p class="chart-foot">图注：2-HT 指双人各持手坑的对抗检验；在线树重规划在 T2 守场达到 80.0%。无目标自博弈盲建将合并 T2 存活率由 56.25% 推升至 64.25%（0 手坑区间 +15.5pt）。</p>
       </div>
     </section>
 
-    <h2 class="section-title">Collaborator Turn-1 Match &amp; Evaluation Options</h2>
+    <h2 class="section-title">协作验证方式 <small>欢迎用真实对局检验，而不是只看演示</small></h2>
     <section class="collab-grid">
       <div class="collab-box">
-        <strong>Option 1 — Direct YGOPro / MyCard Room (Zero Extra UI Work)</strong>
-        Host or join a standard YGOPro LAN or custom room. Collaborators play with the native card UI and real chain windows while Turn-1 moves and `.yrp` traces log cleanly.
+        <span class="tag">盲测</span>
+        <strong>方式一：直连 MyCard / YGOPro 房间盲测</strong>
+        主持或加入标准 YGOPro 房间，合作者使用原生卡片界面与真实连锁窗口；先攻展开与手坑时点会完整落成回放记录，便于逐格复核。
       </div>
       <div class="collab-box">
-        <strong>Option 2 — Browser Duel Link (Blind Human Baselines)</strong>
-        Expose a temporary Turn-1 browser board over HTTPS tunnel so external testers can play blind against the solver without installing desktop clients.
+        <span class="tag">浏览器</span>
+        <strong>方式二：临时公网浏览器对战入口</strong>
+        通过临时 HTTPS 隧道开放一个先攻牌桌，外部测试者无需安装桌面客户端即可在浏览器里盲打，用于收集人类基线与手坑时点样本。
       </div>
     </section>
 
     <footer>
-      <span>OCG-Zero Showcase · High-Level Verified Replay Summaries</span>
-      <span>Dual-Engine Certified · Card names and rule outcomes match official OCG logic</span>
+      <span>OCG-Zero 展示页 · 真实引擎回放 · 双核心逐格验真</span>
+      <span>卡名与规则裁定以官方 OCG 为准 · 本页仅展示脱敏后的公开回放摘要</span>
     </footer>
   </div>
-
   <script>
-    const SCENARIOS = [
-      {
-        id: "tier4_boss",
-        title: "Tier 4 Boss Combo · Plant Link Rikka",
-        subtitle: "24 chain steps · Ending on Link-4 + Teardrop + Regulus + Konkon + Princess",
-        lp: [8800, 8000],
-        steps: [
-          {
-            title: "Step 1 · Search Starter via Rikka Glamour",
-            desc: "Activates Rikka Glamour to add Mudan the Rikka Fairy, then Normal Summons Sunseed Genius Loci.",
-            lp: [8000, 8000], phase: "MP1 · Summon #1",
-            emz: [{ name: "Sunavalon Dryas", meta: "LINK-1 · 0" }, null],
-            m0: [null, null, null, null, { name: "Sunseed Loci", meta: "Normal · 0" }],
-            s0: [{ name: "Rikka Glamour", meta: "S1 · Act" }, null, null, null, null],
-            p1: [], chain: [{ p: 0, text: "CL1 Dryas (Search Sowing)" }], gy: ["Glamour"]
-          },
-          {
-            title: "Step 2 · Therion Omni-Negate Extension",
-            desc: "Summons Therion Lily Borea, searches Discolosseum, and equips into Therion King Regulus before locking into Plants.",
-            lp: [8000, 8000], phase: "MP1 · Pre-Plant-Lock",
-            emz: [{ name: "Sunavalon Dryas", meta: "LINK-1 · 0" }, null],
-            m0: [null, null, null, { name: "Therion King Regulus", meta: "ATK 2800 · Omni" }, { name: "Sunseed Twin", meta: "ATK 0" }],
-            s0: [{ name: "Sowing", meta: "Act" }, { name: "Lily Borea", meta: "Equip" }, { name: "Discolosseum", meta: "Field" }, null, null],
-            p1: [], chain: [{ p: 0, text: "CL1 Sunseed Twin" }, { p: 0, text: "CL2 Dryas" }], gy: ["Loci", "Glamour"]
-          },
-          {
-            title: "Step 3 · Rikka Konkon & Aroma Bridge",
-            desc: "Healer boosts LP (8800), unlocking Aromaseraphy Jasmine tribute search for Rosalina & Laurel, looping Skeletal Soldier.",
-            lp: [8800, 8000], phase: "MP1 · Link Climb",
-            emz: [{ name: "Jasmine", meta: "LINK-2 · 1800" }, null],
-            m0: [{ name: "Rosalina", meta: "LV1" }, null, { name: "Aromage Laurel", meta: "LV1" }, { name: "Regulus", meta: "2800 · Negate" }, { name: "Skeletal Soldier", meta: "Insect/Plant" }],
-            s0: [null, null, { name: "Discolosseum", meta: "Field" }, { name: "Rikka Konkon", meta: "Field" }, null],
-            p1: [], chain: [{ p: 0, text: "CL1 Jasmine -> Lonefire Blossom" }], gy: ["Twin", "Mudan", "Healer"]
-          },
-          {
-            title: "Step 4 · Dual Xyz + Link-4 Boss Endboard",
-            desc: "Snowdrop aligns levels into Teardrop the Rikka Queen while Jasmine + Links climb into Benghalancer; Princess sits in GY.",
-            lp: [8800, 8000], phase: "End of Turn 1 · 9/9 Goal",
-            emz: [null, null],
-            m0: [null, null, { name: "Benghalancer", meta: "LINK-4 · 2500 · Bounce" }, { name: "Teardrop Queen", meta: "XYZ · 2800 · Tribute" }, { name: "Therion King Regulus", meta: "3500 · Negate" }],
-            s0: [null, null, null, null, { name: "Rikka Konkon", meta: "Field · Tribute Opp" }],
-            p1: [], chain: [{ p: 0, text: "Certified Complete (0 Retries)" }], gy: ["Rikka Princess (GY Negate)", "Lonefire", "Jasmine"]
-          }
-        ]
-      },
-      {
-        id: "anti_nibiru",
-        title: "Pre-5th Anti-Nibiru · Swordsoul Tenyi",
-        subtitle: "Longyuan into Baronne before Summon #5, negating Nibiru CL2",
-        lp: [8000, 6800],
-        steps: [
-          {
-            title: "Step 1 · Longyuan Burner -> Early Baronne",
-            desc: "Discards Emergence to Special Summon Longyuan + Token, immediately Synchro Summoning Baronne de Fleur (#4).",
-            lp: [8000, 6800], phase: "MP1 · Summon #4",
-            emz: [{ name: "Baronne de Fleur", meta: "LV10 · 3000 · Negate" }, null],
-            m0: [null, null, null, null, null],
-            s0: [], p1: [{ name: "Hidden Handtrap", meta: "Holding Nibiru" }],
-            chain: [{ p: 0, text: "CL1 Longyuan (-1200 LP)" }], gy: ["Emergence", "Longyuan"]
-          },
-          {
-            title: "Step 2 · Mo Ye Summon #5 Triggers P1 Nibiru",
-            desc: "Normal Summons Swordsoul of Mo Ye and spawns Token (#5). Opponent immediately drops Nibiru as Chain Link 1!",
-            lp: [8000, 6800], phase: "MP1 · Chain Window",
-            emz: [{ name: "Baronne de Fleur", meta: "LV10 · Live Negate" }, null],
-            m0: [{ name: "Mo Ye", meta: "LV4 · 1800" }, null, { name: "Swordsoul Token", meta: "LV4 Tuner" }, null, null],
-            s0: [], p1: [{ name: "Nibiru (Hand -> CL1)", meta: "Tribute Board?" }],
-            chain: [{ p: 1, text: "CL1 Nibiru, the Primal Being" }], gy: ["Emergence", "Longyuan"]
-          },
-          {
-            title: "Step 3 · Baronne Negates & Destroys Nibiru (CL2)",
-            desc: "Chains Baronne de Fleur as CL2 to negate and destroy Nibiru, keeping both Synchro materials untouched on field.",
-            lp: [8000, 6800], phase: "MP1 · Protected",
-            emz: [{ name: "Baronne de Fleur", meta: "LV10 · 3000" }, null],
-            m0: [{ name: "Mo Ye", meta: "LV4" }, null, { name: "Swordsoul Token", meta: "LV4 Tuner" }, null, null],
-            s0: [], p1: [],
-            chain: [{ p: 1, text: "CL1 Nibiru (Negated)" }, { p: 0, text: "CL2 Baronne de Fleur" }], gy: ["Nibiru", "Emergence"]
-          },
-          {
-            title: "Step 4 · Chixiao + Mo Ye Chain-Block Finish",
-            desc: "Synchros Chixiao (M2) and triggers CL1 Mo Ye (draw) + CL2 Chixiao (search Taia) for full Chixiao + Baronne lock.",
-            lp: [8000, 6800], phase: "End of Turn 1 · Goal Solved",
-            emz: [{ name: "Baronne de Fleur", meta: "3000 · Negate" }, null],
-            m0: [null, null, { name: "Chixiao", meta: "2800 · Monster Negate" }, null, null],
-            s0: [], p1: [],
-            chain: [{ p: 0, text: "CL1 Mo Ye (Draw 1)" }, { p: 0, text: "CL2 Chixiao (Search)" }], gy: ["Mo Ye", "Nibiru"]
-          }
-        ]
-      },
-      {
-        id: "psro_hold",
-        title: "Emergent Handtrap Hold · Adversarial PSRO",
-        subtitle: "Zero-ID defender passes early legal window, then doubles Nibiru + Ash to shut down Turn 1",
-        lp: [8000, 8000],
-        steps: [
-          {
-            title: "Step 1 · P1 Deliberately Holds on Early Prompts",
-            desc: "P0 opens Ragnaraika Evil Seed & Samurai Beetle. P1 holds Ash Blossom on the low-impact opener to trap the extension.",
-            lp: [8000, 8000], phase: "MP1 · P1 Hold #1",
-            emz: [null, null],
-            m0: [{ name: "Ragnaraika Evil Seed", meta: "Plant" }, { name: "Samurai Beetle", meta: "LINK-2" }, null, null, null],
-            s0: [], p1: [{ name: "Ash + Nibiru", meta: "Holding Both" }],
-            chain: [{ p: 0, text: "CL1 Beetle -> P1 Chooses HOLD" }], gy: []
-          },
-          {
-            title: "Step 2 · Nibiru Clears Board at Skeletal Soldier Chokepoint",
-            desc: "Once P0 commits into Ragnaraika Skeletal Soldier on the 5th summon, P1 triggers Nibiru and wipes the entire Monster Zone.",
-            lp: [8000, 8000], phase: "MP1 · Chokepoint Wipe",
-            emz: [null, null],
-            m0: [{ name: "Primal Being Token", meta: "DEF" }, null, null, null, null],
-            s0: [], p1: [{ name: "Nibiru", meta: "ATK 3000 · On Field" }],
-            chain: [{ p: 1, text: "CL1 Nibiru (Wipes P0 Board)" }], gy: ["Evil Seed", "Samurai Beetle", "Skeletal Soldier"]
-          },
-          {
-            title: "Step 3 · Ash Blossom Negates Sunvine Sowing Recovery",
-            desc: "P0 tries to recover with Sunvine Sowing from Deck; P1 immediately chains the held Ash Blossom & Joyous Spring as CL2.",
-            lp: [8000, 8000], phase: "MP1 · Double Shutdown",
-            emz: [null, null],
-            m0: [],
-            s0: [{ name: "Sunvine Sowing", meta: "Negated" }, null, null, null, null],
-            p1: [{ name: "Nibiru", meta: "ATK 3000" }, { name: "Ash Blossom", meta: "CL2 Fired -> GY" }],
-            chain: [{ p: 0, text: "CL1 Sunvine Sowing" }, { p: 1, text: "CL2 Ash Blossom" }], gy: ["Evil Seed", "Beetle", "Soldier"]
-          },
-          {
-            title: "Step 4 · Complete Turn-1 Zero-Board Shutdown",
-            desc: "P0 passes with 0 Monsters, 0 Spell/Traps, and 0 Disruptions while P1 retains Nibiru (3000 ATK) entering Turn 2.",
-            lp: [8000, 8000], phase: "Turn 2 Start · 0.0 Disruptions",
-            emz: [null, null], m0: [], s0: [],
-            p1: [{ name: "Nibiru (Live)", meta: "ATK 3000" }, { name: "6-Card T2 Hand", meta: "Full Counter" }],
-            chain: [{ p: 1, text: "P1 Wins Chokepoint Trade (2-HT Shutdown)" }], gy: ["Sowing", "Beetle", "Soldier"]
-          }
-        ]
-      }
-    ];
+    const SCENARIOS = [{"id":"tier4_boss","title":"场景 1 · Tier 4 植物均（5 件套实验目标展开）","subtitle":"88 步完整真实轨迹 · 24 次连锁 · 终场：孟加拉枪兵 + 泪滴花束雪花莲 + 轩辕十四 + 六花来来 + 墓地白姬","side0":"我方 · 植物均","side1":"对手 · 手坑位","p1Label":"对手手牌 / 场面","note":"注：本局为早期可行性实验设定的 5 件套目标场（回生的孟加拉枪兵 + 六花圣 泪滴花束雪花莲 + 轩辕十四 + 六花来来 + 墓地六花白姬，88 步 / 24 连锁，用于验证超深分支搜索与双核心一致性），并非竞技天梯标准的「仙人掌封锁者 / 神树兽 许珀里冬 + 六花薄冰 + 圣天树之大母神开花」封锁终场。","milestones":[["起手展开",0],["外挂轩辕十四",19],["芳香茉莉桥",49],["连锁高峰",85],["最终终场",87]],"steps":[{"lp":[8000,8000],"phase":"第 1 回合 · 主要阶段 1","m":[null,null,null,null,null],"emz":[null,null],"s":[null,{"name":"六花绚烂","meta":"盖放 · 已使用","kind":"spell"},null,null,null,null],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[],"gy":[],"removed":[],"note":"","chainCount":0,"stats":{},"emzSide":null,"title":"盖放《六花绚烂》","desc":"起手先把《六花绚烂》盖放到魔法·陷阱区，为检索《六花精 牡丹》保留资源。"},{"lp":[8000,8000],"phase":"第 1 回合 · 主要阶段 1","m":[null,null,null,null,null],"emz":[null,null],"s":[null,{"name":"六花绚烂","meta":"盖放 · 已使用","kind":"spell"},null,null,null,null],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[],"gy":[],"removed":[],"note":"","chainCount":0,"stats":{},"emzSide":null,"title":"放置到魔法·陷阱区 S1","desc":"区域放置确认：S1 与真实轨迹一致。"},{"lp":[8000,8000],"phase":"第 1 回合 · 主要阶段 1","m":[null,null,null,null,null],"emz":[null,null],"s":[null,{"name":"六花绚烂","meta":"盖放 · 已使用","kind":"spell"},null,null,null,null],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":0,"text":"CL1 六花绚烂"}],"gy":[],"removed":[],"note":"","chainCount":1,"stats":{},"emzSide":null,"title":"发动《六花绚烂》","desc":"《六花绚烂》发动，检索《六花精 牡丹》；本局第 1 次连锁成立。"},{"lp":[8000,8000],"phase":"第 1 回合 · 主要阶段 1","m":[null,null,null,null,null],"emz":[null,null],"s":[null,{"name":"六花绚烂","meta":"盖放 · 已使用","kind":"spell"},null,null,null,null],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":0,"text":"CL1 六花绚烂"}],"gy":[],"removed":[],"note":"","chainCount":1,"stats":{},"emzSide":null,"title":"挑选《六花精 牡丹》","desc":"《六花精 牡丹》加入手牌，作为后续植物族展开的补点。"},{"lp":[8000,8000],"phase":"第 1 回合 · 主要阶段 1","m":[null,null,null,null,null],"emz":[null,null],"s":[null,{"name":"六花绚烂","meta":"盖放 · 已使用","kind":"spell"},null,null,null,null],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":0,"text":"CL1 六花绚烂"}],"gy":[],"removed":[],"note":"","chainCount":1,"stats":{},"emzSide":null,"title":"通常召唤《圣种之地灵》","desc":"通常召唤《圣种之地灵》，本回合第 1 次通常召唤。"},{"lp":[8000,8000],"phase":"第 1 回合 · 主要阶段 1","m":[null,null,null,null,{"name":"圣种之地灵","meta":"等级 1 · 植物族 · 调整","kind":"monster"}],"emz":[null,null],"s":[null,{"name":"六花绚烂","meta":"盖放 · 已使用","kind":"spell"},null,null,null,null],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":0,"text":"CL1 六花绚烂"}],"gy":[],"removed":[],"note":"","chainCount":1,"stats":{},"emzSide":null,"title":"放置到主怪兽区 M4","desc":"《圣种之地灵》落在 M4，主怪兽区开始建立。"},{"lp":[8000,8000],"phase":"第 1 回合 · 主要阶段 1","m":[null,null,null,null,null],"emz":[null,null],"s":[null,{"name":"六花绚烂","meta":"盖放 · 已使用","kind":"spell"},null,null,null,null],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":0,"text":"CL1 六花绚烂"}],"gy":["圣种之地灵"],"removed":[],"note":"","chainCount":1,"stats":{},"emzSide":null,"title":"特殊召唤《圣天树之幼精》","desc":"以《圣种之地灵》为素材连接召唤《圣天树之幼精》，《圣种之地灵》送墓。"},{"lp":[8000,8000],"phase":"第 1 回合 · 主要阶段 1","m":[null,null,null,null,null],"emz":[{"name":"圣天树之幼精","meta":"LINK-1 · 植物族","kind":"link"},null],"s":[null,{"name":"六花绚烂","meta":"盖放 · 已使用","kind":"spell"},null,null,null,null],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":0,"text":"CL1 六花绚烂"}],"gy":["圣种之地灵"],"removed":[],"note":"","chainCount":1,"stats":{},"emzSide":null,"title":"放置到额外怪兽区左侧（M5）","desc":"《圣天树之幼精》进入额外怪兽区左侧，链接箭头指向主怪兽区。"},{"lp":[8000,8000],"phase":"第 1 回合 · 主要阶段 1","m":[null,null,null,null,null],"emz":[{"name":"圣天树之幼精","meta":"LINK-1 · 植物族","kind":"link"},null],"s":[null,{"name":"六花绚烂","meta":"盖放 · 已使用","kind":"spell"},null,null,null,null],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":0,"text":"CL1 圣天树之幼精"}],"gy":["圣种之地灵"],"removed":[],"note":"","chainCount":2,"stats":{},"emzSide":null,"title":"确认发动《圣天树之幼精》的触发效果","desc":"《圣天树之幼精》触发，检索《圣蔓的播种》；第 2 次连锁。"},{"lp":[8000,8000],"phase":"第 1 回合 · 主要阶段 1","m":[null,null,null,null,null],"emz":[{"name":"圣天树之幼精","meta":"LINK-1 · 植物族","kind":"link"},null],"s":[null,{"name":"六花绚烂","meta":"盖放 · 已使用","kind":"spell"},null,null,null,null],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":0,"text":"CL1 圣天树之幼精"}],"gy":["圣种之地灵"],"removed":[],"note":"","chainCount":2,"stats":{},"emzSide":null,"title":"挑选《圣蔓的播种》","desc":"《圣蔓的播种》加入手牌，准备铺开圣种轴。"},{"lp":[8000,8000],"phase":"第 1 回合 · 主要阶段 1","m":[null,{"name":"兽带斗神“百合”玻瑞阿斯","meta":"装备魔法","kind":"equip"},null,null,null],"emz":[{"name":"圣天树之幼精","meta":"LINK-1 · 植物族","kind":"link"},null],"s":[null,{"name":"六花绚烂","meta":"盖放 · 已使用","kind":"spell"},null,null,null,null],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":0,"text":"CL1 兽带斗神“百合”玻瑞阿斯"}],"gy":["圣种之地灵"],"removed":[],"note":"","chainCount":3,"stats":{},"emzSide":null,"title":"发动《兽带斗神“百合”玻瑞阿斯》","desc":"《兽带斗神“百合”玻瑞阿斯》从手牌发动，提前布置兽带斗神外挂。"},{"lp":[8000,8000],"phase":"第 1 回合 · 主要阶段 1","m":[null,{"name":"兽带斗神“百合”玻瑞阿斯","meta":"装备魔法","kind":"equip"},null,null,null],"emz":[{"name":"圣天树之幼精","meta":"LINK-1 · 植物族","kind":"link"},null],"s":[null,{"name":"六花绚烂","meta":"盖放 · 已使用","kind":"spell"},null,null,null,null],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":0,"text":"CL1 兽带斗神“百合”玻瑞阿斯"}],"gy":["圣种之地灵"],"removed":[],"note":"","chainCount":3,"stats":{},"emzSide":null,"title":"放置到主怪兽区 M1","desc":"《兽带斗神“百合”玻瑞阿斯》落在 M1。"},{"lp":[8000,8000],"phase":"第 1 回合 · 主要阶段 1","m":[null,{"name":"兽带斗神“百合”玻瑞阿斯","meta":"装备魔法","kind":"equip"},null,null,null],"emz":[{"name":"圣天树之幼精","meta":"LINK-1 · 植物族","kind":"link"},null],"s":[null,{"name":"六花绚烂","meta":"盖放 · 已使用","kind":"spell"},null,null,null,null],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":0,"text":"CL1 兽带斗神“百合”玻瑞阿斯"}],"gy":["圣种之地灵"],"removed":[],"note":"","chainCount":3,"stats":{},"emzSide":null,"title":"确认《兽带斗神“百合”玻瑞阿斯》的表示形式","desc":"攻击表示确认，兽带斗神外挂开始与植物轴并行。"},{"lp":[8000,8000],"phase":"第 1 回合 · 主要阶段 1","m":[null,{"name":"兽带斗神“百合”玻瑞阿斯","meta":"装备魔法","kind":"equip"},null,null,null],"emz":[{"name":"圣天树之幼精","meta":"LINK-1 · 植物族","kind":"link"},null],"s":[null,{"name":"六花绚烂","meta":"盖放 · 已使用","kind":"spell"},null,null,null,null],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":0,"text":"CL1 兽带斗神“百合”玻瑞阿斯"}],"gy":["圣种之地灵"],"removed":[],"note":"","chainCount":3,"stats":{},"emzSide":null,"title":"放置到魔法·陷阱区 S2","desc":"装备联动区域 S2 记录完成。"},{"lp":[8000,8000],"phase":"第 1 回合 · 主要阶段 1","m":[null,{"name":"兽带斗神“百合”玻瑞阿斯","meta":"装备魔法","kind":"equip"},null,null,null],"emz":[{"name":"圣天树之幼精","meta":"LINK-1 · 植物族","kind":"link"},null],"s":[null,{"name":"六花绚烂","meta":"盖放 · 已使用","kind":"spell"},null,null,null,null],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":0,"text":"CL1 兽带斗神“百合”玻瑞阿斯"}],"gy":["圣种之地灵"],"removed":[],"note":"","chainCount":4,"stats":{},"emzSide":null,"title":"发动《兽带斗神“百合”玻瑞阿斯》的装备效果","desc":"《兽带斗神“百合”玻瑞阿斯》再次发动，进入装备联动。"},{"lp":[8000,8000],"phase":"第 1 回合 · 主要阶段 1","m":[null,{"name":"兽带斗神“百合”玻瑞阿斯","meta":"装备魔法","kind":"equip"},null,null,null],"emz":[{"name":"圣天树之幼精","meta":"LINK-1 · 植物族","kind":"link"},null],"s":[null,{"name":"六花绚烂","meta":"盖放 · 已使用","kind":"spell"},null,null,null,null],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":0,"text":"CL1 兽带斗神“百合”玻瑞阿斯"}],"gy":["圣种之地灵"],"removed":[],"note":"","chainCount":4,"stats":{},"emzSide":null,"title":"以《兽带斗神“百合”玻瑞阿斯》为对象","desc":"效果对象确认，装备关系建立。"},{"lp":[8000,8000],"phase":"第 1 回合 · 主要阶段 1","m":[null,{"name":"兽带斗神“百合”玻瑞阿斯","meta":"装备魔法","kind":"equip"},null,null,null],"emz":[{"name":"圣天树之幼精","meta":"LINK-1 · 植物族","kind":"link"},null],"s":[null,{"name":"六花绚烂","meta":"盖放 · 已使用","kind":"spell"},null,null,null,{"name":"圆盘斗技场","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":0,"text":"CL1 兽带斗神“百合”玻瑞阿斯"}],"gy":["圣种之地灵"],"removed":[],"note":"","chainCount":4,"stats":{},"emzSide":null,"title":"盖放《圆盘斗技场》","desc":"盖放《圆盘斗技场》，为《兽带斗神“王者”轩辕十四》的检索与装备做准备。"},{"lp":[8000,8000],"phase":"第 1 回合 · 主要阶段 1","m":[null,{"name":"兽带斗神“百合”玻瑞阿斯","meta":"装备魔法","kind":"equip"},null,null,null],"emz":[{"name":"圣天树之幼精","meta":"LINK-1 · 植物族","kind":"link"},null],"s":[null,{"name":"六花绚烂","meta":"盖放 · 已使用","kind":"spell"},null,null,null,{"name":"圆盘斗技场","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":0,"text":"CL1 圆盘斗技场"}],"gy":["圣种之地灵"],"removed":[],"note":"","chainCount":5,"stats":{},"emzSide":null,"title":"发动《圆盘斗技场》","desc":"《圆盘斗技场》发动；第 5 次连锁。"},{"lp":[8000,8000],"phase":"第 1 回合 · 主要阶段 1","m":[null,{"name":"兽带斗神“百合”玻瑞阿斯","meta":"装备魔法","kind":"equip"},null,null,null],"emz":[{"name":"圣天树之幼精","meta":"LINK-1 · 植物族","kind":"link"},null],"s":[null,{"name":"六花绚烂","meta":"盖放 · 已使用","kind":"spell"},null,null,null,{"name":"圆盘斗技场","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":0,"text":"CL1 圆盘斗技场"}],"gy":["圣种之地灵"],"removed":[],"note":"","chainCount":5,"stats":{},"emzSide":null,"title":"确认：是","desc":"确认发动，场地效果进入结算。"},{"lp":[8000,8000],"phase":"第 1 回合 · 主要阶段 1","m":[null,{"name":"兽带斗神“百合”玻瑞阿斯","meta":"装备魔法","kind":"equip"},null,null,{"name":"兽带斗神“王者”轩辕十四","meta":"ATK 3500 · 兽带斗神","kind":"monster"}],"emz":[{"name":"圣天树之幼精","meta":"LINK-1 · 植物族","kind":"link"},null],"s":[null,{"name":"六花绚烂","meta":"盖放 · 已使用","kind":"spell"},null,null,null,{"name":"圆盘斗技场","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":0,"text":"CL1 兽带斗神“王者”轩辕十四"}],"gy":["圣种之地灵"],"removed":[],"note":"","chainCount":6,"stats":{},"emzSide":null,"title":"发动《兽带斗神“王者”轩辕十四》","desc":"《兽带斗神“王者”轩辕十四》登场，形成 ATK 3500 的终端压制点；第 6 次连锁。"},{"lp":[8000,8000],"phase":"第 1 回合 · 主要阶段 1","m":[null,{"name":"兽带斗神“百合”玻瑞阿斯","meta":"装备魔法","kind":"equip"},null,null,{"name":"兽带斗神“王者”轩辕十四","meta":"ATK 3500 · 兽带斗神","kind":"monster"}],"emz":[{"name":"圣天树之幼精","meta":"LINK-1 · 植物族","kind":"link"},null],"s":[null,{"name":"六花绚烂","meta":"盖放 · 已使用","kind":"spell"},null,null,null,{"name":"圆盘斗技场","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":0,"text":"CL1 兽带斗神“王者”轩辕十四"}],"gy":["圣种之地灵"],"removed":[],"note":"","chainCount":6,"stats":{},"emzSide":null,"title":"放置到主怪兽区 M4","desc":"《兽带斗神“王者”轩辕十四》落在 M4，主怪兽区核心就位。"},{"lp":[8000,8000],"phase":"第 1 回合 · 主要阶段 1","m":[null,{"name":"兽带斗神“百合”玻瑞阿斯","meta":"装备魔法","kind":"equip"},null,null,{"name":"兽带斗神“王者”轩辕十四","meta":"ATK 3500 · 兽带斗神","kind":"monster"}],"emz":[{"name":"圣天树之幼精","meta":"LINK-1 · 植物族","kind":"link"},null],"s":[null,{"name":"六花绚烂","meta":"盖放 · 已使用","kind":"spell"},null,null,null,{"name":"圆盘斗技场","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":0,"text":"CL1 兽带斗神“王者”轩辕十四"}],"gy":["圣种之地灵"],"removed":[],"note":"","chainCount":6,"stats":{},"emzSide":null,"title":"确认《兽带斗神“王者”轩辕十四》的表示形式","desc":"攻击表示确认，兽带斗神终端站定。"},{"lp":[8000,8000],"phase":"第 1 回合 · 主要阶段 1","m":[null,null,null,null,{"name":"兽带斗神“王者”轩辕十四","meta":"ATK 3500 · 兽带斗神","kind":"monster"}],"emz":[{"name":"圣天树之幼精","meta":"LINK-1 · 植物族","kind":"link"},null],"s":[null,{"name":"六花绚烂","meta":"盖放 · 已使用","kind":"spell"},null,null,{"name":"兽带斗神“百合”玻瑞阿斯","meta":"装备魔法","kind":"equip"},{"name":"圆盘斗技场","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":0,"text":"CL1 兽带斗神“王者”轩辕十四"}],"gy":["圣种之地灵"],"removed":[],"note":"","chainCount":6,"stats":{},"emzSide":null,"title":"放置到魔法·陷阱区 S4","desc":"《兽带斗神“百合”玻瑞阿斯》转为装备，落在 S4。"},{"lp":[8000,8000],"phase":"第 1 回合 · 主要阶段 1","m":[null,null,null,null,{"name":"兽带斗神“王者”轩辕十四","meta":"ATK 3500 · 兽带斗神","kind":"monster"}],"emz":[{"name":"圣天树之幼精","meta":"LINK-1 · 植物族","kind":"link"},null],"s":[null,{"name":"圣蔓的播种","meta":"已发动","kind":"spell"},null,null,{"name":"兽带斗神“百合”玻瑞阿斯","meta":"装备魔法","kind":"equip"},{"name":"圆盘斗技场","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":0,"text":"CL1 圣蔓的播种"}],"gy":["圣种之地灵"],"removed":[],"note":"","chainCount":7,"stats":{},"emzSide":null,"title":"发动《圣蔓的播种》","desc":"《圣蔓的播种》发动，开始第二次圣种展开；第 7 次连锁。"},{"lp":[8000,8000],"phase":"第 1 回合 · 主要阶段 1","m":[null,null,null,null,{"name":"兽带斗神“王者”轩辕十四","meta":"ATK 3500 · 兽带斗神","kind":"monster"}],"emz":[{"name":"圣天树之幼精","meta":"LINK-1 · 植物族","kind":"link"},null],"s":[null,{"name":"圣蔓的播种","meta":"已发动","kind":"spell"},null,null,{"name":"兽带斗神“百合”玻瑞阿斯","meta":"装备魔法","kind":"equip"},{"name":"圆盘斗技场","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":0,"text":"CL1 圣蔓的播种"}],"gy":["圣种之地灵"],"removed":[],"note":"","chainCount":7,"stats":{},"emzSide":null,"title":"放置到魔法·陷阱区 S1","desc":"《圣蔓的播种》占用 S1，魔法区记录同步。"},{"lp":[8000,8000],"phase":"第 1 回合 · 主要阶段 1","m":[null,null,null,null,{"name":"兽带斗神“王者”轩辕十四","meta":"ATK 3500 · 兽带斗神","kind":"monster"}],"emz":[{"name":"圣天树之幼精","meta":"LINK-1 · 植物族","kind":"link"},null],"s":[null,{"name":"圣蔓的播种","meta":"已发动","kind":"spell"},null,null,{"name":"兽带斗神“百合”玻瑞阿斯","meta":"装备魔法","kind":"equip"},{"name":"圆盘斗技场","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":0,"text":"CL1 圣蔓的播种"}],"gy":["圣种之地灵"],"removed":[],"note":"","chainCount":7,"stats":{},"emzSide":null,"title":"挑选《圣种之天双芽》","desc":"挑选《圣种之天双芽》，准备补充场值与连接素材。"},{"lp":[8000,8000],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"圣种之天双芽","meta":"等级 4 · 植物族","kind":"monster"},null,null,null,{"name":"兽带斗神“王者”轩辕十四","meta":"ATK 3500 · 兽带斗神","kind":"monster"}],"emz":[{"name":"圣天树之幼精","meta":"LINK-1 · 植物族","kind":"link"},null],"s":[null,{"name":"圣蔓的播种","meta":"已发动","kind":"spell"},null,null,{"name":"兽带斗神“百合”玻瑞阿斯","meta":"装备魔法","kind":"equip"},{"name":"圆盘斗技场","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":0,"text":"CL1 圣蔓的播种"}],"gy":["圣种之地灵"],"removed":[],"note":"","chainCount":7,"stats":{},"emzSide":null,"title":"放置到主怪兽区 M0","desc":"《圣种之天双芽》落在 M0。"},{"lp":[8000,8000],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"圣种之天双芽","meta":"等级 4 · 植物族","kind":"monster"},null,null,null,{"name":"兽带斗神“王者”轩辕十四","meta":"ATK 3500 · 兽带斗神","kind":"monster"}],"emz":[{"name":"圣天树之幼精","meta":"LINK-1 · 植物族","kind":"link"},null],"s":[null,{"name":"圣蔓的播种","meta":"已发动","kind":"spell"},null,null,{"name":"兽带斗神“百合”玻瑞阿斯","meta":"装备魔法","kind":"equip"},{"name":"圆盘斗技场","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":0,"text":"CL1 圣蔓的播种"}],"gy":["圣种之地灵"],"removed":[],"note":"","chainCount":7,"stats":{},"emzSide":null,"title":"确认《圣种之天双芽》的表示形式","desc":"表示形式确认，圣种轴继续铺场。"},{"lp":[8000,8000],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"圣种之天双芽","meta":"等级 4 · 植物族","kind":"monster"},null,null,null,{"name":"兽带斗神“王者”轩辕十四","meta":"ATK 3500 · 兽带斗神","kind":"monster"}],"emz":[{"name":"圣天树之幼精","meta":"LINK-1 · 植物族","kind":"link"},null],"s":[null,{"name":"圣蔓的播种","meta":"已发动","kind":"spell"},null,null,{"name":"兽带斗神“百合”玻瑞阿斯","meta":"装备魔法","kind":"equip"},{"name":"圆盘斗技场","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":0,"text":"CL1 圣种之天双芽"}],"gy":["圣种之地灵"],"removed":[],"note":"","chainCount":8,"stats":{},"emzSide":null,"title":"连锁《圣种之天双芽》","desc":"《圣种之天双芽》连锁成立；第 8 次连锁。"},{"lp":[8000,8000],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"圣种之天双芽","meta":"等级 4 · 植物族","kind":"monster"},null,null,null,{"name":"兽带斗神“王者”轩辕十四","meta":"ATK 3500 · 兽带斗神","kind":"monster"}],"emz":[{"name":"圣天树之幼精","meta":"LINK-1 · 植物族","kind":"link"},null],"s":[null,{"name":"圣蔓的播种","meta":"已发动","kind":"spell"},null,null,{"name":"兽带斗神“百合”玻瑞阿斯","meta":"装备魔法","kind":"equip"},{"name":"圆盘斗技场","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":0,"text":"CL1 圣种之天双芽"},{"p":0,"text":"CL2 圣天树之幼精"}],"gy":["圣种之地灵"],"removed":[],"note":"","chainCount":9,"stats":{},"emzSide":null,"title":"连锁《圣天树之幼精》","desc":"《圣天树之幼精》接上连锁；第 9 次连锁。"},{"lp":[8000,8000],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"圣种之天双芽","meta":"等级 4 · 植物族","kind":"monster"},null,null,{"name":"圣种之地灵","meta":"等级 1 · 植物族 · 调整","kind":"monster"},{"name":"兽带斗神“王者”轩辕十四","meta":"ATK 3500 · 兽带斗神","kind":"monster"}],"emz":[{"name":"圣天树之幼精","meta":"LINK-1 · 植物族","kind":"link"},null],"s":[null,{"name":"圣蔓的播种","meta":"已发动","kind":"spell"},null,null,{"name":"兽带斗神“百合”玻瑞阿斯","meta":"装备魔法","kind":"equip"},{"name":"圆盘斗技场","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":0,"text":"CL1 圣种之天双芽"},{"p":0,"text":"CL2 圣天树之幼精"}],"gy":["圣种之地灵"],"removed":[],"note":"","chainCount":9,"stats":{},"emzSide":null,"title":"放置到主怪兽区 M3","desc":"《圣种之地灵》被重新放置到 M3。"},{"lp":[8000,8000],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"圣种之天双芽","meta":"等级 4 · 植物族","kind":"monster"},null,null,{"name":"圣种之地灵","meta":"等级 1 · 植物族 · 调整","kind":"monster"},{"name":"兽带斗神“王者”轩辕十四","meta":"ATK 3500 · 兽带斗神","kind":"monster"}],"emz":[{"name":"圣天树之幼精","meta":"LINK-1 · 植物族","kind":"link"},null],"s":[null,{"name":"圣蔓的播种","meta":"已发动","kind":"spell"},null,null,{"name":"兽带斗神“百合”玻瑞阿斯","meta":"装备魔法","kind":"equip"},{"name":"圆盘斗技场","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":0,"text":"CL1 圣种之天双芽"},{"p":0,"text":"CL2 圣天树之幼精"}],"gy":["圣种之地灵"],"removed":[],"note":"","chainCount":9,"stats":{},"emzSide":null,"title":"确认《圣种之地灵》的表示形式","desc":"《圣种之地灵》表示形式确认，场值回收成功。"},{"lp":[8800,8000],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"圣种之天双芽","meta":"等级 4 · 植物族","kind":"monster"},null,{"name":"圣蔓之治愈者","meta":"LINK-1 · 植物族","kind":"link"},{"name":"圣种之地灵","meta":"等级 1 · 植物族 · 调整","kind":"monster"},{"name":"兽带斗神“王者”轩辕十四","meta":"ATK 3500 · 兽带斗神","kind":"monster"}],"emz":[{"name":"圣天树之幼精","meta":"LINK-1 · 植物族","kind":"link"},null],"s":[null,{"name":"圣蔓的播种","meta":"已发动","kind":"spell"},null,null,{"name":"兽带斗神“百合”玻瑞阿斯","meta":"装备魔法","kind":"equip"},{"name":"圆盘斗技场","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":0,"text":"CL1 圣蔓之治愈者"}],"gy":["圣种之地灵"],"removed":[],"note":"","chainCount":10,"stats":{},"emzSide":null,"title":"确认发动《圣蔓之治愈者》的触发效果","desc":"《圣蔓之治愈者》触发，回复 LP 至 8800；第 10 次连锁。"},{"lp":[8800,8000],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"圣种之天双芽","meta":"等级 4 · 植物族","kind":"monster"},null,{"name":"圣蔓之治愈者","meta":"LINK-1 · 植物族","kind":"link"},{"name":"圣种之地灵","meta":"等级 1 · 植物族 · 调整","kind":"monster"},{"name":"兽带斗神“王者”轩辕十四","meta":"ATK 3500 · 兽带斗神","kind":"monster"}],"emz":[{"name":"圣天树之幼精","meta":"LINK-1 · 植物族","kind":"link"},null],"s":[null,{"name":"圣蔓的播种","meta":"已发动","kind":"spell"},null,null,{"name":"兽带斗神“百合”玻瑞阿斯","meta":"装备魔法","kind":"equip"},{"name":"圆盘斗技场","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":0,"text":"CL1 六花精 牡丹"}],"gy":["圣种之地灵"],"removed":[],"note":"","chainCount":11,"stats":{},"emzSide":null,"title":"发动《六花精 牡丹》","desc":"《六花精 牡丹》发动，补充植物族等级；第 11 次连锁。"},{"lp":[8800,8000],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"圣种之天双芽","meta":"等级 4 · 植物族","kind":"monster"},null,{"name":"圣蔓之治愈者","meta":"LINK-1 · 植物族","kind":"link"},{"name":"圣种之地灵","meta":"等级 1 · 植物族 · 调整","kind":"monster"},{"name":"兽带斗神“王者”轩辕十四","meta":"ATK 3500 · 兽带斗神","kind":"monster"}],"emz":[{"name":"圣天树之幼精","meta":"LINK-1 · 植物族","kind":"link"},null],"s":[null,{"name":"圣蔓的播种","meta":"已发动","kind":"spell"},null,null,{"name":"兽带斗神“百合”玻瑞阿斯","meta":"装备魔法","kind":"equip"},{"name":"圆盘斗技场","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":0,"text":"CL1 六花精 牡丹"}],"gy":["圣种之地灵"],"removed":[],"note":"","chainCount":11,"stats":{},"emzSide":null,"title":"以《圣蔓之治愈者》为对象","desc":"效果对象锁定《圣蔓之治愈者》。"},{"lp":[8800,8000],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"圣种之天双芽","meta":"等级 4 · 植物族","kind":"monster"},{"name":"六花精 牡丹","meta":"等级 8 · 植物族","kind":"monster"},{"name":"圣蔓之治愈者","meta":"LINK-1 · 植物族","kind":"link"},{"name":"圣种之地灵","meta":"等级 1 · 植物族 · 调整","kind":"monster"},{"name":"兽带斗神“王者”轩辕十四","meta":"ATK 3500 · 兽带斗神","kind":"monster"}],"emz":[{"name":"圣天树之幼精","meta":"LINK-1 · 植物族","kind":"link"},null],"s":[null,{"name":"圣蔓的播种","meta":"已发动","kind":"spell"},null,null,{"name":"兽带斗神“百合”玻瑞阿斯","meta":"装备魔法","kind":"equip"},{"name":"圆盘斗技场","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":0,"text":"CL1 六花精 牡丹"}],"gy":["圣种之地灵"],"removed":[],"note":"","chainCount":11,"stats":{},"emzSide":null,"title":"放置到主怪兽区 M1","desc":"《六花精 牡丹》落在 M1，场值继续增加。"},{"lp":[8800,8000],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"圣种之天双芽","meta":"等级 4 · 植物族","kind":"monster"},{"name":"六花精 牡丹","meta":"等级 8 · 植物族","kind":"monster"},{"name":"圣蔓之治愈者","meta":"LINK-1 · 植物族","kind":"link"},{"name":"圣种之地灵","meta":"等级 1 · 植物族 · 调整","kind":"monster"},{"name":"兽带斗神“王者”轩辕十四","meta":"ATK 3500 · 兽带斗神","kind":"monster"}],"emz":[{"name":"圣天树之幼精","meta":"LINK-1 · 植物族","kind":"link"},null],"s":[null,{"name":"圣蔓的播种","meta":"已发动","kind":"spell"},null,null,{"name":"兽带斗神“百合”玻瑞阿斯","meta":"装备魔法","kind":"equip"},{"name":"圆盘斗技场","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":0,"text":"CL1 六花精 牡丹"}],"gy":["圣种之地灵"],"removed":[],"note":"","chainCount":11,"stats":{},"emzSide":null,"title":"确认《六花精 牡丹》的表示形式","desc":"《六花精 牡丹》表示形式确认。"},{"lp":[8800,8000],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"圣种之天双芽","meta":"等级 4 · 植物族","kind":"monster"},{"name":"六花精 牡丹","meta":"等级 8 · 植物族","kind":"monster"},{"name":"圣蔓之治愈者","meta":"LINK-1 · 植物族","kind":"link"},{"name":"圣种之地灵","meta":"等级 1 · 植物族 · 调整","kind":"monster"},{"name":"兽带斗神“王者”轩辕十四","meta":"ATK 3500 · 兽带斗神","kind":"monster"}],"emz":[{"name":"圣天树之幼精","meta":"LINK-1 · 植物族","kind":"link"},null],"s":[null,{"name":"圣蔓的播种","meta":"已发动","kind":"spell"},null,null,{"name":"兽带斗神“百合”玻瑞阿斯","meta":"装备魔法","kind":"equip"},{"name":"圆盘斗技场","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":0,"text":"CL1 六花精 牡丹"}],"gy":["圣种之地灵"],"removed":[],"note":"","chainCount":12,"stats":{},"emzSide":null,"title":"确认发动《六花精 牡丹》的触发效果","desc":"《六花精 牡丹》触发；第 12 次连锁。"},{"lp":[8800,8000],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"圣种之天双芽","meta":"等级 4 · 植物族","kind":"monster"},{"name":"六花精 牡丹","meta":"等级 8 · 植物族","kind":"monster"},{"name":"圣蔓之治愈者","meta":"LINK-1 · 植物族","kind":"link"},{"name":"圣种之地灵","meta":"等级 1 · 植物族 · 调整","kind":"monster"},{"name":"兽带斗神“王者”轩辕十四","meta":"ATK 3500 · 兽带斗神","kind":"monster"}],"emz":[{"name":"圣天树之幼精","meta":"LINK-1 · 植物族","kind":"link"},null],"s":[null,{"name":"圣蔓的播种","meta":"已发动","kind":"spell"},null,null,{"name":"兽带斗神“百合”玻瑞阿斯","meta":"装备魔法","kind":"equip"},{"name":"圆盘斗技场","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":0,"text":"CL1 六花精 牡丹"}],"gy":["圣种之地灵"],"removed":[],"note":"","chainCount":12,"stats":{},"emzSide":null,"title":"挑选《六花来来》","desc":"挑选场地魔法《六花来来》，准备把植物族场面转成六花终端。"},{"lp":[8800,8000],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"圣种之天双芽","meta":"等级 4 · 植物族","kind":"monster"},{"name":"六花精 牡丹","meta":"等级 8 · 植物族","kind":"monster"},{"name":"圣蔓之治愈者","meta":"LINK-1 · 植物族","kind":"link"},{"name":"圣种之地灵","meta":"等级 1 · 植物族 · 调整","kind":"monster"},{"name":"兽带斗神“王者”轩辕十四","meta":"ATK 3500 · 兽带斗神","kind":"monster"}],"emz":[{"name":"圣天树之幼精","meta":"LINK-1 · 植物族","kind":"link"},null],"s":[null,{"name":"圣蔓的播种","meta":"已发动","kind":"spell"},null,null,{"name":"兽带斗神“百合”玻瑞阿斯","meta":"装备魔法","kind":"equip"},{"name":"六花来来","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":0,"text":"CL1 六花来来"}],"gy":["圣种之地灵"],"removed":[],"note":"","chainCount":13,"stats":{},"emzSide":null,"title":"发动《六花来来》","desc":"《六花来来》发动，场地进入六花轴；第 13 次连锁。"},{"lp":[8800,8000],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"圣种之天双芽","meta":"等级 4 · 植物族","kind":"monster"},{"name":"六花精 牡丹","meta":"等级 8 · 植物族","kind":"monster"},{"name":"圣蔓之治愈者","meta":"LINK-1 · 植物族","kind":"link"},{"name":"圣种之地灵","meta":"等级 1 · 植物族 · 调整","kind":"monster"},{"name":"兽带斗神“王者”轩辕十四","meta":"ATK 3500 · 兽带斗神","kind":"monster"}],"emz":[{"name":"圣天树之幼精","meta":"LINK-1 · 植物族","kind":"link"},null],"s":[null,{"name":"圣蔓的播种","meta":"已发动","kind":"spell"},null,null,{"name":"兽带斗神“百合”玻瑞阿斯","meta":"装备魔法","kind":"equip"},{"name":"六花来来","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":0,"text":"CL1 芳香炽天使-茉莉"}],"gy":["圣种之地灵"],"removed":[],"note":"","chainCount":14,"stats":{},"emzSide":null,"title":"特殊召唤《芳香炽天使-茉莉》","desc":"连接召唤《芳香炽天使-茉莉》，芳香轴开始接管场面；第 14 次连锁。"},{"lp":[8800,8000],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"圣种之天双芽","meta":"等级 4 · 植物族","kind":"monster"},{"name":"六花精 牡丹","meta":"等级 8 · 植物族","kind":"monster"},{"name":"圣蔓之治愈者","meta":"LINK-1 · 植物族","kind":"link"},{"name":"圣种之地灵","meta":"等级 1 · 植物族 · 调整","kind":"monster"},{"name":"兽带斗神“王者”轩辕十四","meta":"ATK 3500 · 兽带斗神","kind":"monster"}],"emz":[{"name":"圣天树之幼精","meta":"LINK-1 · 植物族","kind":"link"},null],"s":[null,{"name":"圣蔓的播种","meta":"已发动","kind":"spell"},null,null,{"name":"兽带斗神“百合”玻瑞阿斯","meta":"装备魔法","kind":"equip"},{"name":"六花来来","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":0,"text":"CL1 芳香炽天使-茉莉"}],"gy":["圣种之地灵"],"removed":[],"note":"","chainCount":14,"stats":{},"emzSide":null,"title":"以《圣种之地灵》为对象","desc":"连接素材对象一：《圣种之地灵》。"},{"lp":[8800,8000],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"圣种之天双芽","meta":"等级 4 · 植物族","kind":"monster"},{"name":"六花精 牡丹","meta":"等级 8 · 植物族","kind":"monster"},{"name":"圣蔓之治愈者","meta":"LINK-1 · 植物族","kind":"link"},{"name":"圣种之地灵","meta":"等级 1 · 植物族 · 调整","kind":"monster"},{"name":"兽带斗神“王者”轩辕十四","meta":"ATK 3500 · 兽带斗神","kind":"monster"}],"emz":[{"name":"圣天树之幼精","meta":"LINK-1 · 植物族","kind":"link"},null],"s":[null,{"name":"圣蔓的播种","meta":"已发动","kind":"spell"},null,null,{"name":"兽带斗神“百合”玻瑞阿斯","meta":"装备魔法","kind":"equip"},{"name":"六花来来","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":0,"text":"CL1 芳香炽天使-茉莉"}],"gy":["圣种之地灵"],"removed":[],"note":"","chainCount":14,"stats":{},"emzSide":null,"title":"以《六花精 牡丹》为对象","desc":"连接素材对象二：《六花精 牡丹》。"},{"lp":[8800,8000],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"圣种之天双芽","meta":"等级 4 · 植物族","kind":"monster"},{"name":"六花精 牡丹","meta":"等级 8 · 植物族","kind":"monster"},null,null,{"name":"兽带斗神“王者”轩辕十四","meta":"ATK 3500 · 兽带斗神","kind":"monster"}],"emz":[{"name":"圣天树之幼精","meta":"LINK-1 · 植物族","kind":"link"},{"name":"芳香炽天使-茉莉","meta":"LINK-2 · 植物族","kind":"link"}],"s":[null,{"name":"圣蔓的播种","meta":"已发动","kind":"spell"},null,null,{"name":"兽带斗神“百合”玻瑞阿斯","meta":"装备魔法","kind":"equip"},{"name":"六花来来","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":0,"text":"CL1 芳香炽天使-茉莉"}],"gy":["圣种之地灵"],"removed":[],"note":"","chainCount":14,"stats":{},"emzSide":null,"title":"特殊召唤《芳香炽天使-茉莉》","desc":"《芳香炽天使-茉莉》连接召唤完成，素材送墓。"},{"lp":[8800,8000],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"圣种之天双芽","meta":"等级 4 · 植物族","kind":"monster"},{"name":"六花精 牡丹","meta":"等级 8 · 植物族","kind":"monster"},null,null,{"name":"兽带斗神“王者”轩辕十四","meta":"ATK 3500 · 兽带斗神","kind":"monster"}],"emz":[{"name":"圣天树之幼精","meta":"LINK-1 · 植物族","kind":"link"},{"name":"芳香炽天使-茉莉","meta":"LINK-2 · 植物族","kind":"link"}],"s":[null,{"name":"圣蔓的播种","meta":"已发动","kind":"spell"},null,null,{"name":"兽带斗神“百合”玻瑞阿斯","meta":"装备魔法","kind":"equip"},{"name":"六花来来","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":0,"text":"CL1 芳香炽天使-茉莉"}],"gy":["圣种之地灵"],"removed":[],"note":"","chainCount":14,"stats":{},"emzSide":null,"title":"以《芳香炽天使-茉莉》为对象","desc":"《芳香炽天使-茉莉》成为后续效果对象。"},{"lp":[8800,8000],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"圣种之天双芽","meta":"等级 4 · 植物族","kind":"monster"},{"name":"六花精 牡丹","meta":"等级 8 · 植物族","kind":"monster"},null,null,{"name":"兽带斗神“王者”轩辕十四","meta":"ATK 3500 · 兽带斗神","kind":"monster"}],"emz":[{"name":"圣天树之幼精","meta":"LINK-1 · 植物族","kind":"link"},{"name":"芳香炽天使-茉莉","meta":"LINK-2 · 植物族","kind":"link"}],"s":[null,{"name":"圣蔓的播种","meta":"已发动","kind":"spell"},null,null,{"name":"兽带斗神“百合”玻瑞阿斯","meta":"装备魔法","kind":"equip"},{"name":"六花来来","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":0,"text":"CL1 芳香炽天使-茉莉"}],"gy":["圣种之地灵"],"removed":[],"note":"","chainCount":14,"stats":{},"emzSide":null,"title":"以《圣天树之幼精》为对象","desc":"回收《圣天树之幼精》，准备再次铺开圣天树。"},{"lp":[8800,8000],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"圣种之天双芽","meta":"等级 4 · 植物族","kind":"monster"},{"name":"六花精 牡丹","meta":"等级 8 · 植物族","kind":"monster"},null,null,{"name":"兽带斗神“王者”轩辕十四","meta":"ATK 3500 · 兽带斗神","kind":"monster"}],"emz":[{"name":"圣天树之幼精","meta":"LINK-1 · 植物族","kind":"link"},{"name":"芳香炽天使-茉莉","meta":"LINK-2 · 植物族","kind":"link"}],"s":[null,{"name":"圣蔓的播种","meta":"已发动","kind":"spell"},null,null,{"name":"兽带斗神“百合”玻瑞阿斯","meta":"装备魔法","kind":"equip"},{"name":"六花来来","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":0,"text":"CL1 芳香炽天使-茉莉"}],"gy":["圣种之地灵"],"removed":[],"note":"","chainCount":14,"stats":{},"emzSide":null,"title":"放置到额外怪兽区（M5）","desc":"额外怪兽区位置记录完成。"},{"lp":[8800,8000],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"圣种之天双芽","meta":"等级 4 · 植物族","kind":"monster"},{"name":"六花精 牡丹","meta":"等级 8 · 植物族","kind":"monster"},null,null,{"name":"兽带斗神“王者”轩辕十四","meta":"ATK 3500 · 兽带斗神","kind":"monster"}],"emz":[{"name":"圣天树之幼精","meta":"LINK-1 · 植物族","kind":"link"},{"name":"芳香炽天使-茉莉","meta":"LINK-2 · 植物族","kind":"link"}],"s":[null,{"name":"圣蔓的播种","meta":"已发动","kind":"spell"},null,null,{"name":"兽带斗神“百合”玻瑞阿斯","meta":"装备魔法","kind":"equip"},{"name":"六花来来","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":0,"text":"CL1 芳香炽天使-茉莉"}],"gy":["圣种之地灵"],"removed":[],"note":"","chainCount":14,"stats":{},"emzSide":null,"title":"特殊召唤《圣天树之幼精》","desc":"《圣天树之幼精》再次特殊召唤。"},{"lp":[8800,8000],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"圣天树之幼精","meta":"LINK-1 · 植物族","kind":"link"},{"name":"六花精 牡丹","meta":"等级 8 · 植物族","kind":"monster"},null,null,{"name":"兽带斗神“王者”轩辕十四","meta":"ATK 3500 · 兽带斗神","kind":"monster"}],"emz":[null,{"name":"芳香炽天使-茉莉","meta":"LINK-2 · 植物族","kind":"link"}],"s":[null,{"name":"圣蔓的播种","meta":"已发动","kind":"spell"},null,null,{"name":"兽带斗神“百合”玻瑞阿斯","meta":"装备魔法","kind":"equip"},{"name":"六花来来","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":0,"text":"CL1 芳香炽天使-茉莉"}],"gy":["圣种之地灵"],"removed":[],"note":"","chainCount":14,"stats":{},"emzSide":null,"title":"放置到主怪兽区 M0","desc":"《圣天树之幼精》落在 M0，链接箭头覆盖主怪兽区。"},{"lp":[8800,8000],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"芳香莉莉丝-石楠叶白千层","meta":"等级 1 · 植物族","kind":"monster"},{"name":"六花精 牡丹","meta":"等级 8 · 植物族","kind":"monster"},null,null,{"name":"兽带斗神“王者”轩辕十四","meta":"ATK 3500 · 兽带斗神","kind":"monster"}],"emz":[null,{"name":"芳香炽天使-茉莉","meta":"LINK-2 · 植物族","kind":"link"}],"s":[null,{"name":"圣蔓的播种","meta":"已发动","kind":"spell"},null,null,{"name":"兽带斗神“百合”玻瑞阿斯","meta":"装备魔法","kind":"equip"},{"name":"六花来来","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":0,"text":"CL1 芳香炽天使-茉莉"}],"gy":["圣种之地灵"],"removed":[],"note":"","chainCount":15,"stats":{},"emzSide":null,"title":"发动《芳香炽天使-茉莉》","desc":"《芳香炽天使-茉莉》发动，解放植物族检索芳香组件；第 15 次连锁。"},{"lp":[8800,8000],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"芳香莉莉丝-石楠叶白千层","meta":"等级 1 · 植物族","kind":"monster"},{"name":"六花精 牡丹","meta":"等级 8 · 植物族","kind":"monster"},null,null,{"name":"兽带斗神“王者”轩辕十四","meta":"ATK 3500 · 兽带斗神","kind":"monster"}],"emz":[null,{"name":"芳香炽天使-茉莉","meta":"LINK-2 · 植物族","kind":"link"}],"s":[null,{"name":"圣蔓的播种","meta":"已发动","kind":"spell"},null,null,{"name":"兽带斗神“百合”玻瑞阿斯","meta":"装备魔法","kind":"equip"},{"name":"六花来来","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":0,"text":"CL1 芳香莉莉丝-石楠叶白千层"}],"gy":["圣种之地灵"],"removed":[],"note":"","chainCount":16,"stats":{},"emzSide":null,"title":"挑选《芳香莉莉丝-石楠叶白千层》","desc":"《芳香莉莉丝-石楠叶白千层》加入手牌；第 16 次连锁。"},{"lp":[8800,8000],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"芳香莉莉丝-石楠叶白千层","meta":"等级 1 · 植物族","kind":"monster"},{"name":"六花精 牡丹","meta":"等级 8 · 植物族","kind":"monster"},null,null,{"name":"兽带斗神“王者”轩辕十四","meta":"ATK 3500 · 兽带斗神","kind":"monster"}],"emz":[null,{"name":"芳香炽天使-茉莉","meta":"LINK-2 · 植物族","kind":"link"}],"s":[null,{"name":"圣蔓的播种","meta":"已发动","kind":"spell"},null,null,{"name":"兽带斗神“百合”玻瑞阿斯","meta":"装备魔法","kind":"equip"},{"name":"六花来来","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":0,"text":"CL1 芳香莉莉丝-石楠叶白千层"}],"gy":["圣种之地灵"],"removed":[],"note":"","chainCount":16,"stats":{},"emzSide":null,"title":"放置到主怪兽区 M0","desc":"《芳香莉莉丝-石楠叶白千层》落在 M0，替换刚才的圣天树位置。"},{"lp":[8800,8000],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"芳香莉莉丝-石楠叶白千层","meta":"等级 1 · 植物族","kind":"monster"},{"name":"六花精 牡丹","meta":"等级 8 · 植物族","kind":"monster"},null,null,{"name":"兽带斗神“王者”轩辕十四","meta":"ATK 3500 · 兽带斗神","kind":"monster"}],"emz":[null,{"name":"芳香炽天使-茉莉","meta":"LINK-2 · 植物族","kind":"link"}],"s":[null,{"name":"圣蔓的播种","meta":"已发动","kind":"spell"},null,null,{"name":"兽带斗神“百合”玻瑞阿斯","meta":"装备魔法","kind":"equip"},{"name":"六花来来","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":0,"text":"CL1 芳香莉莉丝-石楠叶白千层"}],"gy":["圣种之地灵"],"removed":[],"note":"","chainCount":16,"stats":{},"emzSide":null,"title":"确认发动《芳香莉莉丝-石楠叶白千层》的触发效果","desc":"《芳香莉莉丝-石楠叶白千层》触发，继续检索芳香组件。"},{"lp":[8800,8000],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"芳香莉莉丝-石楠叶白千层","meta":"等级 1 · 植物族","kind":"monster"},{"name":"六花精 牡丹","meta":"等级 8 · 植物族","kind":"monster"},{"name":"芳香法师-月桂叶","meta":"等级 1 · 植物族 · 调整","kind":"monster"},null,{"name":"兽带斗神“王者”轩辕十四","meta":"ATK 3500 · 兽带斗神","kind":"monster"}],"emz":[null,{"name":"芳香炽天使-茉莉","meta":"LINK-2 · 植物族","kind":"link"}],"s":[null,{"name":"圣蔓的播种","meta":"已发动","kind":"spell"},null,null,{"name":"兽带斗神“百合”玻瑞阿斯","meta":"装备魔法","kind":"equip"},{"name":"六花来来","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":0,"text":"CL1 芳香莉莉丝-石楠叶白千层"}],"gy":["圣种之地灵"],"removed":[],"note":"","chainCount":16,"stats":{},"emzSide":null,"title":"挑选《芳香法师-月桂叶》","desc":"《芳香法师-月桂叶》加入手牌，芳香轴补点到位。"},{"lp":[8800,8000],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"芳香莉莉丝-石楠叶白千层","meta":"等级 1 · 植物族","kind":"monster"},{"name":"六花精 牡丹","meta":"等级 8 · 植物族","kind":"monster"},{"name":"芳香法师-月桂叶","meta":"等级 1 · 植物族 · 调整","kind":"monster"},null,{"name":"兽带斗神“王者”轩辕十四","meta":"ATK 3500 · 兽带斗神","kind":"monster"}],"emz":[null,{"name":"芳香炽天使-茉莉","meta":"LINK-2 · 植物族","kind":"link"}],"s":[null,{"name":"圣蔓的播种","meta":"已发动","kind":"spell"},null,null,{"name":"兽带斗神“百合”玻瑞阿斯","meta":"装备魔法","kind":"equip"},{"name":"六花来来","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":0,"text":"CL1 芳香莉莉丝-石楠叶白千层"}],"gy":["圣种之地灵"],"removed":[],"note":"","chainCount":16,"stats":{},"emzSide":null,"title":"放置到主怪兽区 M2","desc":"《芳香法师-月桂叶》落在 M2。"},{"lp":[8800,8000],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"芳香莉莉丝-石楠叶白千层","meta":"等级 1 · 植物族","kind":"monster"},{"name":"六花精 牡丹","meta":"等级 8 · 植物族","kind":"monster"},{"name":"芳香法师-月桂叶","meta":"等级 1 · 植物族 · 调整","kind":"monster"},null,{"name":"兽带斗神“王者”轩辕十四","meta":"ATK 3500 · 兽带斗神","kind":"monster"}],"emz":[null,{"name":"芳香炽天使-茉莉","meta":"LINK-2 · 植物族","kind":"link"}],"s":[null,{"name":"圣蔓的播种","meta":"已发动","kind":"spell"},null,null,{"name":"兽带斗神“百合”玻瑞阿斯","meta":"装备魔法","kind":"equip"},{"name":"六花来来","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":0,"text":"CL1 芳香莉莉丝-石楠叶白千层"}],"gy":["圣种之地灵"],"removed":[],"note":"","chainCount":16,"stats":{},"emzSide":null,"title":"确认《芳香法师-月桂叶》的表示形式","desc":"《芳香法师-月桂叶》表示形式确认。"},{"lp":[8800,8000],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"芳香莉莉丝-石楠叶白千层","meta":"等级 1 · 植物族","kind":"monster"},{"name":"六花精 牡丹","meta":"等级 8 · 植物族","kind":"monster"},{"name":"芳香法师-月桂叶","meta":"等级 1 · 植物族 · 调整","kind":"monster"},{"name":"蕾祸之武者髑髅","meta":"LINK-2 · 植物族","kind":"link"},{"name":"兽带斗神“王者”轩辕十四","meta":"ATK 3500 · 兽带斗神","kind":"monster"}],"emz":[null,{"name":"芳香炽天使-茉莉","meta":"LINK-2 · 植物族","kind":"link"}],"s":[null,{"name":"圣蔓的播种","meta":"已发动","kind":"spell"},null,null,{"name":"兽带斗神“百合”玻瑞阿斯","meta":"装备魔法","kind":"equip"},{"name":"六花来来","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":0,"text":"CL1 芳香莉莉丝-石楠叶白千层"}],"gy":["圣种之地灵"],"removed":[],"note":"","chainCount":16,"stats":{},"emzSide":null,"title":"特殊召唤《蕾祸之武者髑髅》","desc":"《蕾祸之武者髑髅》特殊召唤，提供 LINK 值。"},{"lp":[8800,8000],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"芳香莉莉丝-石楠叶白千层","meta":"等级 1 · 植物族","kind":"monster"},{"name":"六花精 牡丹","meta":"等级 8 · 植物族","kind":"monster"},{"name":"芳香法师-月桂叶","meta":"等级 1 · 植物族 · 调整","kind":"monster"},{"name":"蕾祸之武者髑髅","meta":"LINK-2 · 植物族","kind":"link"},{"name":"兽带斗神“王者”轩辕十四","meta":"ATK 3500 · 兽带斗神","kind":"monster"}],"emz":[null,{"name":"芳香炽天使-茉莉","meta":"LINK-2 · 植物族","kind":"link"}],"s":[null,{"name":"圣蔓的播种","meta":"已发动","kind":"spell"},null,null,{"name":"兽带斗神“百合”玻瑞阿斯","meta":"装备魔法","kind":"equip"},{"name":"六花来来","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":0,"text":"CL1 芳香莉莉丝-石楠叶白千层"}],"gy":["圣种之地灵"],"removed":[],"note":"","chainCount":16,"stats":{},"emzSide":null,"title":"以《芳香法师-月桂叶》为对象","desc":"效果对象一：《芳香法师-月桂叶》。"},{"lp":[8800,8000],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"芳香莉莉丝-石楠叶白千层","meta":"等级 1 · 植物族","kind":"monster"},{"name":"六花精 牡丹","meta":"等级 8 · 植物族","kind":"monster"},{"name":"芳香法师-月桂叶","meta":"等级 1 · 植物族 · 调整","kind":"monster"},{"name":"蕾祸之武者髑髅","meta":"LINK-2 · 植物族","kind":"link"},{"name":"兽带斗神“王者”轩辕十四","meta":"ATK 3500 · 兽带斗神","kind":"monster"}],"emz":[null,{"name":"芳香炽天使-茉莉","meta":"LINK-2 · 植物族","kind":"link"}],"s":[null,{"name":"圣蔓的播种","meta":"已发动","kind":"spell"},null,null,{"name":"兽带斗神“百合”玻瑞阿斯","meta":"装备魔法","kind":"equip"},{"name":"六花来来","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":0,"text":"CL1 芳香莉莉丝-石楠叶白千层"}],"gy":["圣种之地灵"],"removed":[],"note":"","chainCount":16,"stats":{},"emzSide":null,"title":"以《芳香莉莉丝-石楠叶白千层》为对象","desc":"效果对象二：《芳香莉莉丝-石楠叶白千层》。"},{"lp":[8800,8000],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"芳香莉莉丝-石楠叶白千层","meta":"等级 1 · 植物族","kind":"monster"},{"name":"六花精 牡丹","meta":"等级 8 · 植物族","kind":"monster"},{"name":"芳香法师-月桂叶","meta":"等级 1 · 植物族 · 调整","kind":"monster"},{"name":"蕾祸之武者髑髅","meta":"LINK-2 · 植物族","kind":"link"},{"name":"兽带斗神“王者”轩辕十四","meta":"ATK 3500 · 兽带斗神","kind":"monster"}],"emz":[null,{"name":"芳香炽天使-茉莉","meta":"LINK-2 · 植物族","kind":"link"}],"s":[null,{"name":"圣蔓的播种","meta":"已发动","kind":"spell"},null,null,{"name":"兽带斗神“百合”玻瑞阿斯","meta":"装备魔法","kind":"equip"},{"name":"六花来来","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":0,"text":"CL1 芳香莉莉丝-石楠叶白千层"}],"gy":["圣种之地灵"],"removed":[],"note":"","chainCount":16,"stats":{},"emzSide":null,"title":"放置到主怪兽区 M2","desc":"《芳香法师-月桂叶》区域确认。"},{"lp":[8800,8000],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"芳香莉莉丝-石楠叶白千层","meta":"等级 1 · 植物族","kind":"monster"},{"name":"六花精 牡丹","meta":"等级 8 · 植物族","kind":"monster"},{"name":"芳香法师-月桂叶","meta":"等级 1 · 植物族 · 调整","kind":"monster"},{"name":"蕾祸之武者髑髅","meta":"LINK-2 · 植物族","kind":"link"},{"name":"兽带斗神“王者”轩辕十四","meta":"ATK 3500 · 兽带斗神","kind":"monster"}],"emz":[null,{"name":"芳香炽天使-茉莉","meta":"LINK-2 · 植物族","kind":"link"}],"s":[null,{"name":"圣蔓的播种","meta":"已发动","kind":"spell"},null,null,{"name":"兽带斗神“百合”玻瑞阿斯","meta":"装备魔法","kind":"equip"},{"name":"六花来来","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":0,"text":"CL1 芳香法师-月桂叶"}],"gy":["圣种之地灵"],"removed":[],"note":"","chainCount":17,"stats":{},"emzSide":null,"title":"确认发动《芳香法师-月桂叶》的触发效果","desc":"《芳香法师-月桂叶》触发，检索《孤火花》；第 17 次连锁。"},{"lp":[8800,8000],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"芳香莉莉丝-石楠叶白千层","meta":"等级 1 · 植物族","kind":"monster"},{"name":"六花精 牡丹","meta":"等级 8 · 植物族","kind":"monster"},{"name":"芳香法师-月桂叶","meta":"等级 1 · 植物族 · 调整","kind":"monster"},{"name":"蕾祸之武者髑髅","meta":"LINK-2 · 植物族","kind":"link"},{"name":"兽带斗神“王者”轩辕十四","meta":"ATK 3500 · 兽带斗神","kind":"monster"}],"emz":[null,{"name":"芳香炽天使-茉莉","meta":"LINK-2 · 植物族","kind":"link"}],"s":[null,{"name":"圣蔓的播种","meta":"已发动","kind":"spell"},null,null,{"name":"兽带斗神“百合”玻瑞阿斯","meta":"装备魔法","kind":"equip"},{"name":"六花来来","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":0,"text":"CL1 芳香法师-月桂叶"}],"gy":["圣种之地灵"],"removed":[],"note":"","chainCount":17,"stats":{},"emzSide":null,"title":"挑选《孤火花》","desc":"《孤火花》加入手牌，作为最后的植物族补点。"},{"lp":[8800,8000],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"芳香莉莉丝-石楠叶白千层","meta":"等级 1 · 植物族","kind":"monster"},null,{"name":"芳香法师-月桂叶","meta":"等级 1 · 植物族 · 调整","kind":"monster"},null,{"name":"兽带斗神“王者”轩辕十四","meta":"ATK 3500 · 兽带斗神","kind":"monster"}],"emz":[{"name":"回生的孟加拉枪兵","meta":"LINK-4 · ATK 2500","kind":"link"},{"name":"芳香炽天使-茉莉","meta":"LINK-2 · 植物族","kind":"link"}],"s":[null,{"name":"圣蔓的播种","meta":"已发动","kind":"spell"},null,null,{"name":"兽带斗神“百合”玻瑞阿斯","meta":"装备魔法","kind":"equip"},{"name":"六花来来","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":0,"text":"CL1 芳香法师-月桂叶"}],"gy":["圣种之地灵"],"removed":[],"note":"","chainCount":17,"stats":{},"emzSide":null,"title":"特殊召唤《回生的孟加拉枪兵》","desc":"《回生的孟加拉枪兵》登场，LINK-4 终端开始成形；第 18 次连锁。"},{"lp":[8800,8000],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"芳香莉莉丝-石楠叶白千层","meta":"等级 1 · 植物族","kind":"monster"},null,{"name":"芳香法师-月桂叶","meta":"等级 1 · 植物族 · 调整","kind":"monster"},null,{"name":"兽带斗神“王者”轩辕十四","meta":"ATK 3500 · 兽带斗神","kind":"monster"}],"emz":[{"name":"回生的孟加拉枪兵","meta":"LINK-4 · ATK 2500","kind":"link"},{"name":"芳香炽天使-茉莉","meta":"LINK-2 · 植物族","kind":"link"}],"s":[null,{"name":"圣蔓的播种","meta":"已发动","kind":"spell"},null,null,{"name":"兽带斗神“百合”玻瑞阿斯","meta":"装备魔法","kind":"equip"},{"name":"六花来来","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":0,"text":"CL1 芳香法师-月桂叶"}],"gy":["圣种之地灵"],"removed":[],"note":"","chainCount":17,"stats":{},"emzSide":null,"title":"以《蕾祸之武者髑髅》为对象","desc":"以《蕾祸之武者髑髅》为连接素材对象。"},{"lp":[8800,8000],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"芳香莉莉丝-石楠叶白千层","meta":"等级 1 · 植物族","kind":"monster"},null,{"name":"芳香法师-月桂叶","meta":"等级 1 · 植物族 · 调整","kind":"monster"},null,{"name":"兽带斗神“王者”轩辕十四","meta":"ATK 3500 · 兽带斗神","kind":"monster"}],"emz":[{"name":"回生的孟加拉枪兵","meta":"LINK-4 · ATK 2500","kind":"link"},{"name":"芳香炽天使-茉莉","meta":"LINK-2 · 植物族","kind":"link"}],"s":[null,{"name":"圣蔓的播种","meta":"已发动","kind":"spell"},null,null,{"name":"兽带斗神“百合”玻瑞阿斯","meta":"装备魔法","kind":"equip"},{"name":"六花来来","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":0,"text":"CL1 芳香法师-月桂叶"}],"gy":["圣种之地灵"],"removed":[],"note":"","chainCount":17,"stats":{},"emzSide":null,"title":"放置到额外怪兽区右侧（M6）","desc":"额外怪兽区右侧位置记录完成。"},{"lp":[8800,8000],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"芳香莉莉丝-石楠叶白千层","meta":"等级 1 · 植物族","kind":"monster"},null,{"name":"芳香法师-月桂叶","meta":"等级 1 · 植物族 · 调整","kind":"monster"},{"name":"六花之白姬","meta":"等级 4 · 植物族","kind":"monster"},{"name":"兽带斗神“王者”轩辕十四","meta":"ATK 3500 · 兽带斗神","kind":"monster"}],"emz":[{"name":"回生的孟加拉枪兵","meta":"LINK-4 · ATK 2500","kind":"link"},{"name":"芳香炽天使-茉莉","meta":"LINK-2 · 植物族","kind":"link"}],"s":[null,{"name":"圣蔓的播种","meta":"已发动","kind":"spell"},null,null,{"name":"兽带斗神“百合”玻瑞阿斯","meta":"装备魔法","kind":"equip"},{"name":"六花来来","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":0,"text":"CL1 六花之白姬"}],"gy":["圣种之地灵"],"removed":[],"note":"","chainCount":18,"stats":{},"emzSide":null,"title":"发动《六花之白姬》","desc":"《六花之白姬》发动，墓地资源开始转化为场面；第 19 次连锁。"},{"lp":[8800,8000],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"芳香莉莉丝-石楠叶白千层","meta":"等级 1 · 植物族","kind":"monster"},null,{"name":"芳香法师-月桂叶","meta":"等级 1 · 植物族 · 调整","kind":"monster"},{"name":"六花之白姬","meta":"等级 4 · 植物族","kind":"monster"},{"name":"兽带斗神“王者”轩辕十四","meta":"ATK 3500 · 兽带斗神","kind":"monster"}],"emz":[{"name":"回生的孟加拉枪兵","meta":"LINK-4 · ATK 2500","kind":"link"},{"name":"芳香炽天使-茉莉","meta":"LINK-2 · 植物族","kind":"link"}],"s":[null,{"name":"圣蔓的播种","meta":"已发动","kind":"spell"},null,null,{"name":"兽带斗神“百合”玻瑞阿斯","meta":"装备魔法","kind":"equip"},{"name":"六花来来","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":0,"text":"CL1 六花之白姬"}],"gy":["圣种之地灵"],"removed":[],"note":"","chainCount":18,"stats":{},"emzSide":null,"title":"放置到主怪兽区 M3","desc":"《六花之白姬》落在 M3。"},{"lp":[8800,8000],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"芳香莉莉丝-石楠叶白千层","meta":"等级 1 · 植物族","kind":"monster"},null,{"name":"芳香法师-月桂叶","meta":"等级 1 · 植物族 · 调整","kind":"monster"},{"name":"六花之白姬","meta":"等级 4 · 植物族","kind":"monster"},{"name":"兽带斗神“王者”轩辕十四","meta":"ATK 3500 · 兽带斗神","kind":"monster"}],"emz":[{"name":"回生的孟加拉枪兵","meta":"LINK-4 · ATK 2500","kind":"link"},{"name":"芳香炽天使-茉莉","meta":"LINK-2 · 植物族","kind":"link"}],"s":[null,{"name":"圣蔓的播种","meta":"已发动","kind":"spell"},null,null,{"name":"兽带斗神“百合”玻瑞阿斯","meta":"装备魔法","kind":"equip"},{"name":"六花来来","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":0,"text":"CL1 六花之白姬"}],"gy":["圣种之地灵"],"removed":[],"note":"","chainCount":18,"stats":{},"emzSide":null,"title":"确认《六花之白姬》的表示形式","desc":"《六花之白姬》表示形式确认。"},{"lp":[8800,8000],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"芳香莉莉丝-石楠叶白千层","meta":"等级 1 · 植物族","kind":"monster"},null,{"name":"芳香法师-月桂叶","meta":"等级 1 · 植物族 · 调整","kind":"monster"},{"name":"六花精 雪花莲","meta":"等级 8 · 植物族","kind":"monster"},{"name":"兽带斗神“王者”轩辕十四","meta":"ATK 3500 · 兽带斗神","kind":"monster"}],"emz":[{"name":"回生的孟加拉枪兵","meta":"LINK-4 · ATK 2500","kind":"link"},{"name":"芳香炽天使-茉莉","meta":"LINK-2 · 植物族","kind":"link"}],"s":[null,{"name":"圣蔓的播种","meta":"已发动","kind":"spell"},null,null,{"name":"兽带斗神“百合”玻瑞阿斯","meta":"装备魔法","kind":"equip"},{"name":"六花来来","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":0,"text":"CL1 六花精 雪花莲"}],"gy":["圣种之地灵"],"removed":[],"note":"","chainCount":19,"stats":{},"emzSide":null,"title":"发动《六花精 雪花莲》","desc":"《六花精 雪花莲》发动，等级调整进入六花超量路线；第 20 次连锁。"},{"lp":[8800,8000],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"芳香莉莉丝-石楠叶白千层","meta":"等级 1 · 植物族","kind":"monster"},null,{"name":"芳香法师-月桂叶","meta":"等级 1 · 植物族 · 调整","kind":"monster"},{"name":"六花精 雪花莲","meta":"等级 8 · 植物族","kind":"monster"},{"name":"兽带斗神“王者”轩辕十四","meta":"ATK 3500 · 兽带斗神","kind":"monster"}],"emz":[{"name":"回生的孟加拉枪兵","meta":"LINK-4 · ATK 2500","kind":"link"},{"name":"芳香炽天使-茉莉","meta":"LINK-2 · 植物族","kind":"link"}],"s":[null,{"name":"圣蔓的播种","meta":"已发动","kind":"spell"},null,null,{"name":"兽带斗神“百合”玻瑞阿斯","meta":"装备魔法","kind":"equip"},{"name":"六花来来","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":0,"text":"CL1 六花精 雪花莲"}],"gy":["圣种之地灵"],"removed":[],"note":"","chainCount":19,"stats":{},"emzSide":null,"title":"以《六花之白姬》为对象","desc":"以《六花之白姬》为对象，准备叠放。"},{"lp":[8800,8000],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"芳香莉莉丝-石楠叶白千层","meta":"等级 1 · 植物族","kind":"monster"},null,{"name":"芳香法师-月桂叶","meta":"等级 1 · 植物族 · 调整","kind":"monster"},{"name":"六花精 雪花莲","meta":"等级 8 · 植物族","kind":"monster"},{"name":"兽带斗神“王者”轩辕十四","meta":"ATK 3500 · 兽带斗神","kind":"monster"}],"emz":[{"name":"回生的孟加拉枪兵","meta":"LINK-4 · ATK 2500","kind":"link"},{"name":"芳香炽天使-茉莉","meta":"LINK-2 · 植物族","kind":"link"}],"s":[null,{"name":"圣蔓的播种","meta":"已发动","kind":"spell"},null,null,{"name":"兽带斗神“百合”玻瑞阿斯","meta":"装备魔法","kind":"equip"},{"name":"六花来来","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":0,"text":"CL1 六花精 雪花莲"}],"gy":["圣种之地灵"],"removed":[],"note":"","chainCount":19,"stats":{},"emzSide":null,"title":"放置到主怪兽区 M3","desc":"《六花精 雪花莲》落在 M3。"},{"lp":[8800,8000],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"芳香莉莉丝-石楠叶白千层","meta":"等级 1 · 植物族","kind":"monster"},{"name":"孤火花","meta":"等级 3 · 植物族","kind":"monster"},{"name":"芳香法师-月桂叶","meta":"等级 1 · 植物族 · 调整","kind":"monster"},{"name":"六花精 雪花莲","meta":"等级 8 · 植物族","kind":"monster"},{"name":"兽带斗神“王者”轩辕十四","meta":"ATK 3500 · 兽带斗神","kind":"monster"}],"emz":[{"name":"回生的孟加拉枪兵","meta":"LINK-4 · ATK 2500","kind":"link"},{"name":"芳香炽天使-茉莉","meta":"LINK-2 · 植物族","kind":"link"}],"s":[null,{"name":"圣蔓的播种","meta":"已发动","kind":"spell"},null,null,{"name":"兽带斗神“百合”玻瑞阿斯","meta":"装备魔法","kind":"equip"},{"name":"六花来来","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":0,"text":"CL1 六花精 雪花莲"}],"gy":["圣种之地灵"],"removed":[],"note":"","chainCount":19,"stats":{},"emzSide":null,"title":"确认《孤火花》的表示形式","desc":"《孤火花》表示形式确认。"},{"lp":[8800,8000],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"芳香莉莉丝-石楠叶白千层","meta":"等级 1 · 植物族","kind":"monster"},{"name":"孤火花","meta":"等级 3 · 植物族","kind":"monster"},{"name":"芳香法师-月桂叶","meta":"等级 1 · 植物族 · 调整","kind":"monster"},{"name":"六花精 雪花莲","meta":"等级 8 · 植物族","kind":"monster"},{"name":"兽带斗神“王者”轩辕十四","meta":"ATK 3500 · 兽带斗神","kind":"monster"}],"emz":[{"name":"回生的孟加拉枪兵","meta":"LINK-4 · ATK 2500","kind":"link"},{"name":"芳香炽天使-茉莉","meta":"LINK-2 · 植物族","kind":"link"}],"s":[null,{"name":"圣蔓的播种","meta":"已发动","kind":"spell"},null,null,{"name":"兽带斗神“百合”玻瑞阿斯","meta":"装备魔法","kind":"equip"},{"name":"六花来来","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":0,"text":"CL1 六花精 雪花莲"}],"gy":["圣种之地灵"],"removed":[],"note":"","chainCount":19,"stats":{},"emzSide":null,"title":"放置到主怪兽区 M1","desc":"《孤火花》落在 M1。"},{"lp":[8800,8000],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"芳香莉莉丝-石楠叶白千层","meta":"等级 1 · 植物族","kind":"monster"},{"name":"孤火花","meta":"等级 3 · 植物族","kind":"monster"},{"name":"芳香法师-月桂叶","meta":"等级 1 · 植物族 · 调整","kind":"monster"},{"name":"六花精 雪花莲","meta":"等级 8 · 植物族","kind":"monster"},{"name":"兽带斗神“王者”轩辕十四","meta":"ATK 3500 · 兽带斗神","kind":"monster"}],"emz":[{"name":"回生的孟加拉枪兵","meta":"LINK-4 · ATK 2500","kind":"link"},{"name":"芳香炽天使-茉莉","meta":"LINK-2 · 植物族","kind":"link"}],"s":[null,{"name":"圣蔓的播种","meta":"已发动","kind":"spell"},null,null,{"name":"兽带斗神“百合”玻瑞阿斯","meta":"装备魔法","kind":"equip"},{"name":"六花来来","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":0,"text":"CL1 六花精 雪花莲"}],"gy":["圣种之地灵"],"removed":[],"note":"","chainCount":19,"stats":{},"emzSide":null,"title":"确认《六花精 雪花莲》的表示形式","desc":"《六花精 雪花莲》表示形式确认。"},{"lp":[8800,8000],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"芳香莉莉丝-石楠叶白千层","meta":"等级 1 · 植物族","kind":"monster"},{"name":"孤火花","meta":"等级 3 · 植物族","kind":"monster"},{"name":"芳香法师-月桂叶","meta":"等级 1 · 植物族 · 调整","kind":"monster"},{"name":"六花精 雪花莲","meta":"等级 8 · 植物族","kind":"monster"},{"name":"兽带斗神“王者”轩辕十四","meta":"ATK 3500 · 兽带斗神","kind":"monster"}],"emz":[{"name":"回生的孟加拉枪兵","meta":"LINK-4 · ATK 2500","kind":"link"},{"name":"芳香炽天使-茉莉","meta":"LINK-2 · 植物族","kind":"link"}],"s":[null,{"name":"圣蔓的播种","meta":"已发动","kind":"spell"},null,null,{"name":"兽带斗神“百合”玻瑞阿斯","meta":"装备魔法","kind":"equip"},{"name":"六花来来","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":0,"text":"CL1 六花精 雪花莲"}],"gy":["圣种之地灵"],"removed":[],"note":"","chainCount":20,"stats":{},"emzSide":null,"title":"发动《六花精 雪花莲》","desc":"《六花精 雪花莲》再次发动；第 21 次连锁。"},{"lp":[8800,8000],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"芳香莉莉丝-石楠叶白千层","meta":"等级 1 · 植物族","kind":"monster"},{"name":"孤火花","meta":"等级 3 · 植物族","kind":"monster"},{"name":"芳香法师-月桂叶","meta":"等级 1 · 植物族 · 调整","kind":"monster"},{"name":"六花精 雪花莲","meta":"等级 8 · 植物族","kind":"monster"},{"name":"兽带斗神“王者”轩辕十四","meta":"ATK 3500 · 兽带斗神","kind":"monster"}],"emz":[{"name":"回生的孟加拉枪兵","meta":"LINK-4 · ATK 2500","kind":"link"},{"name":"芳香炽天使-茉莉","meta":"LINK-2 · 植物族","kind":"link"}],"s":[null,{"name":"圣蔓的播种","meta":"已发动","kind":"spell"},null,null,{"name":"兽带斗神“百合”玻瑞阿斯","meta":"装备魔法","kind":"equip"},{"name":"六花来来","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":0,"text":"CL1 六花精 雪花莲"}],"gy":["圣种之地灵"],"removed":[],"note":"","chainCount":20,"stats":{},"emzSide":null,"title":"以《六花精 雪花莲》为对象","desc":"以自身为对象，完成最后的等级调整。"},{"lp":[8800,8000],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"芳香莉莉丝-石楠叶白千层","meta":"等级 1 · 植物族","kind":"monster"},{"name":"孤火花","meta":"等级 3 · 植物族","kind":"monster"},{"name":"芳香法师-月桂叶","meta":"等级 1 · 植物族 · 调整","kind":"monster"},{"name":"六花精 雪花莲","meta":"等级 8 · 植物族","kind":"monster"},{"name":"兽带斗神“王者”轩辕十四","meta":"ATK 3500 · 兽带斗神","kind":"monster"}],"emz":[{"name":"回生的孟加拉枪兵","meta":"LINK-4 · ATK 2500","kind":"link"},{"name":"芳香炽天使-茉莉","meta":"LINK-2 · 植物族","kind":"link"}],"s":[null,{"name":"圣蔓的播种","meta":"已发动","kind":"spell"},null,null,{"name":"兽带斗神“百合”玻瑞阿斯","meta":"装备魔法","kind":"equip"},{"name":"六花来来","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":0,"text":"CL1 六花来来"}],"gy":["圣种之地灵"],"removed":[],"note":"","chainCount":21,"stats":{},"emzSide":null,"title":"发动《六花来来》","desc":"《六花来来》再次发动，把六花轴推向终端；第 22 次连锁。"},{"lp":[8800,8000],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"芳香莉莉丝-石楠叶白千层","meta":"等级 1 · 植物族","kind":"monster"},{"name":"孤火花","meta":"等级 3 · 植物族","kind":"monster"},{"name":"芳香法师-月桂叶","meta":"等级 1 · 植物族 · 调整","kind":"monster"},{"name":"六花精 雪花莲","meta":"等级 8 · 植物族","kind":"monster"},{"name":"兽带斗神“王者”轩辕十四","meta":"ATK 3500 · 兽带斗神","kind":"monster"}],"emz":[{"name":"回生的孟加拉枪兵","meta":"LINK-4 · ATK 2500","kind":"link"},{"name":"芳香炽天使-茉莉","meta":"LINK-2 · 植物族","kind":"link"}],"s":[null,{"name":"圣蔓的播种","meta":"已发动","kind":"spell"},null,null,{"name":"兽带斗神“百合”玻瑞阿斯","meta":"装备魔法","kind":"equip"},{"name":"六花来来","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":0,"text":"CL1 六花来来"}],"gy":["圣种之地灵"],"removed":[],"note":"","chainCount":21,"stats":{},"emzSide":null,"title":"放置到魔法·陷阱区 S0","desc":"场地位置记录到 S0。"},{"lp":[8800,8000],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"芳香莉莉丝-石楠叶白千层","meta":"等级 1 · 植物族","kind":"monster"},{"name":"孤火花","meta":"等级 3 · 植物族","kind":"monster"},null,{"name":"六花圣 泪滴花束雪花莲","meta":"XYZ · ATK 2800 · 1 素材","kind":"xyz"},{"name":"兽带斗神“王者”轩辕十四","meta":"ATK 3500 · 兽带斗神","kind":"monster"}],"emz":[{"name":"回生的孟加拉枪兵","meta":"LINK-4 · ATK 2500","kind":"link"},{"name":"芳香炽天使-茉莉","meta":"LINK-2 · 植物族","kind":"link"}],"s":[null,{"name":"圣蔓的播种","meta":"已发动","kind":"spell"},null,null,{"name":"兽带斗神“百合”玻瑞阿斯","meta":"装备魔法","kind":"equip"},{"name":"六花来来","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":0,"text":"CL1 六花圣 泪滴花束雪花莲"}],"gy":["圣种之地灵"],"removed":[],"note":"","chainCount":22,"stats":{},"emzSide":null,"title":"特殊召唤《六花圣 泪滴花束雪花莲》","desc":"《六花圣 泪滴花束雪花莲》特殊召唤，XYZ 终端登场；第 23 次连锁。"},{"lp":[8800,8000],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"芳香莉莉丝-石楠叶白千层","meta":"等级 1 · 植物族","kind":"monster"},{"name":"孤火花","meta":"等级 3 · 植物族","kind":"monster"},null,{"name":"六花圣 泪滴花束雪花莲","meta":"XYZ · ATK 2800 · 1 素材","kind":"xyz"},{"name":"兽带斗神“王者”轩辕十四","meta":"ATK 3500 · 兽带斗神","kind":"monster"}],"emz":[{"name":"回生的孟加拉枪兵","meta":"LINK-4 · ATK 2500","kind":"link"},{"name":"芳香炽天使-茉莉","meta":"LINK-2 · 植物族","kind":"link"}],"s":[null,{"name":"圣蔓的播种","meta":"已发动","kind":"spell"},null,null,{"name":"兽带斗神“百合”玻瑞阿斯","meta":"装备魔法","kind":"equip"},{"name":"六花来来","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":0,"text":"CL1 六花圣 泪滴花束雪花莲"}],"gy":["圣种之地灵"],"removed":[],"note":"","chainCount":22,"stats":{},"emzSide":null,"title":"放置到主怪兽区 M3","desc":"《六花圣 泪滴花束雪花莲》落在 M3。"},{"lp":[8800,8000],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"芳香莉莉丝-石楠叶白千层","meta":"等级 1 · 植物族","kind":"monster"},{"name":"孤火花","meta":"等级 3 · 植物族","kind":"monster"},null,{"name":"六花圣 泪滴花束雪花莲","meta":"XYZ · ATK 2800 · 1 素材","kind":"xyz"},{"name":"兽带斗神“王者”轩辕十四","meta":"ATK 3500 · 兽带斗神","kind":"monster"}],"emz":[{"name":"回生的孟加拉枪兵","meta":"LINK-4 · ATK 2500","kind":"link"},{"name":"芳香炽天使-茉莉","meta":"LINK-2 · 植物族","kind":"link"}],"s":[null,{"name":"圣蔓的播种","meta":"已发动","kind":"spell"},null,null,{"name":"兽带斗神“百合”玻瑞阿斯","meta":"装备魔法","kind":"equip"},{"name":"六花来来","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":0,"text":"CL1 六花圣 泪滴花束雪花莲"}],"gy":["圣种之地灵"],"removed":[],"note":"","chainCount":22,"stats":{},"emzSide":null,"title":"确认《六花圣 泪滴花束雪花莲》的表示形式","desc":"XYZ 表示形式确认，素材数记录为 1。"},{"lp":[8800,8000],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"芳香莉莉丝-石楠叶白千层","meta":"等级 1 · 植物族","kind":"monster"},{"name":"孤火花","meta":"等级 3 · 植物族","kind":"monster"},null,{"name":"六花圣 泪滴花束雪花莲","meta":"XYZ · ATK 2800 · 1 素材","kind":"xyz"},{"name":"兽带斗神“王者”轩辕十四","meta":"ATK 3500 · 兽带斗神","kind":"monster"}],"emz":[{"name":"回生的孟加拉枪兵","meta":"LINK-4 · ATK 2500","kind":"link"},{"name":"芳香炽天使-茉莉","meta":"LINK-2 · 植物族","kind":"link"}],"s":[null,{"name":"圣蔓的播种","meta":"已发动","kind":"spell"},null,null,{"name":"兽带斗神“百合”玻瑞阿斯","meta":"装备魔法","kind":"equip"},{"name":"六花来来","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":0,"text":"CL1 六花圣 泪滴花束雪花莲"}],"gy":["圣种之地灵"],"removed":[],"note":"","chainCount":23,"stats":{},"emzSide":null,"title":"连锁《六花圣 泪滴花束雪花莲》","desc":"《六花圣 泪滴花束雪花莲》连锁成立，终场压制链完成。"},{"lp":[8800,8000],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"芳香莉莉丝-石楠叶白千层","meta":"等级 1 · 植物族","kind":"monster"},{"name":"孤火花","meta":"等级 3 · 植物族","kind":"monster"},null,{"name":"六花圣 泪滴花束雪花莲","meta":"XYZ · ATK 2800 · 1 素材","kind":"xyz"},{"name":"兽带斗神“王者”轩辕十四","meta":"ATK 3500 · 兽带斗神","kind":"monster"}],"emz":[{"name":"回生的孟加拉枪兵","meta":"LINK-4 · ATK 2500","kind":"link"},{"name":"芳香炽天使-茉莉","meta":"LINK-2 · 植物族","kind":"link"}],"s":[null,{"name":"圣蔓的播种","meta":"已发动","kind":"spell"},null,null,{"name":"兽带斗神“百合”玻瑞阿斯","meta":"装备魔法","kind":"equip"},{"name":"六花来来","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":0,"text":"CL1 六花圣 泪滴花束雪花莲"}],"gy":["圣种之地灵"],"removed":[],"note":"","chainCount":23,"stats":{},"emzSide":null,"title":"以《孤火花》为对象","desc":"以《孤火花》为对象，处理最后的植物族资源。"},{"lp":[8800,8000],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"芳香莉莉丝-石楠叶白千层","meta":"等级 1 · 植物族","kind":"monster"},{"name":"孤火花","meta":"等级 3 · 植物族","kind":"monster"},null,{"name":"六花圣 泪滴花束雪花莲","meta":"XYZ · ATK 2800 · 1 素材","kind":"xyz"},{"name":"兽带斗神“王者”轩辕十四","meta":"ATK 3500 · 兽带斗神","kind":"monster"}],"emz":[{"name":"回生的孟加拉枪兵","meta":"LINK-4 · ATK 2500","kind":"link"},{"name":"芳香炽天使-茉莉","meta":"LINK-2 · 植物族","kind":"link"}],"s":[null,{"name":"圣蔓的播种","meta":"已发动","kind":"spell"},null,null,{"name":"兽带斗神“百合”玻瑞阿斯","meta":"装备魔法","kind":"equip"},{"name":"六花来来","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":0,"text":"CL1 六花圣 泪滴花束雪花莲"}],"gy":["圣种之地灵"],"removed":[],"note":"","chainCount":23,"stats":{},"emzSide":null,"title":"以《回生的孟加拉枪兵》为对象","desc":"以《回生的孟加拉枪兵》为对象，准备收束终端。"},{"lp":[8800,8000],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"芳香莉莉丝-石楠叶白千层","meta":"等级 1 · 植物族","kind":"monster"},{"name":"孤火花","meta":"等级 3 · 植物族","kind":"monster"},null,{"name":"六花圣 泪滴花束雪花莲","meta":"XYZ · ATK 2800 · 1 素材","kind":"xyz"},{"name":"兽带斗神“王者”轩辕十四","meta":"ATK 3500 · 兽带斗神","kind":"monster"}],"emz":[{"name":"回生的孟加拉枪兵","meta":"LINK-4 · ATK 2500","kind":"link"},{"name":"芳香炽天使-茉莉","meta":"LINK-2 · 植物族","kind":"link"}],"s":[null,{"name":"圣蔓的播种","meta":"已发动","kind":"spell"},null,null,{"name":"兽带斗神“百合”玻瑞阿斯","meta":"装备魔法","kind":"equip"},{"name":"六花来来","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":0,"text":"CL1 回生的孟加拉枪兵"}],"gy":["圣种之地灵"],"removed":[],"note":"","chainCount":24,"stats":{},"emzSide":null,"title":"发动《回生的孟加拉枪兵》","desc":"《回生的孟加拉枪兵》发动；第 24 次连锁，终场锁定。"},{"lp":[8800,8000],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"芳香莉莉丝-石楠叶白千层","meta":"等级 1 · 植物族","kind":"monster"},{"name":"孤火花","meta":"等级 3 · 植物族","kind":"monster"},null,{"name":"六花圣 泪滴花束雪花莲","meta":"XYZ · ATK 2800 · 1 素材","kind":"xyz"},{"name":"兽带斗神“王者”轩辕十四","meta":"ATK 3500 · 兽带斗神","kind":"monster"}],"emz":[null,null],"s":[null,{"name":"圣蔓的播种","meta":"已发动","kind":"spell"},null,null,{"name":"兽带斗神“百合”玻瑞阿斯","meta":"装备魔法","kind":"equip"},{"name":"六花来来","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":0,"text":"CL1 回生的孟加拉枪兵"}],"gy":["圣种之地灵"],"removed":[],"note":"","chainCount":24,"stats":{},"emzSide":null,"title":"素材合计：芳香炽天使-茉莉 / 圣天树之幼精 / 圣蔓之治愈者","desc":"连接素材合计完成：茉莉、幼精、治愈者依次送墓，LINK-4 素材数核验通过。"},{"lp":[8800,8000],"phase":"第 1 回合 · 主要阶段 1","m":[null,null,{"name":"回生的孟加拉枪兵","meta":"LINK-4 · ATK 2500","kind":"link"},{"name":"六花圣 泪滴花束雪花莲","meta":"XYZ · ATK 2800 · 1 素材","kind":"xyz"},{"name":"兽带斗神“王者”轩辕十四","meta":"ATK 3500 · 兽带斗神","kind":"monster"}],"emz":[null,null],"s":[null,{"name":"圣蔓的播种","meta":"已发动","kind":"spell"},null,null,{"name":"兽带斗神“百合”玻瑞阿斯","meta":"装备魔法","kind":"equip"},{"name":"六花来来","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":0,"text":"CL1 回生的孟加拉枪兵"}],"gy":["圣种之地灵"],"removed":[],"note":"","chainCount":24,"stats":{},"emzSide":null,"title":"放置到主怪兽区 M2","desc":"《回生的孟加拉枪兵》最终落在 M2，主怪兽区终端排列完成。"},{"lp":[8800,8000],"phase":"第 1 回合 · 结束阶段","m":[null,null,{"name":"回生的孟加拉枪兵","meta":"LINK-4 · ATK 2500","kind":"link"},{"name":"六花圣 泪滴花束雪花莲","meta":"XYZ · ATK 2800 · 1 素材","kind":"xyz"},{"name":"兽带斗神“王者”轩辕十四","meta":"ATK 3500 · 兽带斗神","kind":"monster"}],"emz":[null,null],"s":[{"name":"六花绚烂","meta":"盖放 · 已使用","kind":"spell"},null,null,null,{"name":"兽带斗神“百合”玻瑞阿斯","meta":"装备魔法","kind":"equip"},{"name":"六花来来","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":0,"text":"终场核验 · 0 次重试"}],"gy":["六花绚烂","圣蔓的播种","圆盘斗技场","六花精 牡丹","圣种之地灵","芳香炽天使-茉莉","圣种之天双芽","圣天树之幼精","芳香莉莉丝-石楠叶白千层","芳香法师-月桂叶","蕾祸之武者髑髅","六花之白姬","孤火花"],"removed":[],"note":"","chainCount":24,"stats":{"responses":216,"chains":24},"emzSide":null,"title":"进入结束阶段","desc":"进入结束阶段；终场快照与引擎核验逐项对齐，88 步全部完成。"}],"lp":[8800,8000],"chainsTotal":24,"p1HandUnknown":true,"emzSide":"p0","p0HandUnknown":true},{"id":"anti_nibiru","title":"场景 2 · Tier 1 相剑天威：5 步前鲜花护航防陨实战","subtitle":"27 个编号动作 · 28 条轨迹 · 7 次连锁 · 第 19 步尼比鲁 CL1，第 20 步鲜花 CL2 反制","side0":"我方 · 相剑天威","side1":"对手 · 陨石位","p1Label":"对手手牌 / 场面","note":"原始轨迹第 19 条为对手插入动作（尼比鲁），因此页面显示为第 19 / 28 步；原始编号 1–27 与原始记录完全对应，未增删任何一步。","milestones":[["龙渊起手",0],["防陨鲜花",7],["第 5 步召唤",12],["陨石 CL1",18],["鲜花 CL2",19],["赤霄终场",27]],"steps":[{"lp":[8000,6800],"phase":"第 1 回合 · 主要阶段 1","m":[null,null,null,null,null],"emz":[null,null],"s":[null,null,null,null,null,null],"p1":[null,null,null,null,null],"p1Hand":["原始生命态 尼比鲁（捏住）"],"p0Hand":[],"chain":[{"p":0,"text":"CL1 相剑军师-龙渊"}],"gy":[],"removed":[],"note":"","chainCount":1,"stats":{},"emzSide":null,"title":"发动《相剑军师-龙渊》","desc":"《相剑军师-龙渊》从手牌发动，丢弃《相剑现》作为代价，准备在第 5 次召唤前做出鲜花女男爵。"},{"lp":[8000,6800],"phase":"第 1 回合 · 主要阶段 1","m":[null,null,null,null,null],"emz":[null,null],"s":[null,null,null,null,null,null],"p1":[null,null,null,null,null],"p1Hand":["原始生命态 尼比鲁（捏住）"],"p0Hand":[],"chain":[{"p":0,"text":"CL1 相剑军师-龙渊"}],"gy":["相剑现"],"removed":[],"note":"","chainCount":1,"stats":{},"emzSide":null,"title":"将《相剑现》送入墓地作为发动代价","desc":"《相剑现》送入墓地，龙渊的召唤窗口打开。"},{"lp":[8000,6800],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"相剑军师-龙渊","meta":"等级 6 · 调整","kind":"monster"},null,null,null,null],"emz":[null,null],"s":[null,null,null,null,null,null],"p1":[null,null,null,null,null],"p1Hand":["原始生命态 尼比鲁（捏住）"],"p0Hand":[],"chain":[{"p":0,"text":"CL1 相剑军师-龙渊"}],"gy":["相剑现"],"removed":[],"note":"","chainCount":1,"stats":{},"emzSide":null,"title":"放置到主怪兽区 M0","desc":"《相剑军师-龙渊》落在 M0。"},{"lp":[8000,6800],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"相剑军师-龙渊","meta":"等级 6 · 调整","kind":"monster"},null,null,null,null],"emz":[null,null],"s":[null,null,null,null,null,null],"p1":[null,null,null,null,null],"p1Hand":["原始生命态 尼比鲁（捏住）"],"p0Hand":[],"chain":[{"p":0,"text":"CL1 相剑军师-龙渊"}],"gy":["相剑现"],"removed":[],"note":"","chainCount":1,"stats":{},"emzSide":null,"title":"确认《相剑军师-龙渊》的表示形式","desc":"龙渊攻击表示确认。"},{"lp":[8000,6800],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"相剑军师-龙渊","meta":"等级 6 · 调整","kind":"monster"},null,null,null,null],"emz":[null,null],"s":[null,null,null,null,null,null],"p1":[null,null,null,null,null],"p1Hand":["原始生命态 尼比鲁（捏住）"],"p0Hand":[],"chain":[{"p":0,"text":"CL1 相剑军师-龙渊"}],"gy":["相剑现"],"removed":[],"note":"","chainCount":1,"stats":{},"emzSide":null,"title":"确认：是","desc":"确认发动，龙渊与相剑衍生物进入场面。"},{"lp":[8000,6800],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"相剑军师-龙渊","meta":"等级 6 · 调整","kind":"monster"},null,{"name":"相剑衍生物","meta":"等级 4 · 调整","kind":"monster"},null,null],"emz":[null,null],"s":[null,null,null,null,null,null],"p1":[null,null,null,null,null],"p1Hand":["原始生命态 尼比鲁（捏住）"],"p0Hand":[],"chain":[{"p":0,"text":"CL1 相剑军师-龙渊"}],"gy":["相剑现"],"removed":[],"note":"","chainCount":1,"stats":{},"emzSide":null,"title":"放置到主怪兽区 M2","desc":"相剑衍生物落在 M2。"},{"lp":[8000,6800],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"相剑军师-龙渊","meta":"等级 6 · 调整","kind":"monster"},null,{"name":"相剑衍生物","meta":"等级 4 · 调整","kind":"monster"},null,null],"emz":[null,null],"s":[null,null,null,null,null,null],"p1":[null,null,null,null,null],"p1Hand":["原始生命态 尼比鲁（捏住）"],"p0Hand":[],"chain":[{"p":0,"text":"CL1 相剑军师-龙渊"}],"gy":["相剑现"],"removed":[],"note":"","chainCount":1,"stats":{},"emzSide":null,"title":"确认《相剑衍生物》的表示形式","desc":"相剑衍生物作为调整确认，等级 4。"},{"lp":[8000,6800],"phase":"第 1 回合 · 主要阶段 1","m":[null,null,null,null,null],"emz":[{"name":"鲜花女男爵","meta":"等级 10 · ATK 3000","kind":"monster"},null],"s":[null,null,null,null,null,null],"p1":[null,null,null,null,null],"p1Hand":["原始生命态 尼比鲁（捏住）"],"p0Hand":[],"chain":[{"p":0,"text":"CL1 相剑军师-龙渊"}],"gy":["相剑现","相剑军师-龙渊"],"removed":[],"note":"","chainCount":1,"stats":{},"emzSide":null,"title":"特殊召唤《鲜花女男爵》","desc":"龙渊 + 相剑衍生物同调召唤《鲜花女男爵》，在第 5 次召唤前完成护航。"},{"lp":[8000,6800],"phase":"第 1 回合 · 主要阶段 1","m":[null,null,null,null,null],"emz":[{"name":"鲜花女男爵","meta":"等级 10 · ATK 3000","kind":"monster"},null],"s":[null,null,null,null,null,null],"p1":[null,null,null,null,null],"p1Hand":["原始生命态 尼比鲁（捏住）"],"p0Hand":[],"chain":[{"p":0,"text":"CL1 相剑军师-龙渊"}],"gy":["相剑现","相剑军师-龙渊"],"removed":[],"note":"","chainCount":1,"stats":{},"emzSide":null,"title":"放置到额外怪兽区左侧（M5）","desc":"《鲜花女男爵》进入额外怪兽区左侧，EMZ 压制点就位。"},{"lp":[8000,6800],"phase":"第 1 回合 · 主要阶段 1","m":[null,null,null,null,null],"emz":[{"name":"鲜花女男爵","meta":"等级 10 · ATK 3000","kind":"monster"},null],"s":[null,null,null,null,null,null],"p1":[null,null,null,null,null],"p1Hand":["原始生命态 尼比鲁（捏住）"],"p0Hand":[],"chain":[{"p":0,"text":"CL1 相剑军师-龙渊"}],"gy":["相剑现","相剑军师-龙渊"],"removed":[],"note":"","chainCount":1,"stats":{},"emzSide":null,"title":"确认《鲜花女男爵》的表示形式","desc":"鲜花女男爵攻击表示确认。"},{"lp":[8000,6800],"phase":"第 1 回合 · 主要阶段 1","m":[null,null,null,null,null],"emz":[{"name":"鲜花女男爵","meta":"等级 10 · ATK 3000","kind":"monster"},null],"s":[null,null,null,null,null,null],"p1":[null,null,null,null,null],"p1Hand":["原始生命态 尼比鲁（捏住）"],"p0Hand":[],"chain":[{"p":0,"text":"CL1 相剑军师-龙渊"}],"gy":["相剑现","相剑军师-龙渊"],"removed":[],"note":"","chainCount":2,"stats":{},"emzSide":null,"title":"确认发动《相剑军师-龙渊》的触发效果","desc":"龙渊触发，处理检索与 削血效果；第 2 次连锁。"},{"lp":[8000,6800],"phase":"第 1 回合 · 主要阶段 1","m":[null,null,null,null,null],"emz":[{"name":"鲜花女男爵","meta":"等级 10 · ATK 3000","kind":"monster"},null],"s":[null,null,null,null,null,null],"p1":[null,null,null,null,null],"p1Hand":["原始生命态 尼比鲁（捏住）"],"p0Hand":[],"chain":[{"p":0,"text":"CL1 相剑军师-龙渊"}],"gy":["相剑现","相剑军师-龙渊"],"removed":[],"note":"","chainCount":2,"stats":{},"emzSide":null,"title":"让过连锁","desc":"让过连锁，鲜花女男爵保持可用状态。"},{"lp":[8000,6800],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"相剑师-莫邪","meta":"等级 4 · 幻龙族","kind":"monster"},null,null,null,null],"emz":[{"name":"鲜花女男爵","meta":"等级 10 · ATK 3000","kind":"monster"},null],"s":[null,null,null,null,null,null],"p1":[null,null,null,null,null],"p1Hand":["原始生命态 尼比鲁（捏住）"],"p0Hand":[],"chain":[{"p":0,"text":"CL1 相剑军师-龙渊"}],"gy":["相剑现","相剑军师-龙渊"],"removed":[],"note":"","chainCount":2,"stats":{},"emzSide":null,"title":"通常召唤《相剑师-莫邪》","desc":"通常召唤《相剑师-莫邪》，这是本回合第 5 次召唤，也是尼比鲁的经典触发点。"},{"lp":[8000,6800],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"相剑师-莫邪","meta":"等级 4 · 幻龙族","kind":"monster"},null,null,null,null],"emz":[{"name":"鲜花女男爵","meta":"等级 10 · ATK 3000","kind":"monster"},null],"s":[null,null,null,null,null,null],"p1":[null,null,null,null,null],"p1Hand":["原始生命态 尼比鲁（捏住）"],"p0Hand":[],"chain":[{"p":0,"text":"CL1 相剑军师-龙渊"}],"gy":["相剑现","相剑军师-龙渊"],"removed":[],"note":"","chainCount":2,"stats":{},"emzSide":null,"title":"放置到主怪兽区 M0","desc":"《相剑师-莫邪》落在 M0。"},{"lp":[8000,6800],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"相剑师-莫邪","meta":"等级 4 · 幻龙族","kind":"monster"},null,null,null,null],"emz":[{"name":"鲜花女男爵","meta":"等级 10 · ATK 3000","kind":"monster"},null],"s":[null,null,null,null,null,null],"p1":[null,null,null,null,null],"p1Hand":["原始生命态 尼比鲁（捏住）"],"p0Hand":[],"chain":[{"p":0,"text":"CL1 相剑师-莫邪"}],"gy":["相剑现","相剑军师-龙渊"],"removed":[],"note":"","chainCount":3,"stats":{},"emzSide":null,"title":"确认发动《相剑师-莫邪》的触发效果","desc":"莫邪触发，生成相剑衍生物；第 3 次连锁。"},{"lp":[8000,6800],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"相剑师-莫邪","meta":"等级 4 · 幻龙族","kind":"monster"},null,null,null,null],"emz":[{"name":"鲜花女男爵","meta":"等级 10 · ATK 3000","kind":"monster"},null],"s":[null,null,null,null,null,null],"p1":[null,null,null,null,null],"p1Hand":["原始生命态 尼比鲁（捏住）"],"p0Hand":[],"chain":[{"p":0,"text":"CL1 相剑师-莫邪"}],"gy":["相剑现","相剑军师-龙渊"],"removed":[],"note":"","chainCount":3,"stats":{},"emzSide":null,"title":"让过连锁","desc":"让过连锁，等待莫邪效果结算。"},{"lp":[8000,6800],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"相剑师-莫邪","meta":"等级 4 · 幻龙族","kind":"monster"},null,{"name":"相剑衍生物","meta":"等级 4 · 调整","kind":"monster"},null,null],"emz":[{"name":"鲜花女男爵","meta":"等级 10 · ATK 3000","kind":"monster"},null],"s":[null,null,null,null,null,null],"p1":[null,null,null,null,null],"p1Hand":["原始生命态 尼比鲁（捏住）"],"p0Hand":[],"chain":[{"p":0,"text":"CL1 相剑师-莫邪"}],"gy":["相剑现","相剑军师-龙渊"],"removed":[],"note":"","chainCount":3,"stats":{},"emzSide":null,"title":"放置到主怪兽区 M2","desc":"相剑衍生物落在 M2。"},{"lp":[8000,6800],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"相剑师-莫邪","meta":"等级 4 · 幻龙族","kind":"monster"},null,{"name":"相剑衍生物","meta":"等级 4 · 调整","kind":"monster"},null,null],"emz":[{"name":"鲜花女男爵","meta":"等级 10 · ATK 3000","kind":"monster"},null],"s":[null,null,null,null,null,null],"p1":[null,null,null,null,null],"p1Hand":["原始生命态 尼比鲁（捏住）"],"p0Hand":[],"chain":[{"p":0,"text":"CL1 相剑师-莫邪"}],"gy":["相剑现","相剑军师-龙渊"],"removed":[],"note":"","chainCount":3,"stats":{},"emzSide":null,"title":"确认《相剑衍生物》的表示形式","desc":"相剑衍生物确认，等级 4 调整。"},{"lp":[8000,6800],"phase":"第 1 回合 · 连锁窗口","m":[{"name":"相剑师-莫邪","meta":"等级 4 · 幻龙族","kind":"monster"},null,{"name":"相剑衍生物","meta":"等级 4 · 调整","kind":"monster"},null,null],"emz":[{"name":"鲜花女男爵","meta":"等级 10 · ATK 3000","kind":"monster"},null],"s":[null,null,null,null,null,null],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":1,"text":"CL1 原始生命态 尼比鲁"}],"gy":["相剑现","相剑军师-龙渊"],"removed":[],"note":"对手在《相剑衍生物》上发动尼比鲁：CL1，目标清场。","chainCount":4,"stats":{},"emzSide":null,"title":"⚠ 对手发动《原始生命态 尼比鲁》——CL1","desc":"对手在第 5 次召唤后立刻砸下《原始生命态 尼比鲁》，以《相剑衍生物》为触发对象。此处为原始轨迹第 19 条插入动作，因此显示为第 19 / 28 步；后续条目编号顺延。"},{"lp":[8000,6800],"phase":"第 1 回合 · 鲜花反制","m":[{"name":"相剑师-莫邪","meta":"等级 4 · 幻龙族","kind":"monster"},null,{"name":"相剑衍生物","meta":"等级 4 · 调整","kind":"monster"},null,null],"emz":[{"name":"鲜花女男爵","meta":"等级 10 · ATK 3000","kind":"monster"},null],"s":[null,null,null,null,null,null],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":1,"text":"CL1 原始生命态 尼比鲁"},{"p":0,"text":"CL2 鲜花女男爵"}],"gy":["相剑现","相剑军师-龙渊"],"removed":[],"note":"鲜花女男爵 CL2：无效并破坏尼比鲁，保住场面。","chainCount":5,"stats":{},"emzSide":null,"title":"《鲜花女男爵》连锁——CL2","desc":"《鲜花女男爵》作为 CL2 连锁，无效并破坏《原始生命态 尼比鲁》。这是本局最关键的防陨窗口。"},{"lp":[8000,6800],"phase":"第 1 回合 · 鲜花反制","m":[null,null,{"name":"相剑大师-赤霄","meta":"ATK 2800 · 幻龙族","kind":"monster"},null,null],"emz":[{"name":"鲜花女男爵","meta":"等级 10 · ATK 3000","kind":"monster"},null],"s":[null,null,null,null,null,null],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":1,"text":"CL1 原始生命态 尼比鲁"},{"p":0,"text":"CL2 鲜花女男爵"}],"gy":["相剑现","相剑军师-龙渊","相剑师-莫邪","相剑衍生物"],"removed":[],"note":"鲜花女男爵 CL2：无效并破坏尼比鲁，保住场面。","chainCount":5,"stats":{},"emzSide":null,"title":"特殊召唤《相剑大师-赤霄》","desc":"尼比鲁被处理后，莫邪 + 相剑衍生物同调召唤《相剑大师-赤霄》。"},{"lp":[8000,6800],"phase":"第 1 回合 · 鲜花反制","m":[null,null,{"name":"相剑大师-赤霄","meta":"ATK 2800 · 幻龙族","kind":"monster"},null,null],"emz":[{"name":"鲜花女男爵","meta":"等级 10 · ATK 3000","kind":"monster"},null],"s":[null,null,null,null,null,null],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":1,"text":"CL1 原始生命态 尼比鲁"},{"p":0,"text":"CL2 鲜花女男爵"}],"gy":["相剑现","相剑军师-龙渊","相剑师-莫邪","相剑衍生物"],"removed":[],"note":"鲜花女男爵 CL2：无效并破坏尼比鲁，保住场面。","chainCount":5,"stats":{},"emzSide":null,"title":"放置到主怪兽区 M2","desc":"《相剑大师-赤霄》落在 M2。"},{"lp":[8000,6800],"phase":"第 1 回合 · 鲜花反制","m":[null,null,{"name":"相剑大师-赤霄","meta":"ATK 2800 · 幻龙族","kind":"monster"},null,null],"emz":[{"name":"鲜花女男爵","meta":"等级 10 · ATK 3000","kind":"monster"},null],"s":[null,null,null,null,null,null],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":1,"text":"CL1 原始生命态 尼比鲁"},{"p":0,"text":"CL2 鲜花女男爵"}],"gy":["相剑现","相剑军师-龙渊","相剑师-莫邪","相剑衍生物"],"removed":[],"note":"鲜花女男爵 CL2：无效并破坏尼比鲁，保住场面。","chainCount":5,"stats":{},"emzSide":null,"title":"确认《相剑大师-赤霄》的表示形式","desc":"赤霄攻击表示确认，终场双终端成形。"},{"lp":[8000,6800],"phase":"第 1 回合 · 鲜花反制","m":[null,null,{"name":"相剑大师-赤霄","meta":"ATK 2800 · 幻龙族","kind":"monster"},null,null],"emz":[{"name":"鲜花女男爵","meta":"等级 10 · ATK 3000","kind":"monster"},null],"s":[null,null,null,null,null,null],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":0,"text":"CL1 相剑师-莫邪"}],"gy":["相剑现","相剑军师-龙渊","相剑师-莫邪","相剑衍生物"],"removed":[],"note":"鲜花女男爵 CL2：无效并破坏尼比鲁，保住场面。","chainCount":6,"stats":{},"emzSide":null,"title":"连锁《相剑师-莫邪》","desc":"莫邪作为 CL1 触发，抽 1 张牌；第 6 次连锁。"},{"lp":[8000,6800],"phase":"第 1 回合 · 鲜花反制","m":[null,null,{"name":"相剑大师-赤霄","meta":"ATK 2800 · 幻龙族","kind":"monster"},null,null],"emz":[{"name":"鲜花女男爵","meta":"等级 10 · ATK 3000","kind":"monster"},null],"s":[null,null,null,null,null,null],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":0,"text":"CL1 相剑师-莫邪"},{"p":0,"text":"CL2 相剑大师-赤霄"}],"gy":["相剑现","相剑军师-龙渊","相剑师-莫邪","相剑衍生物"],"removed":[],"note":"鲜花女男爵 CL2：无效并破坏尼比鲁，保住场面。","chainCount":7,"stats":{},"emzSide":null,"title":"连锁《相剑大师-赤霄》","desc":"赤霄作为 CL2 触发，检索《相剑师-泰阿》；第 7 次连锁。"},{"lp":[8000,6800],"phase":"第 1 回合 · 鲜花反制","m":[null,null,{"name":"相剑大师-赤霄","meta":"ATK 2800 · 幻龙族","kind":"monster"},null,null],"emz":[{"name":"鲜花女男爵","meta":"等级 10 · ATK 3000","kind":"monster"},null],"s":[null,null,null,null,null,null],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":0,"text":"CL1 相剑师-莫邪"},{"p":0,"text":"CL2 相剑大师-赤霄"}],"gy":["相剑现","相剑军师-龙渊","相剑师-莫邪","相剑衍生物"],"removed":[],"note":"鲜花女男爵 CL2：无效并破坏尼比鲁，保住场面。","chainCount":7,"stats":{},"emzSide":null,"title":"挑选《相剑师-泰阿》","desc":"挑选《相剑师-泰阿》，确认检索目标。"},{"lp":[8000,6800],"phase":"第 1 回合 · 鲜花反制","m":[null,null,{"name":"相剑大师-赤霄","meta":"ATK 2800 · 幻龙族","kind":"monster"},null,null],"emz":[{"name":"鲜花女男爵","meta":"等级 10 · ATK 3000","kind":"monster"},null],"s":[null,null,null,null,null,null],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":0,"text":"CL1 相剑师-莫邪"},{"p":0,"text":"CL2 相剑大师-赤霄"}],"gy":["相剑现","相剑军师-龙渊","相剑师-莫邪","相剑衍生物"],"removed":[],"note":"鲜花女男爵 CL2：无效并破坏尼比鲁，保住场面。","chainCount":7,"stats":{},"emzSide":null,"title":"选择分支 1（确认检索）","desc":"确认检索分支，《相剑师-泰阿》加入手牌。"},{"lp":[8000,6800],"phase":"第 1 回合 · 结束阶段","m":[null,null,{"name":"相剑大师-赤霄","meta":"ATK 2800 · 幻龙族","kind":"monster"},null,null],"emz":[{"name":"鲜花女男爵","meta":"等级 10 · ATK 3000","kind":"monster"},null],"s":[null,null,null,null,null,null],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":["相剑师-莫邪","无限泡影","相剑现"],"chain":[{"p":0,"text":"终场核验 · 0 次重试"}],"gy":["相剑现","相剑军师-龙渊","相剑师-莫邪"],"removed":["相剑师-泰阿"],"note":"鲜花女男爵 CL2：无效并破坏尼比鲁，保住场面。","chainCount":7,"stats":{"responses":57,"chains":7},"emzSide":null,"title":"进入结束阶段","desc":"进入结束阶段；终场为鲜花女男爵 + 相剑大师-赤霄，LP 8000 : 6800。"}],"lp":[8000,6800],"chainsTotal":7,"p1HandUnknown":false,"emzSide":"p0","p0HandUnknown":false},{"id":"psro_hold","title":"场景 3 · 双边对抗 2 手坑实战：真实连锁与捏坑反打","subtitle":"6 条真实连锁事件 · 3 次合法手坑窗口 · 前置捏坑 1 次 · 最终 2 手坑全部命中","side0":"我方 · 植物均","side1":"对手 · 灰流丽 + 尼比鲁","p1Label":"对手手牌 / 场面","note":"本场景只呈现记录内可核验的 6 条连锁事件、捏坑统计与第 3 回合终态；不补写原始记录中未记录的逐卡中间操作。","milestones":[["蕾祸起手",0],["第 5 次召唤",2],["捏坑窗口",3],["陨石清场",4],["播种续航",5],["灰流丽封锁",6],["终局核验",7]],"steps":[{"lp":[8000,8000],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"蕾祸之毬首","meta":"LINK-1 · 植物族","kind":"link"},null,null,null,null],"emz":[null,null],"s":[null,null,null,null,null,null],"p1":[null,null,null,null,null],"p1Hand":["灰流丽","原始生命态 尼比鲁"],"p0Hand":[],"chain":[{"p":0,"text":"CL1 蕾祸之毬首"}],"gy":[],"removed":[],"note":"","chainCount":1,"stats":{"legal":3,"fired":0},"emzSide":null,"title":"第 1 回合 · 蕾祸开局：CL1《蕾祸之毬首》","desc":"我方以《蕾祸之毬首》起手，植物族连接轴开始铺场；对手手牌已知为《灰流丽》与《原始生命态 尼比鲁》。"},{"lp":[8000,8000],"phase":"第 1 回合 · 主要阶段 1","m":[null,{"name":"蕾祸之矢筈天牛","meta":"LINK-2 · 植物族","kind":"link"},null,null,null],"emz":[null,null],"s":[null,null,null,null,null,null],"p1":[null,null,null,null,null],"p1Hand":["灰流丽","原始生命态 尼比鲁"],"p0Hand":[],"chain":[{"p":0,"text":"CL1 蕾祸之矢筈天牛"}],"gy":[],"removed":[],"note":"","chainCount":2,"stats":{"legal":3,"fired":0},"emzSide":null,"title":"连锁推进：CL1《蕾祸之矢筈天牛》","desc":"《蕾祸之矢筈天牛》接上，连接值继续累加。对手保持捏坑，没有在低价值窗口交出灰流丽。"},{"lp":[8000,8000],"phase":"第 1 回合 · 主要阶段 1","m":[null,null,{"name":"蕾祸之武者髑髅","meta":"LINK-2 · 植物族","kind":"link"},null,null],"emz":[null,null],"s":[null,null,null,null,null,null],"p1":[null,null,null,null,null],"p1Hand":["灰流丽","原始生命态 尼比鲁"],"p0Hand":[],"chain":[{"p":0,"text":"CL1 蕾祸之武者髑髅"}],"gy":[],"removed":[],"note":"第 5 次召唤节点：对手仍按住尼比鲁与灰流丽。","chainCount":3,"stats":{"legal":3,"fired":0},"emzSide":null,"title":"第 5 次召唤节点：CL1《蕾祸之武者髑髅》","desc":"《蕾祸之武者髑髅》登场，进入第 5 次召唤节点；这是尼比鲁的高价值触发点。"},{"lp":[8000,8000],"phase":"第 1 回合 · 主要阶段 1","m":[null,null,{"name":"蕾祸之武者髑髅","meta":"LINK-2 · 植物族","kind":"link"},null,null],"emz":[null,null],"s":[null,null,null,null,null,null],"p1":[null,null,null,null,null],"p1Hand":["灰流丽","原始生命态 尼比鲁"],"p0Hand":[],"chain":[],"gy":[],"removed":[],"note":"对手捏坑：合法窗口 3 次，前置捏坑 1 次，已发 0 次。","chainCount":3,"stats":{"legal":3,"fired":0,"holds":1,"holdBefore":1},"emzSide":null,"title":"对手捏坑：3 次合法窗口，先按住不发","desc":"对手本回合共有 3 次合法手坑窗口，但在前置诱饵阶段选择按住。记录字段：捏坑前置 1 次，已发手坑 0 次。"},{"lp":[8000,8000],"phase":"第 1 回合 · 主要阶段 1","m":[null,null,null,null,null],"emz":[null,null],"s":[null,null,null,null,null,null],"p1":[{"name":"原始生命态 尼比鲁","meta":"ATK 3000 · 光属性","kind":"monster"},null,null,null,null],"p1Hand":["灰流丽"],"p0Hand":[],"chain":[{"p":1,"text":"CL1 原始生命态 尼比鲁"}],"gy":[],"removed":[],"note":"关键节点砸陨石：我方场面 4 → 0，零场面崩塌。","chainCount":4,"stats":{"legal":3,"fired":1,"holds":1,"zeroCollapse":true},"emzSide":null,"title":"CL1《原始生命态 尼比鲁》——清场","desc":"对手在关键节点砸下《原始生命态 尼比鲁》，我方场面被完全清空；零场面崩塌标记为真。"},{"lp":[8000,8000],"phase":"第 1 回合 · 主要阶段 1","m":[null,null,null,null,null],"emz":[null,null],"s":[null,{"name":"圣蔓的播种","meta":"已发动","kind":"spell"},null,null,null,null],"p1":[{"name":"原始生命态 尼比鲁","meta":"ATK 3000 · 光属性","kind":"monster"},null,null,null,null],"p1Hand":["灰流丽"],"p0Hand":[],"chain":[{"p":0,"text":"CL1 圣蔓的播种"}],"gy":[],"removed":[],"note":"关键节点砸陨石：我方场面 4 → 0，零场面崩塌。","chainCount":5,"stats":{"legal":3,"fired":1,"holds":1,"zeroCollapse":true},"emzSide":null,"title":"CL1《圣蔓的播种》——尝试续航","desc":"我方从墓地与卡组调度《圣蔓的播种》，试图在空场后重新建立植物族续航。"},{"lp":[8000,8000],"phase":"第 1 回合 · 主要阶段 1","m":[null,null,null,null,null],"emz":[null,null],"s":[null,{"name":"圣蔓的播种","meta":"已发动","kind":"spell"},null,null,null,null],"p1":[{"name":"原始生命态 尼比鲁","meta":"ATK 3000 · 光属性","kind":"monster"},null,null,null,{"name":"灰流丽","meta":"ATK 0 · 炎属性","kind":"monster"}],"p1Hand":[],"p0Hand":[],"chain":[{"p":0,"text":"CL1 圣蔓的播种"},{"p":1,"text":"CL2 灰流丽"}],"gy":[],"removed":[],"note":"灰流丽 CL2：康掉《圣蔓的播种》，我方续航被截断。","chainCount":6,"stats":{"legal":3,"fired":2,"holds":1,"zeroCollapse":true},"emzSide":null,"title":"CL2《灰流丽》——康掉续航","desc":"对手立刻交出一直捏着的《灰流丽》作为 CL2，无效《圣蔓的播种》的检索与特殊召唤。"},{"lp":[8000,8000],"phase":"第 3 回合 · 记录终态","m":[null,null,null,null,null],"emz":[null,null],"s":[null,null,null,null,null,null],"p1":[{"name":"原始生命态 尼比鲁","meta":"ATK 3000 · 光属性","kind":"monster"},null,null,null,{"name":"灰流丽","meta":"ATK 0 · 炎属性","kind":"monster"}],"p1Hand":[],"p0Hand":[],"chain":[{"p":1,"text":"终局核验 · 双边交换完成"}],"gy":[],"removed":[],"note":"终态：我方空场，对手保留尼比鲁 3000 + 灰流丽 0；T1 目标未达成。","chainCount":6,"stats":{"legal":3,"fired":2,"holds":1,"holdBefore":1,"zeroCollapse":true,"t1Goal":false,"turn":3,"planB":0.0},"emzSide":null,"title":"终局核验：第 3 回合 · 双边零和交换","desc":"记录终态：我方主怪兽区与魔法·陷阱区均为空，对手场上保留《原始生命态 尼比鲁》ATK 3000 与《灰流丽》ATK 0；T1 目标未达成，计划 B 干扰值 0.0。"}],"lp":[8000,8000],"chainsTotal":6,"p1HandUnknown":false,"emzSide":"p0","p0HandUnknown":true},{"id":"tenpai_otk","title":"场景 4 · 后攻天杯龙破相剑满场：5 次诱坑后 8000 OTK","subtitle":"相剑 4 阻抗满场 → 天杯龙 5+1 起手 → 5 次对手连锁 → 场面 4 → 0 → 8000 斩杀","side0":"先攻 · 相剑","side1":"后攻 · 天杯龙","p1Label":"后攻手牌 / 场面","note":"本场景严格按已验证的阶段级记录呈现：T1 满场、T2 起手、诱坑统计、清场与战斗斩杀均来自双核心回放；不虚构原始记录中未记录的逐卡操作。","milestones":[["相剑满场",0],["天杯龙起手",1],["诱坑拆场",3],["场面清零",4],["战斗阶段",5],["8000 OTK",6],["终局验真",7]],"steps":[{"lp":[8000,6800],"phase":"第 1 回合 · 结束阶段","m":[null,null,{"name":"相剑大师-赤霄","meta":"ATK 2800 · 幻龙族","kind":"monster"},null,null],"emz":[{"name":"鲜花女男爵","meta":"等级 10 · ATK 3000","kind":"monster"},null],"s":[{"name":"相剑暗转","meta":"盖放 · 反击陷阱","kind":"trap"},{"name":"无限泡影","meta":"盖放 · 通常陷阱","kind":"trap"},null,null,null,null],"p1":[null,null,null,null,null],"p1Hand":["天杯龙 发龙","禁忌的一滴","杯满的灿幻庄","金满而谦虚之壶","天杯龙 中龙"],"p0Hand":[],"chain":[],"gy":[],"removed":[],"note":"","chainCount":0,"stats":{"t1Units":4,"hand":5},"emzSide":"p0","title":"阶段 1 · 先攻相剑满场：赤霄 + 鲜花 + 暗转 + 泡影","desc":"第 1 回合结束，相剑做出 4 件阻抗满场：《相剑大师-赤霄》ATK 2800、《鲜花女男爵》ATK 3000、盖放《相剑暗转》与《无限泡影》；LP 8000 : 6800。"},{"lp":[8000,6800],"phase":"第 2 回合 · 抽牌阶段","m":[null,null,{"name":"相剑大师-赤霄","meta":"ATK 2800 · 幻龙族","kind":"monster"},null,null],"emz":[{"name":"鲜花女男爵","meta":"等级 10 · ATK 3000","kind":"monster"},null],"s":[{"name":"相剑暗转","meta":"盖放 · 反击陷阱","kind":"trap"},{"name":"无限泡影","meta":"盖放 · 通常陷阱","kind":"trap"},null,null,null,null],"p1":[null,null,null,null,null],"p1Hand":["天杯龙 发龙","禁忌的一滴","杯满的灿幻庄","金满而谦虚之壶","天杯龙 中龙","灰流丽"],"p0Hand":[],"chain":[],"gy":[],"removed":[],"note":"","chainCount":0,"stats":{"t1Units":4,"hand":6,"drawn":"灰流丽"},"emzSide":"p0","title":"阶段 1 · 后攻天杯龙抽牌阶段：5 张起手 + 1 张抽取","desc":"天杯龙后攻起手为《天杯龙 发龙》《禁忌的一滴》《杯满的灿幻庄》《金满而谦虚之壶》《天杯龙 中龙》，抽牌阶段再抽到《灰流丽》。"},{"lp":[8000,6800],"phase":"第 2 回合 · 主要阶段 1","m":[null,null,{"name":"相剑大师-赤霄","meta":"ATK 2800 · 幻龙族","kind":"monster"},null,null],"emz":[{"name":"鲜花女男爵","meta":"等级 10 · ATK 3000","kind":"monster"},null],"s":[{"name":"相剑暗转","meta":"盖放 · 反击陷阱","kind":"trap"},{"name":"无限泡影","meta":"盖放 · 通常陷阱","kind":"trap"},null,null,null,null],"p1":[null,null,null,null,null],"p1Hand":["天杯龙 发龙","禁忌的一滴","杯满的灿幻庄","金满而谦虚之壶","天杯龙 中龙","灰流丽"],"p0Hand":[],"chain":[],"gy":[],"removed":[],"note":"","chainCount":0,"stats":{"t1Units":4,"hand":6,"budget":96,"used":79,"valid":true,"t1Verified":true},"emzSide":"p0","title":"阶段 2 · 因果序列破局搜索启动：预算 96 / 使用 79","desc":"因果序列破局搜索开始处理相剑满场；搜索预算 96，实际使用 79 个节点，记录标记为有效且 T1 终场已复核。"},{"lp":[8000,6800],"phase":"第 2 回合 · 主要阶段 1","m":[null,null,{"name":"相剑大师-赤霄","meta":"ATK 2800 · 幻龙族","kind":"monster"},null,null],"emz":[{"name":"鲜花女男爵","meta":"等级 10 · ATK 3000","kind":"monster"},null],"s":[{"name":"相剑暗转","meta":"盖放 · 反击陷阱","kind":"trap"},{"name":"无限泡影","meta":"盖放 · 通常陷阱","kind":"trap"},null,null,null,null],"p1":[null,null,null,null,null],"p1Hand":["天杯龙 发龙","禁忌的一滴","杯满的灿幻庄","金满而谦虚之壶","天杯龙 中龙","灰流丽"],"p0Hand":[],"chain":[{"p":1,"text":"鲜花女男爵 ×2"},{"p":1,"text":"相剑大师-赤霄"},{"p":1,"text":"相剑暗转"},{"p":1,"text":"无限泡影"}],"gy":[],"removed":[],"note":"对手 5 次连锁：鲜花 ×2、赤霄、暗转、泡影；己方主动连锁 13 次。","chainCount":18,"stats":{"p0Chains":5,"p1Chains":13,"negates":0},"emzSide":"p0","title":"阶段 2 · 诱坑：对手交出 5 次连锁","desc":"破局搜索主动诱发对手交出 5 次连锁：《鲜花女男爵》×2、《相剑大师-赤霄》、《相剑暗转》、《无限泡影》。己方在同一主战阶主动连锁 13 次。"},{"lp":[8000,6800],"phase":"第 2 回合 · 主要阶段 1","m":[null,null,null,null,null],"emz":[null,null],"s":[null,null,null,null,null,null],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":1,"text":"鲜花女男爵 ×2"},{"p":1,"text":"相剑大师-赤霄"},{"p":1,"text":"相剑暗转"},{"p":1,"text":"无限泡影"}],"gy":[],"removed":[],"note":"对手场面 4 → 0，全部清空。","chainCount":18,"stats":{"p0Chains":5,"p1Chains":13,"p0EndUnits":0,"cleared":4,"negates":0},"emzSide":"p0","title":"阶段 2 · 对手有效康命中 0 次，场面 4 → 0","desc":"对手 5 次连锁全部被处理，有效康命中数为 0；相剑场上 4 个单位全部清空，后场也一并拔除。"},{"lp":[8000,6800],"phase":"第 2 回合 · 战斗阶段","m":[null,null,null,null,null],"emz":[null,{"name":"三叉戟龙","meta":"ATK 6000 · 龙族","kind":"synchro"}],"s":[null,null,null,null,null,null],"p1":[null,null,{"name":"灿幻升龙 双叉戟龙军王","meta":"ATK 2600 · 龙族","kind":"synchro"},null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":1,"text":"鲜花女男爵 ×2"},{"p":1,"text":"相剑大师-赤霄"},{"p":1,"text":"相剑暗转"},{"p":1,"text":"无限泡影"}],"gy":[],"removed":[],"note":"对手场面 4 → 0，全部清空。","chainCount":18,"stats":{"p0EndUnits":0,"cleared":4,"negates":0,"bp":true,"fullBreak":true},"emzSide":"p1","title":"阶段 3 · 战斗阶段：双叉戟龙军王 + 三叉戟龙","desc":"进入战斗阶段，场上终局为《灿幻升龙 双叉戟龙军王》ATK 2600 与《三叉戟龙》ATK 6000。"},{"lp":[-1000,6800],"phase":"第 2 回合 · 战斗阶段","m":[null,null,null,null,null],"emz":[null,{"name":"三叉戟龙","meta":"ATK 6000 · 龙族","kind":"synchro"}],"s":[null,null,null,null,null,null],"p1":[null,null,{"name":"灿幻升龙 双叉戟龙军王","meta":"ATK 2600 · 龙族","kind":"synchro"},null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":1,"text":"鲜花女男爵 ×2"},{"p":1,"text":"相剑大师-赤霄"},{"p":1,"text":"相剑暗转"},{"p":1,"text":"无限泡影"}],"gy":[],"removed":[],"note":"对手场面 4 → 0，全部清空。","chainCount":18,"stats":{"cleared":4,"negates":0,"bp":true,"fullBreak":true,"damage":8000,"otk":true},"emzSide":"p1","title":"阶段 3 · 8000 斩杀：LP -1000 : 6800","desc":"两只龙打足 8000 伤害，LP 变为 -1000 : 6800；OTK 标记与全场突破标记同时为真。"},{"lp":[-1000,6800],"phase":"第 2 回合 · 战斗阶段结束","m":[null,null,null,null,null],"emz":[null,{"name":"三叉戟龙","meta":"ATK 6000 · 龙族","kind":"synchro"}],"s":[null,null,null,null,null,null],"p1":[null,null,{"name":"灿幻升龙 双叉戟龙军王","meta":"ATK 2600 · 龙族","kind":"synchro"},null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":1,"text":"终局核验 · 0 次重试"}],"gy":[],"removed":[],"note":"对手场面 4 → 0，全部清空。","chainCount":18,"stats":{"bp":true,"fullBreak":true,"damage":8000,"otk":true,"responses":239,"retries":0,"winner":1},"emzSide":"p1","title":"终局核验：239 次决策响应，0 重试","desc":"整段后攻由 239 次决策响应组成，0 次重试通过双核心逐格验真；胜者记录为后攻天杯龙。"}],"lp":[-1000,6800],"chainsTotal":18,"p1HandUnknown":false,"emzSide":"p0","p0HandUnknown":true}];
 
     let activeScenarioIdx = 0;
     let activeStepIdx = 0;
     let timer = null;
-    let speedMult = 1.0;
+    const SPEEDS = [1, 2, 4];
+    let speedIdx = 0;
+    const BASE_MS = 2100;
 
     const tabsEl = document.getElementById("scenarioTabs");
     const sliderEl = document.getElementById("stepSlider");
     const playBtn = document.getElementById("playBtn");
     const speedBtn = document.getElementById("speedBtn");
+    const logEl = document.getElementById("stepLog");
+    const mileEl = document.getElementById("milestones");
 
-    function renderSlot(tag, card, cls = "") {
+    const esc = (s) => String(s == null ? "" : s)
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+
+    function slot(tag, card, cls) {
+      cls = cls || "";
       if (!card) {
-        return `<div class="slot ${cls}"><span class="slot-tag">${tag}</span><span class="slot-name" style="opacity:.35">Empty</span></div>`;
+        return `<div class="slot empty ${cls}"><span class="slot-tag">${esc(tag)}</span><span class="slot-name">空</span></div>`;
       }
-      return `<div class="slot filled ${cls}"><span class="slot-tag">${tag}</span><span class="slot-name">${card.name}</span><span class="slot-meta">${card.meta || ""}</span></div>`;
+      const kind = card.kind ? ` ${card.kind}` : "";
+      const title = card.name + (card.meta ? " · " + card.meta : "");
+      return `<div class="slot filled${kind} ${cls}" title="${esc(title)}"><span class="slot-tag">${esc(tag)}</span><span class="slot-name">${esc(card.name)}</span><span class="slot-meta">${esc(card.meta || "")}</span></div>`;
+    }
+
+    function isTrapName(name) {
+      return /尼比鲁|灰流丽|泡影|暗转|陨石/.test(name || "");
+    }
+
+    function handStrip(el, cards, emptyText) {
+      if (!cards || !cards.length) {
+        el.innerHTML = `<span class="hand-empty">${esc(emptyText)}</span>`;
+        return;
+      }
+      el.innerHTML = cards.map((c) => {
+        const name = typeof c === "string" ? c : c.name;
+        return `<span class="hand-chip${isTrapName(name) ? " trap" : ""}">${esc(name)}</span>`;
+      }).join("");
+    }
+
+    function countCards(arr) { return (arr || []).filter(Boolean).length; }
+    function emzSideOf(step, sc) { return (step && step.emzSide) || (sc && sc.emzSide) || "p0"; }
+    function countP0(step, sc) { return countCards(step.m) + (emzSideOf(step, sc) === "p0" ? countCards(step.emz) : 0); }
+    function countP1(step, sc) { return countCards(step.p1) + (emzSideOf(step, sc) === "p1" ? countCards(step.emz) : 0); }
+
+    function milestoneActive(sc) {
+      let last = 0;
+      (sc.milestones || []).forEach((m) => { if (activeStepIdx >= m[1]) last = m[1]; });
+      return last;
+    }
+
+    function updateMilestones() {
+      const sc = SCENARIOS[activeScenarioIdx];
+      const last = milestoneActive(sc);
+      mileEl.querySelectorAll(".mile-btn").forEach((b) => {
+        b.classList.toggle("active", Number(b.dataset.idx) === last);
+      });
+    }
+
+    function updateLogActive() {
+      const items = logEl.querySelectorAll(".log-item");
+      items.forEach((el) => el.classList.toggle("active", Number(el.dataset.idx) === activeStepIdx));
+      const active = logEl.querySelector(`.log-item[data-idx="${activeStepIdx}"]`);
+      if (active) {
+        const target = active.offsetTop - logEl.clientHeight / 2 + active.offsetHeight / 2;
+        logEl.scrollTop = Math.max(0, target);
+      }
+    }
+
+    const STAT_LABELS = {
+      responses: "决策响应", retries: "重试", budget: "搜索预算", used: "实际节点",
+      negates: "有效康命中", p0Chains: "对手连锁", p1Chains: "己方连锁",
+      cleared: "清空单位", damage: "伤害", t1Units: "先攻场面", p0EndUnits: "对手终场",
+      legal: "合法手坑窗口", fired: "已发手坑", holds: "捏坑", holdBefore: "前置捏坑",
+      planB: "计划 B 干扰", turn: "记录回合", hand: "起手张数", drawn: "抽牌"
+    };
+    const BOOL_LABELS = {
+      otk: ["OTK", "达成", "未达成"], fullBreak: ["全场突破", "是", "否"],
+      zeroCollapse: ["零场面崩塌", "是", "否"], bp: ["战斗阶段", "已进入", "未进入"],
+      t1Goal: ["T1 达成", "是", "否"],
+      valid: ["记录有效性", "通过", "未通过"], t1Verified: ["T1 终复核", "通过", "未通过"]
+    };
+
+    function renderStats(step, sc) {
+      const chips = [];
+      chips.push(`<span class="stat-chip">累计连锁 <b>${step.chainCount || 0}</b>${sc.chainsTotal ? ` / ${sc.chainsTotal}` : ""}</span>`);
+      chips.push(`<span class="stat-chip">对手怪兽 <b>${countP1(step, sc)}</b></span>`);
+      chips.push(`<span class="stat-chip">我方怪兽 <b>${countP0(step, sc)}</b></span>`);
+      const s = step.stats || {};
+      Object.keys(STAT_LABELS).forEach((k) => {
+        if (s[k] === undefined || s[k] === null) return;
+        let v = s[k];
+        if (k === "planB" && typeof v === "number") v = v.toFixed(1);
+        chips.push(`<span class="stat-chip">${STAT_LABELS[k]} <b>${esc(v)}</b></span>`);
+      });
+      Object.keys(BOOL_LABELS).forEach((k) => {
+        if (s[k] === undefined) return;
+        const lab = BOOL_LABELS[k];
+        chips.push(`<span class="stat-chip">${lab[0]} <b>${s[k] ? lab[1] : lab[2]}</b></span>`);
+      });
+      document.getElementById("boardStats").innerHTML = chips.join("");
     }
 
     function render() {
       const sc = SCENARIOS[activeScenarioIdx];
-      const st = sc.steps[activeStepIdx];
+      const step = sc.steps[activeStepIdx];
+      const total = sc.steps.length;
 
       document.querySelectorAll(".tab-btn").forEach((b, i) => b.classList.toggle("active", i === activeScenarioIdx));
-      document.getElementById("lp0").textContent = st.lp[0];
-      document.getElementById("lp1").textContent = st.lp[1];
-      document.getElementById("phasePill").textContent = st.phase;
-      document.getElementById("stepTitle").textContent = st.title;
-      document.getElementById("stepDesc").textContent = st.desc;
+      document.getElementById("scTitle").textContent = sc.title;
+      document.getElementById("scSubtitle").textContent = sc.subtitle;
+      const noteEl = document.getElementById("scNote");
+      if (sc.note) { noteEl.textContent = sc.note; noteEl.classList.add("show"); }
+      else { noteEl.textContent = ""; noteEl.classList.remove("show"); }
 
-      const p1Slots = Array.from({ length: 5 }, (_, i) => renderSlot(`OPP ${i}`, st.p1[i] || null, "opp"));
-      document.getElementById("p1Board").innerHTML = p1Slots.join("");
-      document.getElementById("emz0").innerHTML = renderSlot("EMZ L", st.emz[0] || null);
-      document.getElementById("emz1").innerHTML = renderSlot("EMZ R", st.emz[1] || null);
+      document.getElementById("stepBadge").textContent = `第 ${activeStepIdx + 1} / ${total} 步`;
+      document.getElementById("lpLabel0").textContent = sc.side0;
+      document.getElementById("lpLabel1").textContent = sc.side1;
+      document.getElementById("lp0").textContent = step.lp[0];
+      document.getElementById("lp1").textContent = step.lp[1];
+      document.getElementById("phasePill").textContent = step.phase;
+      document.getElementById("p0Name").textContent = sc.side0;
+      const emzSideName = emzSideOf(step, sc) === "p1" ? "对手" : "我方";
+      document.getElementById("emzLabel0").textContent = `${emzSideName}额外区 左（M5）`;
+      document.getElementById("emzLabel1").textContent = `${emzSideName}额外区 右（M6）`;
+      document.getElementById("p1Name").textContent = sc.side1;
+      document.getElementById("p1HandLabel").textContent = sc.p1Label || "手牌 / 场面";
+      document.getElementById("p0HandLabel").textContent = "手牌";
 
-      const mSlots = Array.from({ length: 5 }, (_, i) => renderSlot(`M${i}`, st.m0[i] || null));
-      document.getElementById("p0MZone").innerHTML = mSlots.join("");
+      document.getElementById("stepTitle").textContent = step.title;
+      document.getElementById("stepDesc").textContent = step.desc;
+      const flagEl = document.getElementById("stepFlag");
+      if (step.note) { flagEl.textContent = "关键判定 · " + step.note; flagEl.style.display = "inline-block"; }
+      else { flagEl.textContent = ""; flagEl.style.display = "none"; }
 
-      const sTags = ["S0", "S1", "S2", "S3", "Field"];
-      const sSlots = Array.from({ length: 5 }, (_, i) => renderSlot(sTags[i], st.s0[i] || null, "spell"));
-      document.getElementById("p0SZone").innerHTML = sSlots.join("");
+      handStrip(document.getElementById("p1Hand"), step.p1Hand || [], sc.p1HandUnknown ? "对手手牌未公开" : "手牌未记录");
+      handStrip(document.getElementById("p0Hand"), step.p0Hand || [], "手牌未公开");
 
-      document.getElementById("chainBox").innerHTML = st.chain.length
-        ? st.chain.map((c) => `<span class="chain-chip ${c.p === 1 ? "p1" : ""}">${c.text}</span>`).join("")
-        : "<span style='color:var(--muted)'>Chain empty</span>";
-      document.getElementById("gyBox").textContent = "GY: " + (st.gy.length ? st.gy.join(", ") : "-");
+      document.getElementById("p1Board").innerHTML = Array.from({ length: 5 }, (_, i) =>
+        slot(`对手 M${i}`, (step.p1 || [])[i] || null, "opp")).join("");
+      document.getElementById("emz0").innerHTML = slot("额外左 M5", (step.emz || [])[0] || null);
+      document.getElementById("emz1").innerHTML = slot("额外右 M6", (step.emz || [])[1] || null);
+      document.getElementById("p0MZone").innerHTML = Array.from({ length: 5 }, (_, i) =>
+        slot(`M${i}`, (step.m || [])[i] || null)).join("");
+      const sTags = ["S0", "S1", "S2", "S3", "S4", "场地"];
+      document.getElementById("p0SZone").innerHTML = Array.from({ length: 6 }, (_, i) =>
+        slot(sTags[i], (step.s || [])[i] || null)).join("");
 
-      sliderEl.max = sc.steps.length - 1;
+      document.getElementById("chainBox").innerHTML = (step.chain && step.chain.length)
+        ? step.chain.map((c) => `<span class="chain-chip ${c.p === 1 ? "p1" : ""}">${esc(c.text)}</span>`).join("")
+        : `<span class="muted">本步无新增连锁</span>`;
+      document.getElementById("chainCount").textContent = `累计连锁 ${step.chainCount || 0}${sc.chainsTotal ? " / " + sc.chainsTotal : ""}`;
+
+      const gy = step.gy || [];
+      document.getElementById("gyBox").innerHTML = gy.length
+        ? gy.map((n) => `<span class="grave-chip">${esc(n)}</span>`).join("")
+        : `<span class="hand-empty">暂无记录</span>`;
+
+      renderStats(step, sc);
+
+      sliderEl.max = total - 1;
       sliderEl.value = activeStepIdx;
+      updateMilestones();
+      updateLogActive();
+    }
 
-      document.getElementById("stepLog").innerHTML = sc.steps.map((s, idx) => {
-        const isTrap = s.chain.some((c) => c.p === 1);
-        return `<div class="log-item ${idx === activeStepIdx ? "active" : ""} ${isTrap ? "trap" : ""}" data-idx="${idx}">[${idx + 1}/${sc.steps.length}] ${s.title}</div>`;
+    function buildLog() {
+      const sc = SCENARIOS[activeScenarioIdx];
+      logEl.innerHTML = sc.steps.map((s, i) => {
+        const trap = (s.chain || []).some((c) => c.p === 1);
+        const note = s.note ? ` title="${esc(s.note)}"` : "";
+        return `<div class="log-item${trap ? " trap" : ""}" data-idx="${i}"${note}><span class="log-no">[${i + 1}/${sc.steps.length}]</span>${esc(s.title)}</div>`;
       }).join("");
-      document.querySelectorAll(".log-item").forEach((el) => {
-        el.onclick = () => { stopPlay(); activeStepIdx = Number(el.dataset.idx); render(); };
+      logEl.querySelectorAll(".log-item").forEach((el) => {
+        el.onclick = () => { stopPlay(); go(Number(el.dataset.idx)); };
+      });
+      logEl.scrollTop = 0;
+    }
+
+    function buildMilestones() {
+      const sc = SCENARIOS[activeScenarioIdx];
+      mileEl.innerHTML = (sc.milestones || []).map((m) =>
+        `<button class="mile-btn" data-idx="${m[1]}">${esc(m[0])}</button>`).join("");
+      mileEl.querySelectorAll(".mile-btn").forEach((b) => {
+        b.onclick = () => { stopPlay(); go(Number(b.dataset.idx)); };
       });
     }
 
     function stopPlay() {
       if (timer) { clearInterval(timer); timer = null; }
-      playBtn.textContent = "Play";
+      playBtn.textContent = "播放";
     }
 
     function startPlay() {
       stopPlay();
-      playBtn.textContent = "Pause";
+      if (activeStepIdx >= SCENARIOS[activeScenarioIdx].steps.length - 1) activeStepIdx = 0;
+      playBtn.textContent = "暂停";
       timer = setInterval(() => {
         const len = SCENARIOS[activeScenarioIdx].steps.length;
-        activeStepIdx = (activeStepIdx + 1) % len;
-        render();
-      }, Math.round(1900 / speedMult));
+        if (activeStepIdx >= len - 1) { stopPlay(); return; }
+        go(activeStepIdx + 1);
+      }, Math.round(BASE_MS / SPEEDS[speedIdx]));
+    }
+
+    function go(idx) {
+      const sc = SCENARIOS[activeScenarioIdx];
+      activeStepIdx = Math.max(0, Math.min(sc.steps.length - 1, idx));
+      render();
     }
 
     SCENARIOS.forEach((sc, idx) => {
       const btn = document.createElement("button");
       btn.className = "tab-btn";
-      btn.innerHTML = `${sc.title}<small>${sc.subtitle}</small>`;
-      btn.onclick = () => { stopPlay(); activeScenarioIdx = idx; activeStepIdx = 0; render(); };
+      btn.innerHTML = `${esc(sc.title)}<small>${esc(sc.subtitle)}</small>`;
+      btn.onclick = () => {
+        stopPlay();
+        activeScenarioIdx = idx;
+        activeStepIdx = 0;
+        buildMilestones();
+        buildLog();
+        render();
+      };
       tabsEl.appendChild(btn);
     });
 
-    document.getElementById("prevBtn").onclick = () => {
-      stopPlay();
-      activeStepIdx = Math.max(0, activeStepIdx - 1);
-      render();
-    };
-    document.getElementById("nextBtn").onclick = () => {
-      stopPlay();
-      const len = SCENARIOS[activeScenarioIdx].steps.length;
-      activeStepIdx = Math.min(len - 1, activeStepIdx + 1);
-      render();
-    };
+    document.getElementById("prevBtn").onclick = () => { stopPlay(); go(activeStepIdx - 1); };
+    document.getElementById("nextBtn").onclick = () => { stopPlay(); go(activeStepIdx + 1); };
     playBtn.onclick = () => (timer ? stopPlay() : startPlay());
     speedBtn.onclick = () => {
-      speedMult = speedMult === 1.0 ? 1.5 : speedMult === 1.5 ? 2.0 : 1.0;
-      speedBtn.textContent = `${speedMult.toFixed(1)}×`;
+      speedIdx = (speedIdx + 1) % SPEEDS.length;
+      speedBtn.textContent = `${SPEEDS[speedIdx].toFixed(1)}×`;
       if (timer) startPlay();
     };
-    sliderEl.oninput = (e) => { stopPlay(); activeStepIdx = Number(e.target.value); render(); };
+    sliderEl.oninput = (e) => { stopPlay(); go(Number(e.target.value)); };
+    document.addEventListener("keydown", (e) => {
+      if (e.target && /INPUT|TEXTAREA|BUTTON/.test(e.target.tagName)) return;
+      if (e.key === "ArrowLeft") { stopPlay(); go(activeStepIdx - 1); }
+      if (e.key === "ArrowRight") { stopPlay(); go(activeStepIdx + 1); }
+      if (e.code === "Space") { e.preventDefault(); playBtn.click(); }
+    });
 
+    buildMilestones();
+    buildLog();
     render();
   </script>
 </body>

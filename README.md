@@ -1,14 +1,30 @@
-# OCG-Zero Showcase
+# OCG-Zero 展示页
 
-Interactive replay explorer and high-level benchmark results for verified Yu-Gi-Oh! Turn-1 combo synthesis, pre-5th-summon anti-Nibiru lines, and emergent handtrap timing.
+面向公开访问的 OCG 真实回放浏览器，展示原装 40 卡卡表上的先攻展开、5 步前防陨、双边手坑捏坑反打，以及后攻天杯龙的 8000 OTK。
 
-Live interactive viewer: https://0xtoward.github.io/ocg-zero-showcase/
+在线体验：https://0xtoward.github.io/ocg-zero-showcase/
 
-## Highlights
+## 页面内容
 
-- **12 / 12 Real-OCG Golden Tasks Solved**: Verified on unmodified 40-card OCG lists across Swordsoul Tenyi, Branded, Ritual Beast, and Plant Link Rikka.
-- **8.0x Search Efficiency Speedup**: Outperforms pure symbolic planning baselines under tight node budgets while maintaining 0% illegal moves.
-- **47.1% Emergent Handtrap Holding**: Adversarial interdiction learns to pass early baits and fire on fatal chokepoints without card-specific handtrap rules.
-- **Dual-Engine Replay Certification**: Every displayed sequence comes from deterministic engine replays checked with zero rule retries (`MSG_RETRY == 0`).
+- **场景 1 · Tier 4 植物均**：完整 88 步真实轨迹、24 次连锁，终场为回生的孟加拉枪兵、六花圣 泪滴花束雪花莲、兽带斗神“王者”轩辕十四、六花来来与墓地六花之白姬。
+- **场景 2 · Tier 1 相剑天威**：第 5 次召唤前做出鲜花女男爵；第 19 / 28 步对手以原始生命态 尼比鲁 CL1 触发，第 20 / 28 步鲜花女男爵 CL2 无效并破坏。
+- **场景 3 · 双边对抗 2 手坑**：6 条真实连锁事件，对手在 3 次合法窗口中前置捏坑 1 次，随后原始生命态 尼比鲁清场、灰流丽 CL2 康掉圣蔓的播种，最终第 3 回合我方空场。
+- **场景 4 · 后攻天杯龙**：相剑 4 阻抗满场对上天杯龙 5+1 起手；因果序列破局搜索诱发对手 5 次连锁、己方主动连锁 13 次、对手有效康命中 0 次，场面 4 → 0 后完成 8000 斩杀。
 
-*(Note: This public repository hosts only the static showcase frontend and sanitized replay summaries. Core engines and training pipelines are kept private.)*
+## 核心结果
+
+- **12 / 12**：原装 40 卡 OCG Golden 目标全部打通，4 大梯度卡组零魔改。
+- **3.25×**：同预算下深度残差先验达到 48.2%，搜索收益斜率是扩宽网络的 3.25 倍。
+- **47.1%**：双边博弈手坑捏坑率，从 0% 无脑乱交演化到主动捏坑，压低 T1 达成率 -49%。
+- **38.75%**：天杯龙后攻 8000 OTK；凭因果序列破局搜索对 4 梯队满场达 63.75% 全破阵，全检验 0 Retries。
+
+## 浏览方式
+
+1. 在上方场景标签中选择要看的对局。
+2. 使用“上一步 / 播放 / 下一步”和进度滑杆逐格推进，或切换 1.0× / 2.0× / 4.0× 速度。
+3. 点击“起手展开”“外挂轩辕十四”“连锁高峰”“最终终场”等里程碑标签快速跳转。
+4. 右侧动作日志会随步骤滚动；点击任意一行可立即跳到该步。
+
+## 数据与边界
+
+所有展示步骤均来自双核心逐格验真后的回放记录；没有记录的中间操作不会被补写。公开仓库只包含静态展示前端与脱敏后的回放摘要，核心引擎与训练管线保持私有。
