@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OCG-Zero · PSRO 博弈演化与手坑对局</title>
+  <link rel="stylesheet" href="assets/style.css" />
+</head>
+<body>
+  <nav class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="index.html"><span class="brand-dot"></span><span>OCG-Zero</span></a>
+      <div class="nav-links">
+        <a class="nav-link" href="index.html">对局回放</a>
+        <a class="nav-link" href="puct.html">PUCT 实时选招</a>
+        <a class="nav-link active" href="psro.html">PSRO 博弈演化</a>
+      </div>
+    </div>
+  </nav>
+  <main class="container">
+    <div class="page-head">
+      <h1>PSRO 双边对抗演化与可见轨迹</h1>
+      <p>Policy-Space Response Oracles：先攻展开方与后攻手坑方通过策略池对打，不断加入“针对对手均衡混合的最佳应对”，逼近零可利用度的 GTO 纳什均衡。</p>
+    </div>
+
+    <section class="three-col" style="margin-bottom:22px;">
+      <div class="panel">
+        <h3 style="font-size:13.5px;color:var(--accent);margin-bottom:5px;">① 初始策略并非纯随机</h3>
+        <p style="font-size:12px;color:var(--muted);">手坑起点 HT₀ 为强启发规则（见合法窗即按陷阱康→高星康优先交出）；先攻起点 P0₀ 为离线无坑两层 MLP，不触发线上重规划。</p>
+      </div>
+      <div class="panel">
+        <h3 style="font-size:13.5px;color:var(--gold);margin-bottom:5px;">② 手坑不可见性与 GTO 性质</h3>
+        <p style="font-size:12px;color:var(--muted);">先攻全程看不见对手隐藏手坑，仅读公开桌面与已亮出连锁重规划。PSRO 求出的均衡混合满足即使公开策略池分布也无法被针对剥削（NashConv → 0）。</p>
+      </div>
+      <div class="panel">
+        <h3 style="font-size:13.5px;color:var(--rose);margin-bottom:5px;">③ 实测收敛：从混合到纯鞍点</h3>
+        <p style="font-size:12px;color:var(--muted);">本组 4×4 矩阵最终收敛到纯策略鞍点 P0₃ × HT₂（Kuhn/LP 精确解，KKT 误差 0）；评估期单手坑策略为确定性 argmax，未来可再接随机混合采样反读心。</p>
+      </div>
+    </section>
+
+    <div class="two-col">
+      <section class="panel">
+        <h2 style="font-size:1.05rem;margin-bottom:4px;">4 × 4 留出对局收益矩阵 (U<sub>P0</sub>)</h2>
+        <p style="font-size:12px;color:var(--muted);margin-bottom:12px;">每格基于 200 局盲手牌实测（U<sub>P1</sub> = 1 − U<sub>P0</sub>）；金框标出纳什均衡鞍点 P0₃ × HT₂。</p>
+        <div style="overflow-x:auto;">
+          <table class="matrix-table" id="payoffMatrix"></table>
+        </div>
+        <div id="cellInspector" style="margin-top:12px;padding:10px 12px;background:#0b0f17;border:1px solid var(--border);border-radius:9px;font-size:12px;color:var(--muted);"></div>
+      </section>
+
+      <section class="panel">
+        <h2 style="font-size:1.05rem;margin-bottom:4px;">手坑各代时点演化统计 (N=800/代)</h2>
+        <p style="font-size:12px;color:var(--muted);margin-bottom:12px;">每轮针对先攻最优混合重训后，手坑学会忍过前置诱饵、显著压低先攻达成率。</p>
+        <table class="data-table" style="margin-bottom:14px;">
+          <thead><tr><th>手坑版本</th><th>对手 U<sub>P1</sub></th><th>被打破 T1 率</th><th>主动捏坑率</th><th>平均出手步</th></tr></thead>
+          <tbody id="htStatRows"></tbody>
+        </table>
+        <h3 style="font-size:12.5px;color:var(--muted);margin-bottom:6px;">轮次均衡可利用度 (NashConv) 收敛</h3>
+        <table class="data-table">
+          <thead><tr><th>轮次</th><th>均衡值 v*</th><th>NashConv</th><th>当前均衡</th></tr></thead>
+          <tbody id="roundRows"></tbody>
+        </table>
+      </section>
+    </div>
+
+    <div class="section-head">
+      <h2>真实可见对抗轨迹对比</h2>
+      <span>全部源自双向校验回放，按官方 YGOCDB 中文卡名还原逐条连锁</span>
+    </div>
+    <section class="two-col" id="psroReplayGrid"></section>
+
+    <footer>
+      <span>OCG-Zero · PSRO 多智能体博弈演化</span>
+      <span>卡名核对来源：YGOCDB 中文卡表</span>
+    </footer>
+  </main>
+
+  <script>
+    const PSRO = {"p0Labels":["P0₀ 离线无坑","P0₁ 初代在线重规划","P0₂ 博弈最佳应对1","P0₃ 博弈最佳应对2"],"htLabels":["HT₀ 见窗就交","HT₁ 捏坑策略1","HT₂ 捏坑策略2","HT₃ 捏坑策略3"],"matrix":[[0.2751,0.2731,0.2708,0.27],[0.3166,0.2987,0.2966,0.301],[0.3509,0.3308,0.3042,0.3119],[0.3591,0.3359,0.3082,0.3195]],"htStats":[{"name":"HT₀ 见窗就交","u1":0.6746,"t1Goal":"7.62%","holdPre":"0.00%","fireStep":"3.89","whiff":"6.50%"},{"name":"HT₁ 捏坑 R1","u1":0.6903,"t1Goal":"5.88%","holdPre":"48.12%","fireStep":"5.55","whiff":"9.50%"},{"name":"HT₂ 捏坑 R2 (均衡)","u1":0.7051,"t1Goal":"3.88%","holdPre":"47.12%","fireStep":"5.72","whiff":"11.38%"},{"name":"HT₃ 捏坑 R3","u1":0.6994,"t1Goal":"4.38%","holdPre":"45.00%","fireStep":"5.53","whiff":"9.62%"}],"rounds":[{"round":"Round 1 (2×2)","val":"0.2988","nashConv":"0.0394","eq":"P0₁ × HT₁"},{"round":"Round 2 (3×3)","val":"0.3042","nashConv":"0.0041","eq":"P0₂ × HT₂"},{"round":"Round 3 (4×3)","val":"0.3082","nashConv":"0.0000","eq":"P0₃ × HT₂"},{"round":"Round 4 (4×4)","val":"0.3082","nashConv":"0.0000","eq":"P0₃ × HT₂"}],"replays":[{"id":"easy_swordsoul_tenyi_ocg_ht0_P0_0_HT_0_s2951_6","badge":"相剑基线崩盘 · P0₀ × HT₀","summary":"离线无坑规划在《相剑师-莫邪》吃到第 1 张《无限泡影》后直接失去规划弹性，随后空开《龙相剑现》即空场结束。","p0":"offline_goldfish","ht":"naive_first_fire","htLabel":"无限泡影","fired":1,"holdsPre":0,"legalPrompts":1,"goal":false,"t2Hold":false,"u0":0,"chains":[{"link":1,"name":"白之圣女 艾克莉西娅","ctrl":0,"kind":"monster"},{"link":1,"name":"相剑师-莫邪","ctrl":0,"kind":"monster"},{"link":2,"name":"无限泡影","ctrl":1,"kind":"trap"},{"link":1,"name":"龙相剑现","ctrl":0,"kind":"spell"}],"p0EndM":[],"p0EndS":[],"p1EndM":[{"name":"灰流丽","atk":0,"kind":"monster"}]},{"id":"easy_swordsoul_tenyi_ocg_p0br_P0_2_HT_2_s2961_5","badge":"相剑硬吃双坑翻盘 · P0₂ × HT₂","summary":"对手先手对《龙相剑现》交《灰流丽》、再拍《无限泡影》，但进化后的 P0₂ 在线重规划立即切入《虚空之龙轮》→《天威龙-真知蟠龙》→《大灵峰相剑门》，11 步连锁逆转做出《赤霄 + 鲜花女男爵 + 天威之拳僧×2》。","p0":"online_replan","ht":"neural_ht","htLabel":"灰流丽 + 无限泡影","fired":2,"holdsPre":0,"legalPrompts":2,"goal":true,"t2Hold":true,"u0":1,"chains":[{"link":1,"name":"龙相剑现","ctrl":0,"kind":"spell"},{"link":2,"name":"灰流丽","ctrl":1,"kind":"monster"},{"link":1,"name":"无限泡影","ctrl":1,"kind":"trap"},{"link":1,"name":"虚空之龙轮","ctrl":0,"kind":"spell"},{"link":1,"name":"天威龙-真知蟠龙","ctrl":0,"kind":"monster"},{"link":1,"name":"大灵峰相剑门","ctrl":0,"kind":"spell"},{"link":1,"name":"相剑师-莫邪","ctrl":0,"kind":"monster"},{"link":1,"name":"相剑大师-赤霄","ctrl":0,"kind":"synchro"},{"link":2,"name":"相剑师-莫邪","ctrl":0,"kind":"monster"},{"link":1,"name":"相剑军师-龙渊","ctrl":0,"kind":"monster"},{"link":1,"name":"相剑军师-龙渊","ctrl":0,"kind":"monster"}],"p0EndM":[{"name":"相剑大师-赤霄","atk":2800,"kind":"synchro"},{"name":"鲜花女男爵","atk":3000,"kind":"synchro"},{"name":"天威之拳僧","atk":1000,"kind":"link"},{"name":"天威之拳僧","atk":1000,"kind":"link"}],"p0EndS":[],"p1EndM":[]},{"id":"boss_plant_link_rikka_ocg_holdfire_P0_2_HT_2_s2963_2","badge":"植物均遭捏坑双杀 · P0₂ × HT₂","summary":"对手没有见窗交坑：先主动捏坑跳过《蕾祸之矢筈天牛》诱饵，等《蕾祸之武者髑髅》着地时直接下《原始生命态 尼比鲁》清场，再留《灰流丽》CL2 精确康掉恢复点《圣蔓的播种》，令 P0 零场结束。","p0":"online_replan","ht":"neural_ht","htLabel":"灰流丽 + 原始生命态 尼比鲁","fired":2,"holdsPre":1,"legalPrompts":3,"goal":false,"t2Hold":false,"u0":0,"chains":[{"link":1,"name":"蕾祸之毬首","ctrl":0,"kind":"monster"},{"link":1,"name":"蕾祸之矢筈天牛","ctrl":0,"kind":"monster"},{"link":1,"name":"蕾祸之武者髑髅","ctrl":0,"kind":"link"},{"link":1,"name":"原始生命态 尼比鲁","ctrl":1,"kind":"monster"},{"link":1,"name":"圣蔓的播种","ctrl":0,"kind":"spell"},{"link":2,"name":"灰流丽","ctrl":1,"kind":"monster"}],"p0EndM":[],"p0EndS":[],"p1EndM":[{"name":"原始生命态 尼比鲁","atk":3000,"kind":"monster"},{"name":"灰流丽","atk":0,"kind":"monster"}]},{"id":"boss_plant_link_rikka_ocg_p0br_P0_3_HT_1_s2982_5","badge":"植物均顶坑重建 · P0₃ × HT₁","summary":"对手先后捏坑 2 次后在关键点全交《灰流丽》与《无限泡影》，P0₃ 吃满双坑后立刻绕行《六花来来 + 蕾祸 + 圣天树之灰树精》重连 9 步保底达成目标。","p0":"online_replan","ht":"neural_ht","htLabel":"灰流丽 + 无限泡影","fired":2,"holdsPre":2,"legalPrompts":4,"goal":true,"t2Hold":true,"u0":1,"chains":[{"link":1,"name":"蕾祸之毬首","ctrl":0,"kind":"monster"},{"link":2,"name":"灰流丽","ctrl":1,"kind":"monster"},{"link":1,"name":"六花精 叶牡丹","ctrl":0,"kind":"monster"},{"link":2,"name":"无限泡影","ctrl":1,"kind":"trap"},{"link":1,"name":"六花精 叶牡丹","ctrl":0,"kind":"monster"},{"link":1,"name":"六花来来","ctrl":0,"kind":"field"},{"link":1,"name":"蕾祸之矢筈天牛","ctrl":0,"kind":"monster"},{"link":1,"name":"蕾祸之武者髑髅","ctrl":0,"kind":"link"},{"link":1,"name":"圣天树之灰树精","ctrl":0,"kind":"link"}],"p0EndM":[],"p0EndS":[{"name":"六花来来","kind":"field"}],"p1EndM":[{"name":"月华龙 黑蔷薇","atk":2400,"kind":"synchro"}]}]};
+    const esc = (s) => String(s == null ? "" : s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+
+    function renderMatrix() {
+      let html = `<thead><tr><th></th>${PSRO.htLabels.map((h) => `<th>${esc(h)}</th>`).join("")}</tr></thead><tbody>`;
+      PSRO.matrix.forEach((row, r) => {
+        html += `<tr><th class="row-h">${esc(PSRO.p0Labels[r])}</th>`;
+        row.forEach((val, c) => {
+          const isEq = (r === 3 && c === 2);
+          const norm = Math.max(0, Math.min(1, (val - 0.26) / 0.11));
+          const bg = `rgba(56, 189, 248, ${(0.08 + norm * 0.24).toFixed(2)})`;
+          html += `<td><div class="m-cell${isEq ? " eq" : ""}" style="background:${bg};" onclick="inspectCell(${r},${c})">${val.toFixed(4)}<small>U₁=${(1-val).toFixed(4)}${isEq ? " · 均衡" : ""}</small></div></td>`;
+        });
+        html += `</tr>`;
+      });
+      html += `</tbody>`;
+      document.getElementById("payoffMatrix").innerHTML = html;
+      inspectCell(3, 2);
+    }
+
+    window.inspectCell = function(r, c) {
+      const v = PSRO.matrix[r][c];
+      const tag = (r === 3 && c === 2) ? "（全局 4×4 纳什均衡鞍点 · KKT 误差 0）" : "";
+      document.getElementById("cellInspector").innerHTML = `选中对抗组合：<b>${esc(PSRO.p0Labels[r])}</b> vs <b>${esc(PSRO.htLabels[c])}</b> → 先攻收益 <b>${v.toFixed(4)}</b> / 后攻收益 <b>${(1-v).toFixed(4)}</b> ${tag}`;
+    };
+
+    document.getElementById("htStatRows").innerHTML = PSRO.htStats.map((x, i) => `
+      <tr class="${i === 2 ? "picked" : ""}"><td>${esc(x.name)}</td><td>${x.u1.toFixed(4)}</td><td>${x.t1Goal}</td><td>${x.holdPre}</td><td>${x.fireStep}</td></tr>
+    `).join("");
+
+    document.getElementById("roundRows").innerHTML = PSRO.rounds.map((r) => `
+      <tr><td>${esc(r.round)}</td><td>${r.val}</td><td>${r.nashConv}</td><td>${esc(r.eq)}</td></tr>
+    `).join("");
+
+    document.getElementById("psroReplayGrid").innerHTML = PSRO.replays.map((rp) => {
+      const chainHtml = rp.chains.map((ev, i) =>
+        `${i ? '<span class="flow-arrow">→</span>' : ""}<span class="flow-node${ev.ctrl === 1 ? " opp" : ""}">${ev.ctrl === 1 ? "对手 " : ""}C${ev.link} ${esc(ev.name)}</span>`
+      ).join("");
+      const endCards = [...rp.p0EndM.map((m) => `${m.name}(${m.atk})`), ...rp.p0EndS.map((s) => s.name)];
+      return `
+        <div class="panel">
+          <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:6px;">
+            <h3 style="font-size:14.5px;color:${rp.goal ? "var(--green)" : "var(--rose)"};">${esc(rp.badge)}</h3>
+            <span class="lp-tag">${rp.goal ? "T1 达成 ✓" : "防线被断 ✕"}</span>
+          </div>
+          <p style="font-size:12px;color:var(--muted);margin-bottom:8px;">${esc(rp.summary)}</p>
+          <div style="display:flex;flex-wrap:wrap;gap:6px;font-size:11px;color:var(--muted);margin-bottom:8px;">
+            <span class="lp-tag">手坑：<b>${esc(rp.htLabel)}</b></span>
+            <span class="lp-tag">前置捏坑：<b>${rp.holdsPre} 次</b></span>
+            <span class="lp-tag">交出：<b>${rp.fired} 张</b></span>
+          </div>
+          <div class="chain-flow">${chainHtml}</div>
+          <div style="margin-top:10px;font-size:11.5px;color:var(--muted);">
+            T1 终场残留：${endCards.length ? endCards.map((x) => `<span class="grave-pill">${esc(x)}</span>`).join(" ") : '<span style="color:var(--rose);">空场</span>'}
+          </div>
+        </div>
+      `;
+    }).join("");
+
+    renderMatrix();
+  </script>
+</body>
+</html>
