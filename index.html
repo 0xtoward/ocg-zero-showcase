@@ -33,7 +33,7 @@
       line-height: 1.62;
       min-height: 100vh;
     }
-    .container { max-width: 1240px; margin: 0 auto; padding: 30px 20px 56px; min-width: 0; }
+    .container { max-width: 1360px; margin: 0 auto; padding: 28px 20px 56px; min-width: 0; }
     header {
       display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end;
       gap: 18px; margin-bottom: 24px; border-bottom: 1px solid var(--border); padding-bottom: 22px;
@@ -99,64 +99,170 @@
       cursor: pointer; font-family: var(--sans); font-weight: 600;
     }
     .mile-btn:hover, .mile-btn.active { background: rgba(167,139,250,.25); border-color: var(--accent-2); color: #fff; }
-    .explorer-grid { display: grid; grid-template-columns: 1.42fr 1fr; gap: 18px; align-items: start; min-width: 0; }
+    .explorer-grid { display: grid; grid-template-columns: 1.72fr 1fr; gap: 18px; align-items: start; min-width: 0; }
     .explorer-grid > * { min-width: 0; }
-    @media (max-width: 980px) { .explorer-grid { grid-template-columns: 1fr; } }
-    .duel-board { background: #0d1422; border: 1px solid var(--border); border-radius: 13px; padding: 14px; display: flex; flex-direction: column; gap: 12px; min-width: 0; }
-    .board-hud { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px; padding-bottom: 10px; border-bottom: 1px solid var(--border); font-family: var(--mono); font-size: 12px; }
+    @media (max-width: 1060px) { .explorer-grid { grid-template-columns: 1fr; } }
+    .duel-board { background: #0c1220; border: 1px solid var(--border); border-radius: 13px; padding: 12px; display: flex; flex-direction: column; gap: 9px; min-width: 0; }
+    .board-hud { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px; padding-bottom: 8px; border-bottom: 1px solid var(--border); font-family: var(--mono); font-size: 12px; }
+    .hud-mid { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+    .mat-toggle {
+      background: rgba(244,63,94,.16); border: 1px solid rgba(251,191,36,.48); color: #fde68a;
+      padding: 3px 9px; border-radius: 999px; font-size: 11px; font-weight: 650; cursor: pointer;
+      font-family: var(--sans); transition: filter .15s ease;
+    }
+    .mat-toggle:hover { filter: brightness(1.15); }
     .lp-pill { padding: 4px 10px; border-radius: 8px; background: var(--surface-2); border: 1px solid var(--border); }
     .lp-pill strong { color: var(--green); font-size: 13px; }
     .lp-pill.opp strong { color: var(--danger); }
     .phase-pill { color: var(--accent); font-size: 11.5px; }
-    .side-block { border: 1px solid rgba(43,60,94,.65); border-radius: 10px; padding: 9px; background: rgba(25,36,58,.23); }
-    .side-block.opp { border-color: rgba(244,63,94,.22); background: rgba(244,63,94,.045); }
-    .side-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 6px; }
-    .side-head span:first-child { font-size: 11.5px; font-weight: 700; letter-spacing: .04em; color: var(--text); }
-    .side-head .mini { font-size: 10.5px; color: var(--muted); }
-    .hand-strip { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 7px; min-height: 18px; }
-    .hand-chip { font-size: 10.5px; padding: 2px 7px; border-radius: 999px; background: rgba(56,189,248,.10); border: 1px solid rgba(56,189,248,.28); color: #bae6fd; }
-    .hand-chip.trap { background: rgba(244,63,94,.10); border-color: rgba(244,63,94,.32); color: #fecdd3; }
-    .hand-empty { font-size: 10.5px; color: #64748b; }
-    .zone-col label, .zone-row-label { display: block; font-size: 10.5px; color: var(--muted); letter-spacing: .04em; margin-bottom: 5px; }
-    .zone-row { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 7px; min-width: 0; }
-    .zone-row.six { grid-template-columns: repeat(6, minmax(0, 1fr)); }
-    .emz-row { display: grid; grid-template-columns: 1fr 1fr 1.6fr; gap: 8px; align-items: stretch; }
-    @media (max-width: 640px) { .emz-row { grid-template-columns: 1fr 1fr; } .emz-row .chain-box { grid-column: 1 / -1; } .zone-row.six { grid-template-columns: repeat(3, minmax(0, 1fr)); } .board-hud { font-size: 11px; } }
-    .slot {
-      min-width: 0;
-      min-height: 58px; border-radius: 8px; border: 1px dashed #2b3c5e; background: rgba(25,36,58,.45);
-      padding: 5px 6px; font-size: 10.5px; display: flex; flex-direction: column; justify-content: space-between;
-      gap: 2px; transition: border-color .18s ease, background .18s ease;
+
+    .hand-bar {
+      display: flex; flex-wrap: wrap; align-items: center; gap: 7px; padding: 6px 10px;
+      border-radius: 9px; background: rgba(25,36,58,.45); border: 1px solid rgba(43,60,94,.7);
     }
-    .slot.empty .slot-name { opacity: .30; font-weight: 500; }
-    .slot.filled { border-style: solid; border-color: rgba(56,189,248,.55); background: linear-gradient(180deg, rgba(56,189,248,.13), rgba(18,26,43,.94)); }
-    .slot.filled.spell { border-color: rgba(16,185,129,.58); background: linear-gradient(180deg, rgba(16,185,129,.13), rgba(18,26,43,.94)); }
-    .slot.filled.trap { border-color: rgba(244,63,94,.55); background: linear-gradient(180deg, rgba(244,63,94,.13), rgba(18,26,43,.94)); }
-    .slot.filled.field, .slot.filled.equip { border-color: rgba(245,158,11,.55); background: linear-gradient(180deg, rgba(245,158,11,.12), rgba(18,26,43,.94)); }
-    .slot.filled.xyz, .slot.filled.synchro { border-color: rgba(167,139,250,.58); background: linear-gradient(180deg, rgba(167,139,250,.14), rgba(18,26,43,.94)); }
-    .slot.filled.opp { border-color: rgba(244,63,94,.65); background: linear-gradient(180deg, rgba(244,63,94,.16), rgba(18,26,43,.95)); }
-    .slot-tag { font-family: var(--mono); font-size: 9.5px; color: var(--muted); }
-    .slot-name { font-weight: 700; color: var(--text); line-height: 1.28; word-break: break-word; overflow-wrap: anywhere; }
-    .slot-meta { font-family: var(--mono); font-size: 9.5px; color: var(--accent); line-height: 1.3; }
-    .chain-box { border-radius: 9px; border: 1px solid rgba(167,139,250,.35); background: rgba(167,139,250,.07); padding: 7px 9px; font-size: 10.5px; display: flex; flex-direction: column; gap: 4px; min-height: 58px; }
-    .chain-box label { font-size: 10px; color: #c4b5fd; }
-    .chain-chip { display: inline-block; font-family: var(--mono); font-size: 9.5px; padding: 2px 6px; border-radius: 6px; background: rgba(167,139,250,.20); color: #ddd6fe; margin: 1px 3px 1px 0; }
-    .chain-chip.p1 { background: rgba(244,63,94,.22); color: #fecdd3; }
-    .chain-count { color: var(--muted); font-family: var(--mono); font-size: 9.5px; }
-    .grave-strip { border-top: 1px dashed var(--border); padding-top: 8px; display: flex; gap: 8px; align-items: flex-start; }
+    .hand-bar.opp { border-color: rgba(244,63,94,.28); background: rgba(244,63,94,.06); }
+    .hand-who { font-size: 11px; font-weight: 700; color: var(--text); white-space: nowrap; }
+    .hand-sub { font-size: 10px; color: var(--muted); white-space: nowrap; }
+    .hand-strip { display: flex; flex-wrap: wrap; gap: 5px; align-items: center; min-height: 20px; }
+    .hand-chip { font-size: 10.5px; padding: 2px 8px; border-radius: 999px; background: rgba(56,189,248,.12); border: 1px solid rgba(56,189,248,.34); color: #bae6fd; }
+    .hand-chip.trap { background: rgba(244,63,94,.14); border-color: rgba(244,63,94,.38); color: #fecdd3; }
+    .hand-empty { font-size: 10.5px; color: #7c8ea9; }
+
+    .playmat-scroll { overflow-x: auto; padding-bottom: 2px; border-radius: 12px; }
+    .playmat {
+      position: relative;
+      min-width: 640px;
+      border-radius: 12px;
+      padding: 10px;
+      border: 1.5px solid rgba(251,191,36,.42);
+      background:
+        linear-gradient(90deg, rgba(255,215,128,.05) 1px, transparent 1px) 0 0 / 34px 34px,
+        linear-gradient(0deg, rgba(255,215,128,.05) 1px, transparent 1px) 0 0 / 34px 34px,
+        radial-gradient(circle at 50% 50%, rgba(220,38,38,.48) 0%, rgba(127,15,29,.92) 55%, rgba(69,8,16,.98) 100%);
+      box-shadow: inset 0 0 36px rgba(0,0,0,.48), 0 8px 24px rgba(0,0,0,.35);
+    }
+    .playmat::before {
+      content: ""; position: absolute; inset: 4px; border-radius: 9px;
+      border: 1px solid rgba(251,191,36,.22); pointer-events: none;
+    }
+    .playmat.theme-dark {
+      border-color: rgba(56,189,248,.36);
+      background:
+        linear-gradient(90deg, rgba(56,189,248,.04) 1px, transparent 1px) 0 0 / 34px 34px,
+        linear-gradient(0deg, rgba(56,189,248,.04) 1px, transparent 1px) 0 0 / 34px 34px,
+        radial-gradient(circle at 50% 50%, #162238 0%, #0d1525 65%, #090e1a 100%);
+    }
+    .playmat.theme-dark::before { border-color: rgba(56,189,248,.16); }
+
+    .playmat-grid {
+      position: relative; z-index: 1;
+      display: grid; grid-template-columns: repeat(7, minmax(0, 1fr));
+      gap: 7px; align-items: stretch;
+    }
+    .pm-zone {
+      position: relative; min-width: 0; min-height: 76px;
+      border-radius: 6px; padding: 4px 5px;
+      display: flex; flex-direction: column; justify-content: space-between; gap: 2px;
+      background: rgba(15, 6, 9, 0.34);
+      border: 1.5px solid rgba(245, 158, 11, 0.45);
+      transition: transform .15s ease, border-color .15s ease, box-shadow .15s ease;
+    }
+    .playmat.theme-dark .pm-zone { background: rgba(11, 18, 32, 0.58); }
+    .pm-zone.opp-side { border-color: rgba(251, 191, 36, 0.38); }
+    /* Overlapping attack/defense dual outline on empty Main Monster & EMZ like authentic OCG mats */
+    .pm-zone.mz.empty::before, .pm-zone.emz.empty::before {
+      content: ""; position: absolute; left: -3px; right: -3px; top: 14%; bottom: 14%;
+      border-radius: 4px; border: 1px solid rgba(251, 191, 36, 0.36); pointer-events: none;
+    }
+    .pm-zone.emz {
+      border-color: rgba(56, 189, 248, 0.85);
+      background: rgba(8, 47, 73, 0.42);
+      box-shadow: inset 0 0 12px rgba(56,189,248,.18), 0 0 10px rgba(56,189,248,.16);
+    }
+    .pm-zone.emz.empty::before { border-color: rgba(125, 211, 252, 0.42); }
+    .pm-zone.st { border-color: rgba(16, 185, 129, 0.52); background: rgba(6, 78, 59, 0.24); }
+    .pm-zone.pend-blue { border-color: rgba(56, 189, 248, 0.65); background: rgba(7, 89, 133, 0.28); }
+    .pm-zone.pend-red { border-color: rgba(244, 63, 94, 0.68); background: rgba(136, 19, 55, 0.28); }
+    .pm-zone.field-z { border-color: rgba(132, 204, 22, 0.56); background: rgba(54, 83, 20, 0.26); }
+    .pm-zone.gy-z { border-color: rgba(148, 163, 184, 0.45); background: rgba(30, 41, 59, 0.45); }
+    .pm-zone.deck-z {
+      border-color: rgba(148, 163, 184, 0.40); background: rgba(17, 24, 39, 0.62);
+      box-shadow: 2px 2px 0 rgba(0,0,0,.45), inset 0 0 10px rgba(0,0,0,.35);
+    }
+    .pm-zone.extra-z {
+      border-color: rgba(217, 119, 6, 0.55); background: rgba(41, 22, 12, 0.55);
+      box-shadow: 2px 2px 0 rgba(0,0,0,.45), inset 0 0 10px rgba(0,0,0,.35);
+    }
+
+    .pend-gem {
+      position: absolute; right: 4px; top: 4px; width: 10px; height: 10px;
+      transform: rotate(45deg); opacity: .78; pointer-events: none; border-radius: 1px;
+    }
+    .pend-gem.blue { background: linear-gradient(135deg, #7dd3fc, #0284c7); border: 1px solid #e0f2fe; }
+    .pend-gem.red { background: linear-gradient(135deg, #fda4af, #e11d48); border: 1px solid #ffe4e6; }
+
+    /* Card Frame Themes when occupied */
+    .pm-zone.filled { z-index: 2; box-shadow: 0 4px 12px rgba(0,0,0,.52); }
+    .pm-zone.filled.monster { border-color: #f59e0b; background: linear-gradient(180deg, #9a4a12 0%, #582809 100%); }
+    .pm-zone.filled.synchro { border-color: #cbd5e1; background: linear-gradient(180deg, #e2e8f0 0%, #cbd5e1 100%); }
+    .pm-zone.filled.xyz { border-color: #fbbf24; background: linear-gradient(180deg, #171c28 0%, #090b12 100%); }
+    .pm-zone.filled.link { border-color: #38bdf8; background: linear-gradient(180deg, #1d4ed8 0%, #172554 100%); }
+    .pm-zone.filled.spell, .pm-zone.filled.field, .pm-zone.filled.equip {
+      border-color: #34d399; background: linear-gradient(180deg, #047857 0%, #064e3b 100%);
+    }
+    .pm-zone.filled.trap { border-color: #f472b6; background: linear-gradient(180deg, #9d174d 0%, #500724 100%); }
+    .pm-zone.filled.facedown { border-color: #b45309; background: linear-gradient(180deg, #431d0b 0%, #240e05 100%); }
+    .pm-zone.filled.opp-owned { box-shadow: 0 0 0 1px rgba(244,63,94,.55), 0 4px 12px rgba(0,0,0,.52); }
+
+    .slot-tag { font-family: var(--mono); font-size: 9px; color: rgba(255,255,255,.68); line-height: 1.15; letter-spacing: .02em; }
+    .slot-name { font-size: 10.5px; font-weight: 750; color: #f8fafc; line-height: 1.24; word-break: break-word; overflow-wrap: anywhere; }
+    .slot-meta { font-family: var(--mono); font-size: 8.8px; color: #bae6fd; line-height: 1.2; }
+    .pm-zone.empty .slot-name { opacity: .34; font-weight: 500; font-size: 10px; color: #fef2f2; }
+    .playmat.theme-dark .pm-zone.empty .slot-name { color: #cbd5e1; }
+    .pm-zone.filled.synchro .slot-tag { color: #475569; }
+    .pm-zone.filled.synchro .slot-name { color: #0f172a; }
+    .pm-zone.filled.synchro .slot-meta { color: #1d4ed8; font-weight: 700; }
+    .pm-zone.filled.facedown .slot-name { color: #fed7aa; }
+    .pm-zone.filled.facedown .slot-meta { color: #fdba74; }
+
+    .pm-crest {
+      grid-column: 1 / span 2; min-height: 76px;
+      border-radius: 7px; border: 1px dashed rgba(251,191,36,.34);
+      background: rgba(15, 6, 9, 0.34); padding: 6px 9px;
+      display: flex; flex-direction: column; justify-content: center; gap: 3px;
+    }
+    .playmat.theme-dark .pm-crest { border-color: rgba(56,189,248,.28); background: rgba(11,18,32,.48); }
+    .pm-crest-title { font-size: 11px; font-weight: 800; color: #fde68a; letter-spacing: .04em; }
+    .playmat.theme-dark .pm-crest-title { color: var(--accent); }
+    .pm-crest-sub { font-size: 9.5px; color: rgba(248,250,252,.78); line-height: 1.35; }
+    .pm-center-mid {
+      min-height: 76px; border-radius: 7px; padding: 5px;
+      border: 1px dashed rgba(251,191,36,.28); background: rgba(15, 6, 9, 0.25);
+      display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; gap: 3px;
+    }
+    .pm-center-mid.hot { border-style: solid; border-color: #c084fc; background: rgba(107, 33, 168, 0.38); }
+    .pm-center-mid .vs-badge { font-family: var(--mono); font-size: 11px; font-weight: 800; color: #fde68a; }
+    .pm-center-mid.hot .vs-badge { color: #f3e8ff; }
+    .pm-center-mid .vs-sub { font-size: 9px; color: rgba(248,250,252,.75); }
+    .chain-box {
+      grid-column: 6 / span 2; min-height: 76px; border-radius: 7px;
+      border: 1px solid rgba(192,132,252,.42); background: rgba(17, 12, 34, 0.72);
+      padding: 6px 8px; font-size: 10px; display: flex; flex-direction: column; justify-content: space-between; gap: 3px;
+    }
+    .chain-box label { font-size: 9.5px; color: #ddd6fe; font-weight: 700; }
+    .chain-chip { display: inline-block; font-family: var(--mono); font-size: 9.2px; padding: 2px 5px; border-radius: 5px; background: rgba(167,139,250,.24); color: #ede9fe; margin: 1px 3px 1px 0; }
+    .chain-chip.p1 { background: rgba(244,63,94,.28); color: #ffe4e6; }
+    .chain-count { color: #cbd5e1; font-family: var(--mono); font-size: 9.2px; }
+    .grave-strip { border-top: 1px dashed var(--border); padding-top: 7px; display: flex; gap: 8px; align-items: flex-start; }
     .grave-strip label { flex: 0 0 auto; font-size: 10.5px; color: var(--muted); margin-top: 2px; }
     .grave-list { display: flex; flex-wrap: wrap; gap: 4px; }
-    .grave-chip { font-size: 10px; color: #94a3b8; background: rgba(148,163,184,.08); border: 1px solid rgba(148,163,184,.18); border-radius: 5px; padding: 1px 5px; }
-    .board-stats { display: flex; flex-wrap: wrap; gap: 5px; border-top: 1px dashed var(--border); padding-top: 8px; }
+    .grave-chip { font-size: 10px; color: #cbd5e1; background: rgba(148,163,184,.10); border: 1px solid rgba(148,163,184,.22); border-radius: 5px; padding: 1px 6px; }
+    .board-stats { display: flex; flex-wrap: wrap; gap: 5px; border-top: 1px dashed var(--border); padding-top: 7px; }
     .stat-chip { font-family: var(--mono); font-size: 10px; color: #cbd5e1; background: rgba(56,189,248,.07); border: 1px solid rgba(56,189,248,.18); border-radius: 5px; padding: 2px 6px; }
     .stat-chip b { color: var(--accent); font-weight: 700; }
     .step-side { display: flex; flex-direction: column; gap: 10px; position: sticky; top: 12px; min-width: 0; }
-    @media (max-width: 980px) { .step-side { position: static; } }
-    @media (max-width: 430px) {
-      .zone-row { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-      .zone-row.six { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .kpi-value { font-size: 1.7rem; }
-    }
+    @media (max-width: 1060px) { .step-side { position: static; } }
+    @media (max-width: 480px) { .kpi-value { font-size: 1.7rem; } }
     .controls { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; padding: 11px; background: #0d1422; border: 1px solid var(--border); border-radius: 10px; }
     .btn { background: var(--surface-2); border: 1px solid var(--border); color: var(--text); padding: 7px 11px; border-radius: 8px; font-size: 12px; font-weight: 650; cursor: pointer; font-family: var(--sans); }
     .btn:hover { filter: brightness(1.12); border-color: #3b5480; }
@@ -247,45 +353,86 @@
         <div class="duel-board">
           <div class="board-hud">
             <span class="lp-pill"><span id="lpLabel0">我方</span> LP: <strong id="lp0">8000</strong></span>
-            <span class="phase-pill" id="phasePill">第 1 回合 · 主要阶段 1</span>
+            <div class="hud-mid">
+              <span class="phase-pill" id="phasePill">第 1 回合 · 主要阶段 1</span>
+              <button class="mat-toggle" id="matToggleBtn" title="切换桌面红毯与暗夜配色">经典红毯</button>
+            </div>
             <span class="lp-pill opp"><span id="lpLabel1">对手</span> LP: <strong id="lp1">8000</strong></span>
           </div>
 
-          <div class="side-block opp">
-            <div class="side-head"><span id="p1Name">对手</span><span class="mini" id="p1HandLabel">手牌 / 场面</span></div>
+          <div class="hand-bar opp">
+            <span class="hand-who" id="p1Name">对手</span>
+            <span class="hand-sub" id="p1HandLabel">手牌</span>
             <div class="hand-strip" id="p1Hand"></div>
-            <div class="zone-row" id="p1Board"></div>
           </div>
 
-          <div class="emz-row">
-            <div class="zone-col">
-              <label id="emzLabel0">额外怪兽区 左（M5）</label>
-              <div id="emz0"></div>
-            </div>
-            <div class="zone-col">
-              <label id="emzLabel1">额外怪兽区 右（M6）</label>
-              <div id="emz1"></div>
-            </div>
-            <div class="chain-box">
-              <label>最近连锁 / 关键判定</label>
-              <div id="chainBox"><span class="muted">连锁为空</span></div>
-              <div class="chain-count" id="chainCount">累计连锁 0</div>
+          <div class="playmat-scroll">
+            <div class="playmat" id="playmatBox">
+              <div class="playmat-grid">
+                <!-- Row 1: 对手后场（镜像面对我方：左为对手 S4 红灵摆，右为对手 S0 蓝灵摆） -->
+                <div class="pm-zone deck-z opp-side" id="oppDeckCell"></div>
+                <div class="pm-zone st pend-red opp-side" id="oppS4"></div>
+                <div class="pm-zone st opp-side" id="oppS3"></div>
+                <div class="pm-zone st opp-side" id="oppS2"></div>
+                <div class="pm-zone st opp-side" id="oppS1"></div>
+                <div class="pm-zone st pend-blue opp-side" id="oppS0"></div>
+                <div class="pm-zone extra-z opp-side" id="oppExtraCell"></div>
+
+                <!-- Row 2: 对手前场主怪兽 M4..M0 + 墓地 + 场地 -->
+                <div class="pm-zone gy-z opp-side" id="oppGYCell"></div>
+                <div class="pm-zone mz opp-side" id="oppM4"></div>
+                <div class="pm-zone mz opp-side" id="oppM3"></div>
+                <div class="pm-zone mz opp-side" id="oppM2"></div>
+                <div class="pm-zone mz opp-side" id="oppM1"></div>
+                <div class="pm-zone mz opp-side" id="oppM0"></div>
+                <div class="pm-zone field-z opp-side" id="oppFieldCell"></div>
+
+                <!-- Row 3: 额外怪兽区 M5/M6 与中心连锁中枢 -->
+                <div class="pm-crest">
+                  <div class="pm-crest-title">OCG-ZERO · 7×5 决斗场地</div>
+                  <div class="pm-crest-sub" id="emzOwnerHint">M5 正对 M1 / 对手 M3 · M6 正对 M3 / 对手 M1</div>
+                </div>
+                <div class="pm-zone emz" id="emz0"></div>
+                <div class="pm-center-mid" id="centerChainOrb">
+                  <span class="vs-badge" id="centerChainBadge">MAIN</span>
+                  <span class="vs-sub" id="centerChainSub">待机窗口</span>
+                </div>
+                <div class="pm-zone emz" id="emz1"></div>
+                <div class="chain-box">
+                  <label>最近连锁 / 关键判定</label>
+                  <div id="chainBox"><span class="muted">本步无新增连锁</span></div>
+                  <div class="chain-count" id="chainCount">累计连锁 0</div>
+                </div>
+
+                <!-- Row 4: 我方场地区（M0 左侧）+ 主怪兽区 M0..M4 + 我方墓地（M4 右侧） -->
+                <div class="pm-zone field-z" id="p0Field"></div>
+                <div class="pm-zone mz" id="p0M0"></div>
+                <div class="pm-zone mz" id="p0M1"></div>
+                <div class="pm-zone mz" id="p0M2"></div>
+                <div class="pm-zone mz" id="p0M3"></div>
+                <div class="pm-zone mz" id="p0M4"></div>
+                <div class="pm-zone gy-z" id="p0GYCell"></div>
+
+                <!-- Row 5: 我方额外卡组 + 魔陷 S0（蓝灵摆）.. S4（红灵摆）+ 主卡组 -->
+                <div class="pm-zone extra-z" id="p0ExtraCell"></div>
+                <div class="pm-zone st pend-blue" id="p0S0"></div>
+                <div class="pm-zone st" id="p0S1"></div>
+                <div class="pm-zone st" id="p0S2"></div>
+                <div class="pm-zone st" id="p0S3"></div>
+                <div class="pm-zone st pend-red" id="p0S4"></div>
+                <div class="pm-zone deck-z" id="p0DeckCell"></div>
+              </div>
             </div>
           </div>
 
-          <div class="side-block">
-            <div class="side-head"><span id="p0Name">我方</span><span class="mini" id="p0HandLabel">手牌</span></div>
+          <div class="hand-bar">
+            <span class="hand-who" id="p0Name">我方</span>
+            <span class="hand-sub" id="p0HandLabel">手牌</span>
             <div class="hand-strip" id="p0Hand"></div>
-            <div class="zone-row" id="p0MZone"></div>
-          </div>
-
-          <div class="zone-col">
-            <label>我方魔法·陷阱区 S0–S4 / 场地</label>
-            <div class="zone-row six" id="p0SZone"></div>
           </div>
 
           <div class="grave-strip">
-            <label>墓地</label>
+            <label>墓地明细</label>
             <div class="grave-list" id="gyBox"><span class="hand-empty">暂无记录</span></div>
           </div>
           <div class="board-stats" id="boardStats"></div>
@@ -432,14 +579,30 @@
       .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
       .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
 
-    function slot(tag, card, cls) {
-      cls = cls || "";
+    function renderZone(elId, tag, card, opt = {}) {
+      const el = document.getElementById(elId);
+      if (!el) return;
+      const baseCls = opt.baseCls || "";
+      const pend = opt.pend ? `<span class="pend-gem ${opt.pend}"></span>` : "";
       if (!card) {
-        return `<div class="slot empty ${cls}"><span class="slot-tag">${esc(tag)}</span><span class="slot-name">空</span></div>`;
+        el.className = `pm-zone ${baseCls} empty`;
+        el.removeAttribute("title");
+        el.innerHTML = `${pend}<span class="slot-tag">${esc(tag)}</span><span class="slot-name">${esc(opt.emptyText || "空")}</span><span class="slot-meta">${esc(opt.emptyMeta || "")}</span>`;
+        return;
       }
-      const kind = card.kind ? ` ${card.kind}` : "";
-      const title = card.name + (card.meta ? " · " + card.meta : "");
-      return `<div class="slot filled${kind} ${cls}" title="${esc(title)}"><span class="slot-tag">${esc(tag)}</span><span class="slot-name">${esc(card.name)}</span><span class="slot-meta">${esc(card.meta || "")}</span></div>`;
+      const isFacedown = /盖放/.test(card.meta || "") && !/已使用/.test(card.meta || "");
+      const kindCls = isFacedown ? "facedown" : (card.kind || "monster");
+      const oppCls = opt.oppOwned ? " opp-owned" : "";
+      el.className = `pm-zone ${baseCls} filled ${kindCls}${oppCls}`;
+      el.title = card.name + (card.meta ? " · " + card.meta : "");
+      el.innerHTML = `${pend}<span class="slot-tag">${esc(tag)}</span><span class="slot-name">${esc(card.name)}</span><span class="slot-meta">${esc(card.meta || "")}</span>`;
+    }
+
+    function renderFixedPile(elId, baseCls, tag, title, meta) {
+      const el = document.getElementById(elId);
+      if (!el) return;
+      el.className = `pm-zone ${baseCls}`;
+      el.innerHTML = `<span class="slot-tag">${esc(tag)}</span><span class="slot-name">${esc(title)}</span><span class="slot-meta">${esc(meta || "")}</span>`;
     }
 
     function isTrapName(name) {
@@ -539,11 +702,11 @@
       document.getElementById("lp1").textContent = step.lp[1];
       document.getElementById("phasePill").textContent = step.phase;
       document.getElementById("p0Name").textContent = sc.side0;
-      const emzSideName = emzSideOf(step, sc) === "p1" ? "对手" : "我方";
-      document.getElementById("emzLabel0").textContent = `${emzSideName}额外区 左（M5）`;
-      document.getElementById("emzLabel1").textContent = `${emzSideName}额外区 右（M6）`;
+      const emzSide = emzSideOf(step, sc);
+      const emzSideName = emzSide === "p1" ? sc.side1 : sc.side0;
+      document.getElementById("emzOwnerHint").textContent = `当前额外区归属：${emzSideName}（M5↔M1 · M6↔M3）`;
       document.getElementById("p1Name").textContent = sc.side1;
-      document.getElementById("p1HandLabel").textContent = sc.p1Label || "手牌 / 场面";
+      document.getElementById("p1HandLabel").textContent = sc.p1Label || "手牌";
       document.getElementById("p0HandLabel").textContent = "手牌";
 
       document.getElementById("stepTitle").textContent = step.title;
@@ -555,22 +718,51 @@
       handStrip(document.getElementById("p1Hand"), step.p1Hand || [], sc.p1HandUnknown ? "对手手牌未公开" : "手牌未记录");
       handStrip(document.getElementById("p0Hand"), step.p0Hand || [], "手牌未公开");
 
-      document.getElementById("p1Board").innerHTML = Array.from({ length: 5 }, (_, i) =>
-        slot(`对手 M${i}`, (step.p1 || [])[i] || null, "opp")).join("");
-      document.getElementById("emz0").innerHTML = slot("额外左 M5", (step.emz || [])[0] || null);
-      document.getElementById("emz1").innerHTML = slot("额外右 M6", (step.emz || [])[1] || null);
-      document.getElementById("p0MZone").innerHTML = Array.from({ length: 5 }, (_, i) =>
-        slot(`M${i}`, (step.m || [])[i] || null)).join("");
-      const sTags = ["S0", "S1", "S2", "S3", "S4", "场地"];
-      document.getElementById("p0SZone").innerHTML = Array.from({ length: 6 }, (_, i) =>
-        slot(sTags[i], (step.s || [])[i] || null)).join("");
+      const p1Arr = step.p1 || [];
+      renderFixedPile("oppDeckCell", "deck-z opp-side", "OPP 卡组", "主卡组", "40 张制");
+      renderZone("oppS4", "对手 S4", null, { baseCls: "st pend-red opp-side", pend: "red", emptyText: "魔陷 / P区" });
+      renderZone("oppS3", "对手 S3", null, { baseCls: "st opp-side", emptyText: "魔法·陷阱" });
+      renderZone("oppS2", "对手 S2", null, { baseCls: "st opp-side", emptyText: "魔法·陷阱" });
+      renderZone("oppS1", "对手 S1", null, { baseCls: "st opp-side", emptyText: "魔法·陷阱" });
+      renderZone("oppS0", "对手 S0", null, { baseCls: "st pend-blue opp-side", pend: "blue", emptyText: "魔陷 / P区" });
+      renderFixedPile("oppExtraCell", "extra-z opp-side", "OPP 额外", "额外卡组", "15 张");
 
-      document.getElementById("chainBox").innerHTML = (step.chain && step.chain.length)
+      renderFixedPile("oppGYCell", "gy-z opp-side", "OPP 墓地", "墓地", "镜像位");
+      [4, 3, 2, 1, 0].forEach((idx) => {
+        renderZone(`oppM${idx}`, `对手 M${idx}`, p1Arr[idx] || null, { baseCls: "mz opp-side", oppOwned: true });
+      });
+      renderZone("oppFieldCell", "对手场地", null, { baseCls: "field-z opp-side", emptyText: "场地区" });
+
+      renderZone("emz0", `${emzSide === "p1" ? "对手" : ""}额外 M5`, (step.emz || [])[0] || null, { baseCls: "emz", oppOwned: emzSide === "p1" });
+      renderZone("emz1", `${emzSide === "p1" ? "对手" : ""}额外 M6`, (step.emz || [])[1] || null, { baseCls: "emz", oppOwned: emzSide === "p1" });
+
+      const sArr = step.s || [];
+      const mArr = step.m || [];
+      renderZone("p0Field", "场地区", sArr[5] || null, { baseCls: "field-z", emptyText: "场地区" });
+      [0, 1, 2, 3, 4].forEach((idx) => {
+        renderZone(`p0M${idx}`, `M${idx}`, mArr[idx] || null, { baseCls: "mz" });
+      });
+
+      const gy = step.gy || [];
+      renderFixedPile("p0GYCell", "gy-z", "我方墓地", gy.length ? `${gy.length} 张` : "空", gy.length ? gy[gy.length - 1] : "M4 右侧");
+
+      renderFixedPile("p0ExtraCell", "extra-z", "额外卡组", "额外卡组", "15 张");
+      renderZone("p0S0", "S0 · P左", sArr[0] || null, { baseCls: "st pend-blue", pend: "blue", emptyText: "魔陷 / P区" });
+      renderZone("p0S1", "S1", sArr[1] || null, { baseCls: "st", emptyText: "魔法·陷阱" });
+      renderZone("p0S2", "S2", sArr[2] || null, { baseCls: "st", emptyText: "魔法·陷阱" });
+      renderZone("p0S3", "S3", sArr[3] || null, { baseCls: "st", emptyText: "魔法·陷阱" });
+      renderZone("p0S4", "S4 · P右", sArr[4] || null, { baseCls: "st pend-red", pend: "red", emptyText: "魔陷 / P区" });
+      renderFixedPile("p0DeckCell", "deck-z", "主卡组", "主卡组", "40 张制");
+
+      const hasChain = !!(step.chain && step.chain.length);
+      document.getElementById("centerChainOrb").className = `pm-center-mid${hasChain ? " hot" : ""}`;
+      document.getElementById("centerChainBadge").textContent = hasChain ? `CL ${step.chain.length}` : (/战斗/.test(step.phase) ? "BP" : /结束/.test(step.phase) ? "EP" : "MP");
+      document.getElementById("centerChainSub").textContent = hasChain ? "连锁处理" : "场面对齐";
+      document.getElementById("chainBox").innerHTML = hasChain
         ? step.chain.map((c) => `<span class="chain-chip ${c.p === 1 ? "p1" : ""}">${esc(c.text)}</span>`).join("")
         : `<span class="muted">本步无新增连锁</span>`;
       document.getElementById("chainCount").textContent = `累计连锁 ${step.chainCount || 0}${sc.chainsTotal ? " / " + sc.chainsTotal : ""}`;
 
-      const gy = step.gy || [];
       document.getElementById("gyBox").innerHTML = gy.length
         ? gy.map((n) => `<span class="grave-chip">${esc(n)}</span>`).join("")
         : `<span class="hand-empty">暂无记录</span>`;
@@ -657,6 +849,13 @@
       if (e.key === "ArrowRight") { stopPlay(); go(activeStepIdx + 1); }
       if (e.code === "Space") { e.preventDefault(); playBtn.click(); }
     });
+
+    const matBox = document.getElementById("playmatBox");
+    const matToggleBtn = document.getElementById("matToggleBtn");
+    matToggleBtn.onclick = () => {
+      const dark = matBox.classList.toggle("theme-dark");
+      matToggleBtn.textContent = dark ? "暗夜赛场" : "经典红毯";
+    };
 
     buildMilestones();
     buildLog();
