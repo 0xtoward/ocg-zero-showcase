@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OCG-Zero · 后攻破阵 (MAP-Elites + 事后重排序)</title>
+  <link rel="stylesheet" href="assets/style.css" />
+  <script src="assets/gate.js"></script>
+</head>
+<body>
+  <nav class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="index.html"><span class="brand-dot"></span><span>OCG-Zero</span></a>
+      <div class="nav-links">
+        <a class="nav-link" href="index.html">对局回放</a>
+        <a class="nav-link" href="puct.html">PUCT 实时选招</a>
+        <a class="nav-link" href="psro.html">PSRO 博弈演化</a>
+        <a class="nav-link active" href="breaker.html">后攻破阵</a>
+        <a class="nav-link" href="arch.html">架构与算力</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container">
+    <div class="page-head">
+      <h1>天杯龙后攻破阵 · MAP-Elites + 事后动作重排序（causal_order_qd）</h1>
+      <p>拆解 Wave 21（ocg_breaker_lab）零神经网络、零卡号硬编码的后攻求解器：如何用三维行为精英网格守住“已骗康”的中间局面，再靠单局内的事后优势归因动态改写动作优先级，并在 4 阶满场防线下将天杯龙 T2 斩杀率推升至 38.75%。</p>
+    </div>
+
+    <section class="kpi-grid">
+      <div class="kpi">
+        <div class="kpi-label">天杯龙 T2 斩杀率（N=80）</div>
+        <div class="kpi-value">38.75%</div>
+        <div class="kpi-sub">31/80 斩杀 · 对比 MCTS 13.75% / Flat 12.50% / Greedy 0.00%</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">天杯龙 T2 全清破阵率</div>
+        <div class="kpi-value">63.75%</div>
+        <div class="kpi-sub">51/80 全清 · 均伤 4,557.5 · 净卡差 +1.2875</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">全 4 卡组总 OTK 提升</div>
+        <div class="kpi-value">19.06%</div>
+        <div class="kpi-sub">61/320 斩杀 · Greedy (0.94%) 的 20.3×（等预算 B ≤ 96）</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">零卡号硬编码 · 验真</div>
+        <div class="kpi-value">6,907 / 0</div>
+        <div class="kpi-sub">verify_ocg_breaker.py 全过 · 20/20 双引擎 .yrp2 位对齐</div>
+      </div>
+    </section>
+
+    <div class="section-head">
+      <h2>① causal_order_qd 运行闭环：精英存档截断变异 × 事后桶权重蒸馏</h2>
+      <span>对应代码：ocg_breaker_lab/breaker_solver.cpp (L1726–1742, L2488–2605) · 预算 B ≤ 96 次 Turn-2 交互推演</span>
+    </div>
+    <section class="panel">
+      <div class="svg-frame">
+        <svg viewBox="0 0 960 318" role="img" aria-label="MAP-Elites plus Hindsight Action-Ordering Distillation Loop">
+          <defs>
+            <marker id="arrB" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+              <path d="M 0 1.5 L 9 5 L 0 8.5 z" fill="#38bdf8" />
+            </marker>
+            <marker id="arrG" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+              <path d="M 0 1.5 L 9 5 L 0 8.5 z" fill="#34d399" />
+            </marker>
+            <marker id="arrGold" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+              <path d="M 0 1.5 L 9 5 L 0 8.5 z" fill="#d4a853" />
+            </marker>
+            <marker id="arrV" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6.5" markerHeight="6.5" orient="auto-start-reverse">
+              <path d="M 0 1.5 L 9 5 L 0 8.5 z" fill="#a78bfa" />
+            </marker>
+          </defs>
+
+          <text x="20" y="24" font-size="12" font-weight="700" fill="#8b96a9">一局 Turn-2 规划预算为 B=96 步；两条闭环同时运转——横向“保留中间跳板重采样”，纵向“越打越懂先后手”</text>
+
+          <!-- Col 1: MAP-Elites Archive -->
+          <rect x="20" y="46" width="276" height="196" rx="10" fill="#10151f" stroke="#d4a853" stroke-width="1.3" />
+          <text x="158" y="71" text-anchor="middle" font-size="13.5" font-weight="700" fill="#f6dca6">1. MAP-Elites 三维行为网格</text>
+          <text x="158" y="92" text-anchor="middle" font-size="11" font-family="ui-monospace,monospace" fill="#cbd5e1">QdCellKey(bait, clear, dmg)</text>
+
+          <rect x="36" y="106" width="244" height="72" rx="7" fill="#161d2b" stroke="#2c3a52" />
+          <text x="48" y="125" font-size="11" fill="#bae6fd">• bait_bin  ∈ {0..3}：骗掉对方连锁次数</text>
+          <text x="48" y="144" font-size="11" fill="#a7f3d0">• clear_bin ∈ {0..3}：清场卡数 / 全清=3</text>
+          <text x="48" y="163" font-size="11" fill="#f6dca6">• dmg_bin   ∈ {0..4}：每 2500 一档 / OTK=4</text>
+
+          <text x="158" y="198" text-anchor="middle" font-size="11" fill="#cbd5e1">前 warmup = max(8, B/4) 轮试不同起手第一招；</text>
+          <text x="158" y="216" text-anchor="middle" font-size="11" fill="#8b96a9">之后按 (1 + 0.5·bait + clear + 1.5·dmg) 抽格，</text>
+          <text x="158" y="232" text-anchor="middle" font-size="11" fill="#f6dca6">随机截断 parent_prefix[0..cut) 原地重分支</text>
+
+          <line x1="296" y1="144" x2="338" y2="144" stroke="#38bdf8" stroke-width="1.8" marker-end="url(#arrB)" />
+
+          <!-- Col 2: ocgcore Turn-2 Rollout -->
+          <rect x="342" y="46" width="276" height="196" rx="10" fill="#161d2b" stroke="#38bdf8" stroke-width="1.4" />
+          <text x="480" y="71" text-anchor="middle" font-size="13.5" font-weight="700" fill="#38bdf8">2. ocgcore Turn-2 交互推演</text>
+          <text x="480" y="92" text-anchor="middle" font-size="11" fill="#cbd5e1">严格同种子复现 P0 T1 金终场后接手 T2</text>
+
+          <rect x="358" y="106" width="244" height="54" rx="7" fill="#10151f" stroke="#2c3a52" />
+          <text x="480" y="127" text-anchor="middle" font-size="11" fill="#f1f5f9">前缀期：step &lt; cut 原样照抄父动作带</text>
+          <text x="480" y="146" text-anchor="middle" font-size="11" fill="#34d399">分叉后：按 w = base_weight × bonus 采样</text>
+
+          <text x="480" y="182" text-anchor="middle" font-size="11" fill="#cbd5e1">对手：chokepoint_defender 留康抓</text>
+          <text x="480" y="200" text-anchor="middle" font-size="11" fill="#fecdd3">额外登场 / 解场 / 战阶启动的致命交点</text>
+          <text x="480" y="224" text-anchor="middle" font-size="11" font-family="ui-monospace,monospace" fill="#8b96a9">OTK=+1e6 · 清场=+600 · 净卡差=+120 · 步数=−4</text>
+
+          <line x1="618" y1="144" x2="660" y2="144" stroke="#a78bfa" stroke-width="1.8" marker-end="url(#arrV)" />
+
+          <!-- Col 3: Hindsight Distillation -->
+          <rect x="664" y="46" width="276" height="196" rx="10" fill="#10151f" stroke="#a78bfa" stroke-width="1.3" />
+          <text x="802" y="71" text-anchor="middle" font-size="13.5" font-weight="700" fill="#ddd6fe">3. 事后动作重排序蒸馏</text>
+          <text x="802" y="92" text-anchor="middle" font-size="11" font-family="ui-monospace,monospace" fill="#cbd5e1">bucket = (baited, msg, grp, type, cat)</text>
+
+          <rect x="680" y="106" width="244" height="72" rx="7" fill="#161d2b" stroke="#2c3a52" />
+          <text x="692" y="125" font-size="11" fill="#cbd5e1">• 算相对优势：adv = score − baseline</text>
+          <text x="692" y="144" font-size="11" fill="#a7f3d0">• 因果骗康奖：诱发对手连锁且后续清场</text>
+          <text x="692" y="163" font-size="11" fill="#a7f3d0">  或出伤，当步额外记 +1,200 信用分</text>
+
+          <text x="802" y="198" text-anchor="middle" font-size="11" fill="#cbd5e1">聚合为桶乘子更新下一次采样权重：</text>
+          <text x="802" y="217" text-anchor="middle" font-size="11" font-family="ui-monospace,monospace" fill="#f6dca6">bonus ∈ [0.35, 2.50]</text>
+          <text x="802" y="233" text-anchor="middle" font-size="10.5" fill="#8b96a9">绝不依赖卡号 ID，完全可跨分支泛化</text>
+
+          <!-- Bottom feedback bar -->
+          <path d="M 802 242 L 802 268 L 480 268 L 480 246" fill="none" stroke="#34d399" stroke-width="1.7" marker-end="url(#arrG)" />
+          <path d="M 480 268 L 158 268 L 158 246" fill="none" stroke="#d4a853" stroke-width="1.5" stroke-dasharray="4 3" marker-end="url(#arrGold)" />
+          <rect x="260" y="278" width="440" height="28" rx="7" fill="#131824" stroke="#2a364c" />
+          <text x="480" y="296" text-anchor="middle" font-size="11" fill="#cbd5e1">循环最多 96 次；一旦命中任意合法 OTK 立刻提前停机并导出 .yrp2 录像</text>
+        </svg>
+      </div>
+    </section>
+
+    <div class="section-head">
+      <h2>② 两大核心机制拆解与真实复现斩杀链</h2>
+      <span>没有一行“遇到鲜花先交一滴”的硬编码，全部因果排序从单局 96 次交互内自发蒸馏得出</span>
+    </div>
+    <div class="formula-card">
+      w'(s, a) &nbsp;=&nbsp; base_weight(s, a) &nbsp;&times;&nbsp; clamp(&thinsp;1.0 &nbsp;+&nbsp; 0.75 &middot; tanh(mean_adv(<b>bucket(a)</b>) / 2500), &thinsp;0.35, &thinsp;2.5&thinsp;)
+    </div>
+    <section class="two-col">
+      <div class="panel">
+        <h3 style="font-size:14.5px;color:var(--gold);margin-bottom:8px;">为什么 MAP-Elites 比普通 MCTS 更扛压？</h3>
+        <p style="font-size:12.5px;color:var(--muted);line-height:1.62;">
+          普通 MCTS 只用一个标量 <code>Q</code> 评价路径，而且 <code>prefix_hash</code> 把每条微小分支视为完全独立的树节点——在 <code>B=96</code> 这种极小预算下，大部分后半段节点只被访问 1 次，刚摸出“先把鲜花和赤霄骗掉、还差最后两步进战阶”的残局很快会被淘汰。<br /><br />
+          <b>MAP-Elites 把“战果拆成三维格子”</b>：哪怕当前这条路线只打了 <code>bait=3, clear=2, dmg=0</code>，它在那个格子里依然是局部最高分精英（<code>QdElite</code>）。后续迭代优先从高格子（高诱发、高解场、高伤害）抽父路线，随机拦腰截断前 <code>cut</code> 步重跑，等于把 <b>“已骗完康的桥头堡”锁定后再二次深挖致死链</b>。
+        </p>
+      </div>
+      <div class="panel">
+        <h3 style="font-size:14.5px;color:var(--violet);margin-bottom:8px;">事后动作重排序启发式到底学出了什么？</h3>
+        <p style="font-size:12.5px;color:var(--muted);line-height:1.62;">
+          事后蒸馏器会把每一步压缩成 32 位 <b>零卡号特征桶</b>：<code>(敌方此前已交康?, 消息类型, 指令组, 卡种[怪/速攻/通常/额外/陷阱], CDB效果位[解场或康/特招融合同调])</code>。<br /><br />
+          一次 rollout 跑完后，所有分支上的同类型动作共享这个桶的 <code>mean_adv</code>：
+          先交《羽毛扫》《禁忌的一滴》《封印的黄金柜》往往先诱出对方 <code>cl++</code> 且后续清光后场，桶权重自动升到上限 <b>2.5×</b>；反之，开局乱拍《金满而谦虚之壶》（导致全回合伤害减半、卡死 OTK）或一上来盲做额外被康光资源，均带来负优势并把该类桶压低至 <b>0.35×</b>。
+        </p>
+      </div>
+    </section>
+
+    <section class="panel" style="margin-top:14px;">
+      <h3 style="font-size:14px;color:var(--text);margin-bottom:10px;">Wave 21 真实双引擎验证过的天杯龙破阵斩杀链（节选自 OCG_BREAKER_REPORT.md）</h3>
+      <div style="margin-bottom:12px;">
+        <div style="font-size:12px;color:var(--accent);font-weight:700;margin-bottom:4px;">案例 A · 破满场烙印（Tier 2，6 连锁交互，对手终局 LP = -1,300）</div>
+        <div class="chain-flow">
+          <span class="flow-node">无限泡影 关冰剑龙</span><span class="flow-arrow">→</span>
+          <span class="flow-node">封印的黄金柜</span><span class="flow-arrow">⇄</span>
+          <span class="flow-node opp">骗掉 烙印的断罪</span><span class="flow-arrow">→</span>
+          <span class="flow-node">白龙 + 灿幻庄 + 中龙</span><span class="flow-arrow">⇄</span>
+          <span class="flow-node opp">逼光 赫焉龙→圣女→铁兽鸟 + 冰剑</span><span class="flow-arrow">→</span>
+          <span class="flow-node">战阶同调 双叉戟(5200) + 超越戟(3000) OTK</span>
+        </div>
+      </div>
+      <div>
+        <div style="font-size:12px;color:var(--green);font-weight:700;margin-bottom:4px;">案例 B · 破灵兽暗封lock（Tier 3，4 连锁交互，对手终局 LP = -1,250）</div>
+        <div class="chain-flow">
+          <span class="flow-node">禁忌的一滴 弃3(含陷阱) 不可对应锁死暗属性封锁+三妨碍</span><span class="flow-arrow">→</span>
+          <span class="flow-node">通召 白龙进战阶</span><span class="flow-arrow">→</span>
+          <span class="flow-node">战阶速攻 灿幻开门</span><span class="flow-arrow">⇄</span>
+          <span class="flow-node opp">迫交 蕾拉乌塔里 + 灵兽连契</span><span class="flow-arrow">→</span>
+          <span class="flow-node">中龙拉怪战阶连打同调 OTK</span>
+        </div>
+      </div>
+    </section>
+
+    <div class="section-head">
+      <h2>③ 等预算对照数据（B ≤ 96，seeds 2201..2220，chokepoint_defender）</h2>
+      <span>每格 80 局（天杯龙） / 320 局（4 套后攻构筑汇总），总计 1,280 局确定性交互对抗</span>
+    </div>
+    <section class="two-col">
+      <div class="panel" style="overflow-x:auto;">
+        <h3 style="font-size:13.5px;color:var(--gold);margin-bottom:10px;">天杯龙专项表现（tenpai_going2nd，N = 80 / 算法）</h3>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>算法</th>
+              <th>OTK 率</th>
+              <th>全清破阵</th>
+              <th>平均伤害</th>
+              <th>净卡差 Δ</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>greedy_pilot（无搜索）</td>
+              <td>0.00%</td>
+              <td>3.75%</td>
+              <td>134.38</td>
+              <td>-1.3875</td>
+            </tr>
+            <tr>
+              <td>flat_break_search（平铺蒙特卡洛）</td>
+              <td>12.50%</td>
+              <td>60.00%</td>
+              <td>2,612.81</td>
+              <td>+1.0000</td>
+            </tr>
+            <tr>
+              <td>bait_aware_mcts（诱发感知 MCTS）</td>
+              <td>13.75%</td>
+              <td>52.50%</td>
+              <td>3,081.56</td>
+              <td>+1.1750</td>
+            </tr>
+            <tr class="picked">
+              <td>causal_order_qd（MAP-Elites + 事后重排）</td>
+              <td>38.75% (31)</td>
+              <td>63.75% (51)</td>
+              <td>4,557.50</td>
+              <td>+1.2875</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="panel" style="overflow-x:auto;">
+        <h3 style="font-size:13.5px;color:var(--accent);margin-bottom:10px;">4 卡组汇总对照（天杯龙 / 闪刀 / 烙印 / 相剑，N = 320 / 算法）</h3>
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>算法</th>
+              <th>总 OTK 率</th>
+              <th>总全清</th>
+              <th>骗掉阻抗</th>
+              <th>单局耗时</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>greedy_pilot (B=1)</td>
+              <td>0.94%</td>
+              <td>10.94%</td>
+              <td>2.0625</td>
+              <td>20.75 ms</td>
+            </tr>
+            <tr>
+              <td>flat_break_search (B≤96)</td>
+              <td>10.31%</td>
+              <td>48.44%</td>
+              <td>2.5969</td>
+              <td>953.50 ms</td>
+            </tr>
+            <tr>
+              <td>bait_aware_mcts (B≤96)</td>
+              <td>11.88%</td>
+              <td>46.88%</td>
+              <td>2.6094</td>
+              <td>967.92 ms</td>
+            </tr>
+            <tr class="picked">
+              <td>causal_order_qd (B≤96)</td>
+              <td>19.06% (61)</td>
+              <td>52.19% (167)</td>
+              <td>2.6156</td>
+              <td>976.69 ms</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <div class="section-head">
+      <h2>④ 适用边界实话：为何离线 T2 这样就够了，而真实联机远远不够？</h2>
+      <span>明确区分“离线单回合破阵实验室 (Wave 21)”与“真实 233/MyCard 联机天梯实战”之间的鸿沟</span>
+    </div>
+    <section class="three-col">
+      <div class="tier-card good">
+        <span class="tier-badge">为什么离线单回合 T2 这样就够了？</span>
+        <div class="tier-metric">线性破阵 ≈ 因果排序问题</div>
+        <p style="font-size:12px;color:var(--muted);">离线测试已知对手明牌终场，天杯龙本身下级连招高度模式化——瓶颈不是复杂深度规划，而是<b>有限预算下如何把有限手牌排对因果先后手</b>。三维 QD 锁住中间成果 + 跨分支共享桶权重，正好专治这个结构。</p>
+      </div>
+      <div class="tier-card warn">
+        <span class="tier-badge">为什么打真实 MyCard / 233 远远不够？</span>
+        <div class="tier-metric">三道真实差距不能自欺</div>
+        <p style="font-size:12px;color:var(--muted);">① 依赖确定性明牌重跑 96 次，实战遇到盖卡/手坑<b>无法在对手身上倒带试错</b>；② <code>hindsight</code> 权重表每局开打前清空、不跨局记忆；③ 只算到 Turn-2 战阶结束，<b>不会处理斩不掉转 T3–T8 长盘拉扯与猜拳输了被迫先手</b>。</p>
+      </div>
+      <div class="tier-card bad">
+        <span class="tier-badge">注意区分：233 首测 0-3 跑的是啥？</span>
+        <div class="tier-metric">尚未接入本 C++ 求解器</div>
+        <p style="font-size:12px;color:var(--muted);">近期 <code>s1.ygo233.com</code> 连战 WindBot 0 胜 3 负的是轻量纯 JS 脚本版，它直接暴露了“主阶 1 抢合武士破坏者、黄金柜除外星球改造”等规则硬伤；下一步是把本文这套搜索 + H100 实体网与长盘价值头真正接进联机客户端。</p>
+      </div>
+    </section>
+
+    <footer>
+      <span>OCG-Zero · 后攻破阵与因果重排序解析</span>
+      <span>源码：ocg_breaker_lab/breaker_solver.cpp · 验真：verify_ocg_breaker.py (6,907 checks PASS)</span>
+    </footer>
+  </main>
+</body>
+</html>
