@@ -22,8 +22,8 @@
   </nav>
   <main class="container">
     <div class="page-head">
-      <h1>OCG-Zero · 真实规则对局回放</h1>
-      <p>原装 40 卡 OCG 卡表实测轨迹，全量动作经双核心 0 重试核验，卡名已按官方中文数据库校对。</p>
+      <h1>OCG-Zero · 真实规则与排位对局回放</h1>
+      <p>包含 4 场离线实验室基准回放与 6 场 MyCard 竞技排位（Bo3）真人实战高光/复盘；桌垫上的手牌、双方墓地、除外、额外、卡组、Bo3 换备及每张在场卡均可点击查看详情与官方中文卡文。</p>
     </div>
 
     <section class="kpi-grid">
@@ -43,13 +43,14 @@
         <div class="kpi-sub">跳过早期诱饵，T1 目标达成率减半</div>
       </div>
       <div class="kpi">
-        <div class="kpi-label">天杯龙后攻 8000 OTK</div>
+        <div class="kpi-label">天杯龙后攻 · 排位与破阵</div>
         <div class="kpi-value">38.75%</div>
-        <div class="kpi-sub">对 4 梯队满场 63.75% 全清破阵</div>
+        <div class="kpi-sub">离线 63.75% 全清 · 新增 6 场 MyCard 真人排位 Bo3</div>
       </div>
     </section>
 
     <section class="panel">
+      <div class="filter-bar" id="scenarioFilters"></div>
       <div class="tabs" id="scenarioTabs"></div>
 
       <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:10px;">
@@ -69,6 +70,7 @@
             </div>
             <div class="bar-group">
               <button class="btn" id="handBtn">当前手牌</button>
+              <button class="btn" id="zoneBtn">墓地/除外/额外</button>
               <button class="btn" id="deckBtn">完整卡组</button>
               <button class="btn" id="matToggleBtn">深空桌垫</button>
               <span class="lp-tag opp"><span id="lpLabel1">对手</span> <b id="lp1">8000</b></span>
@@ -83,15 +85,15 @@
           <div class="playmat-scroll">
             <div class="playmat" id="playmatBox">
               <div class="playmat-grid">
-                <div class="zone pile" id="oppDeck"></div>
+                <div class="zone pile clickable" id="oppDeck" title="点击查看对手已亮卡表"></div>
                 <div class="zone st pend-red" id="oppS4"></div>
                 <div class="zone st" id="oppS3"></div>
                 <div class="zone st" id="oppS2"></div>
                 <div class="zone st" id="oppS1"></div>
                 <div class="zone st pend-blue" id="oppS0"></div>
-                <div class="zone pile" id="oppExtra"></div>
+                <div class="zone pile clickable" id="oppExtra" title="点击查看对手已亮卡表"></div>
 
-                <div class="zone pile" id="oppGY"></div>
+                <div class="zone pile clickable" id="oppGY" title="点击检视对手墓地与除外区"></div>
                 <div class="zone mz" id="oppM4"></div>
                 <div class="zone mz" id="oppM3"></div>
                 <div class="zone mz" id="oppM2"></div>
@@ -114,20 +116,20 @@
                 <div class="zone mz" id="p0M2"></div>
                 <div class="zone mz" id="p0M3"></div>
                 <div class="zone mz" id="p0M4"></div>
-                <div class="zone pile" id="p0GY"></div>
+                <div class="zone pile clickable" id="p0GY" title="点击检视我方墓地与除外区"></div>
 
-                <div class="zone pile" id="p0Extra"></div>
+                <div class="zone pile clickable" id="p0Extra" title="点击检视我方额外卡组"></div>
                 <div class="zone st pend-blue" id="p0S0"></div>
                 <div class="zone st" id="p0S1"></div>
                 <div class="zone st" id="p0S2"></div>
                 <div class="zone st" id="p0S3"></div>
                 <div class="zone st pend-red" id="p0S4"></div>
-                <div class="zone pile" id="p0Deck"></div>
+                <div class="zone pile clickable" id="p0Deck" title="点击查看我方完整主/额/副卡组"></div>
               </div>
             </div>
           </div>
 
-          <div class="grave-line" id="gyRow"><span>墓地：暂无</span></div>
+          <div class="zone-strip" id="zoneStrip"></div>
           <p id="scNote" style="font-size:11.5px;color:var(--muted);line-height:1.5;"></p>
         </div>
 
@@ -141,11 +143,14 @@
           </div>
           <div class="milestones" id="milestones"></div>
           <div class="step-detail">
-            <h3 id="stepTitle"></h3>
+            <div class="step-head-row">
+              <h3 id="stepTitle"></h3>
+              <span class="src-badge" id="stepSrcBadge" style="display:none;"></span>
+            </div>
             <p id="stepDesc"></p>
           </div>
           <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--muted);padding:0 2px;">
-            <span>动作日志</span><span>点击任意行跳转</span>
+            <span>动作日志</span><span>点击任意行跳转 · 场上卡片可点开</span>
           </div>
           <div class="step-log" id="stepLog"></div>
         </div>
@@ -168,11 +173,12 @@
     </section>
 
     <footer>
-      <span>OCG-Zero 公开展示页 · 7×5 对局回放浏览器</span>
-      <span>卡名核对来源：YGOCDB 中文卡表</span>
+      <span>OCG-Zero 公开展示页 · 7×5 对局回放与多区域检视浏览器</span>
+      <span>卡名与卡文核对来源：YGOCDB 中文卡表 &amp; MyCard 竞技排位实录</span>
     </footer>
   </main>
 
+  <!-- Deck / Opp Cards / Bo3 Side Modal -->
   <div class="modal-backdrop" id="deckModal">
     <div class="modal-box">
       <div class="modal-head">
@@ -182,21 +188,57 @@
         </div>
         <button class="btn" id="closeDeckBtn">关闭</button>
       </div>
-      <div class="deck-cols" id="deckModalBody"></div>
+      <div class="modal-tabs" id="deckModalTabs"></div>
+      <div id="deckModalBody"></div>
     </div>
   </div>
 
-  <script>
-    const SCENARIOS = [{"id":"tier4_boss","title":"场景 1 · Tier 4 植物均（5 件套基准展开 · ocgcore 逐帧实况）","subtitle":"88 步真实决策对齐 216 次底层引擎状态 · 终场：回生之铁丹尼拘律树 + 六花圣 泪滴花束 + 轩辕十四 + 六花来来 + 白姬（0 幻影占格）","side0":"我方 · 植物均","side1":"对手 · 手坑位","p1Label":"对手手牌 / 场面","note":"对应卡组：植物均（40 主卡组 + 15 额外），目标为 5 件套基准终场。每一步的怪兽区 / EMZ / 魔陷区 / 手牌 / 墓地 / 除外区 / LP 均由 libocgcore.a query_field_card 实况直出。","milestones":[["起手展开",0],["外挂轩辕十四",19],["芳香茉莉桥",49],["连锁高峰",85],["最终终场",87]],"steps":[{"lp":[8000,8000],"phase":"第 1 回合 · 主要阶段 1","m":[null,null,null,null,null],"emz":[null,null],"s":[null,null,null,null,null,null],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":["圣种之地灵","六花的白姬","六花精 雪花莲","兽带斗神“百合”胃宿二","六花绚烂"],"chain":[],"gy":[],"removed":[],"note":"","chainCount":0,"stats":{},"emzSide":null,"title":"盖放《六花绚烂》","desc":"起手先把《六花绚烂》盖放到魔法·陷阱区，为检索《六花精 叶牡丹》保留资源。"},{"lp":[8000,8000],"phase":"第 1 回合 · 主要阶段 1","m":[null,null,null,null,null],"emz":[null,null],"s":[null,{"name":"六花绚烂","meta":"盖放 · 魔陷","kind":"spell"},null,null,null,null],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":["圣种之地灵","六花的白姬","六花精 雪花莲","兽带斗神“百合”胃宿二"],"chain":[],"gy":[],"removed":[],"note":"","chainCount":0,"stats":{},"emzSide":null,"title":"放置到魔法·陷阱区 S1","desc":"区域放置确认：S1 与真实轨迹一致。"},{"lp":[8000,8000],"phase":"第 1 回合 · 主要阶段 1","m":[null,null,null,null,null],"emz":[null,null],"s":[null,{"name":"六花绚烂","meta":"表侧魔法","kind":"spell"},null,null,null,null],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":["圣种之地灵","六花的白姬","六花精 雪花莲","兽带斗神“百合”胃宿二"],"chain":[],"gy":[],"removed":[],"note":"","chainCount":0,"stats":{},"emzSide":null,"title":"发动《六花绚烂》","desc":"《六花绚烂》发动，检索《六花精 叶牡丹》；本局第 1 次连锁成立。"},{"lp":[8000,8000],"phase":"第 1 回合 · 主要阶段 1","m":[null,null,null,null,null],"emz":[null,null],"s":[null,{"name":"六花绚烂","meta":"表侧魔法","kind":"spell"},null,null,null,null],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":["圣种之地灵","六花的白姬","六花精 雪花莲","兽带斗神“百合”胃宿二","六花精 叶牡丹"],"chain":[{"p":0,"text":"CL1 六花绚烂"}],"gy":[],"removed":[],"note":"","chainCount":0,"stats":{},"emzSide":null,"title":"挑选《六花精 叶牡丹》","desc":"《六花精 叶牡丹》加入手牌，作为后续植物族展开的补点。"},{"lp":[8000,8000],"phase":"第 1 回合 · 主要阶段 1","m":[null,null,null,null,null],"emz":[null,null],"s":[null,null,null,null,null,null],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":["兽带斗神“百合”胃宿二","六花精 叶牡丹","六花精 雪花莲","圣种之地灵","六花的白姬"],"chain":[],"gy":["六花绚烂"],"removed":[],"note":"","chainCount":0,"stats":{},"emzSide":null,"title":"通常召唤《圣种之地灵》","desc":"通常召唤《圣种之地灵》，本回合第 1 次通常召唤。"},{"lp":[8000,8000],"phase":"第 1 回合 · 主要阶段 1","m":[null,null,null,null,{"name":"圣种之地灵","meta":"★1 · ATK 0","kind":"monster"}],"emz":[null,null],"s":[null,null,null,null,null,null],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":["兽带斗神“百合”胃宿二","六花精 叶牡丹","六花精 雪花莲","六花的白姬"],"chain":[],"gy":["六花绚烂"],"removed":[],"note":"","chainCount":0,"stats":{},"emzSide":null,"title":"放置到主怪兽区 M4","desc":"《圣种之地灵》落在 M4，主怪兽区开始建立。"},{"lp":[8000,8000],"phase":"第 1 回合 · 主要阶段 1","m":[null,null,null,null,{"name":"圣种之地灵","meta":"★1 · ATK 0","kind":"monster"}],"emz":[null,null],"s":[null,null,null,null,null,null],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":["兽带斗神“百合”胃宿二","六花精 叶牡丹","六花精 雪花莲","六花的白姬"],"chain":[],"gy":["六花绚烂"],"removed":[],"note":"","chainCount":0,"stats":{},"emzSide":null,"title":"特殊召唤《圣天树之幼精》","desc":"以《圣种之地灵》为素材连接召唤《圣天树之幼精》，《圣种之地灵》送墓。"},{"lp":[8000,8000],"phase":"第 1 回合 · 主要阶段 1","m":[null,null,null,null,null],"emz":[{"name":"圣天树之幼精","meta":"LINK-1 · ATK 0","kind":"link"},null],"s":[null,null,null,null,null,null],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":["兽带斗神“百合”胃宿二","六花精 叶牡丹","六花精 雪花莲","六花的白姬"],"chain":[],"gy":["六花绚烂","圣种之地灵"],"removed":[],"note":"","chainCount":0,"stats":{},"emzSide":null,"title":"放置到额外怪兽区左侧（M5）","desc":"《圣天树之幼精》进入额外怪兽区左侧，链接箭头指向主怪兽区。"},{"lp":[8000,8000],"phase":"第 1 回合 · 主要阶段 1","m":[null,null,null,null,null],"emz":[{"name":"圣天树之幼精","meta":"LINK-1 · ATK 0","kind":"link"},null],"s":[null,null,null,null,null,null],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":["兽带斗神“百合”胃宿二","六花精 叶牡丹","六花精 雪花莲","六花的白姬"],"chain":[{"p":0,"text":"CL1 圣天树之幼精"}],"gy":["六花绚烂","圣种之地灵"],"removed":[],"note":"","chainCount":1,"stats":{},"emzSide":null,"title":"确认发动《圣天树之幼精》的触发效果","desc":"《圣天树之幼精》触发，检索《圣蔓的播种》；第 2 次连锁。"},{"lp":[8000,8000],"phase":"第 1 回合 · 主要阶段 1","m":[null,null,null,null,null],"emz":[{"name":"圣天树之幼精","meta":"LINK-1 · ATK 0","kind":"link"},null],"s":[null,null,null,null,null,null],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":["兽带斗神“百合”胃宿二","六花精 叶牡丹","六花精 雪花莲","六花的白姬","圣蔓的播种"],"chain":[{"p":0,"text":"CL1 圣天树之幼精"}],"gy":["六花绚烂","圣种之地灵"],"removed":[],"note":"","chainCount":1,"stats":{},"emzSide":null,"title":"挑选《圣蔓的播种》","desc":"《圣蔓的播种》加入手牌，准备铺开圣种轴。"},{"lp":[8000,8000],"phase":"第 1 回合 · 主要阶段 1","m":[null,null,null,null,null],"emz":[{"name":"圣天树之幼精","meta":"LINK-1 · ATK 0","kind":"link"},null],"s":[null,null,null,null,null,null],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":["圣蔓的播种","六花的白姬","兽带斗神“百合”胃宿二","六花精 雪花莲","六花精 叶牡丹"],"chain":[{"p":0,"text":"CL1 兽带斗神“百合”胃宿二"}],"gy":["六花绚烂","圣种之地灵"],"removed":[],"note":"","chainCount":2,"stats":{},"emzSide":null,"title":"发动《兽带斗神“百合”胃宿二》","desc":"《兽带斗神“百合”胃宿二》从手牌发动，提前布置兽带斗神外挂。"},{"lp":[8000,8000],"phase":"第 1 回合 · 主要阶段 1","m":[null,null,null,null,null],"emz":[{"name":"圣天树之幼精","meta":"LINK-1 · ATK 0","kind":"link"},null],"s":[null,null,null,null,null,null],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":["圣蔓的播种","六花的白姬","兽带斗神“百合”胃宿二","六花精 雪花莲","六花精 叶牡丹"],"chain":[{"p":0,"text":"CL1 兽带斗神“百合”胃宿二"}],"gy":["六花绚烂","圣种之地灵"],"removed":[],"note":"","chainCount":2,"stats":{},"emzSide":null,"title":"放置到主怪兽区 M1","desc":"《兽带斗神“百合”胃宿二》落在 M1。"},{"lp":[8000,8000],"phase":"第 1 回合 · 主要阶段 1","m":[null,{"name":"兽带斗神“百合”胃宿二","meta":"★8 · DEF 2500","kind":"monster"},null,null,null],"emz":[{"name":"圣天树之幼精","meta":"LINK-1 · ATK 0","kind":"link"},null],"s":[null,null,null,null,null,null],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":["圣蔓的播种","六花的白姬","六花精 雪花莲","六花精 叶牡丹"],"chain":[{"p":0,"text":"CL1 兽带斗神“百合”胃宿二"}],"gy":["六花绚烂","圣种之地灵"],"removed":[],"note":"","chainCount":2,"stats":{},"emzSide":null,"title":"确认《兽带斗神“百合”胃宿二》的表示形式","desc":"攻击表示确认，兽带斗神外挂开始与植物轴并行。"},{"lp":[8000,8000],"phase":"第 1 回合 · 主要阶段 1","m":[null,{"name":"兽带斗神“百合”胃宿二","meta":"★8 · DEF 2500","kind":"monster"},null,null,null],"emz":[{"name":"圣天树之幼精","meta":"LINK-1 · ATK 0","kind":"link"},null],"s":[null,null,{"name":"圣种之地灵","meta":"装备魔法","kind":"monster"},null,null,null],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":["圣蔓的播种","六花的白姬","六花精 雪花莲","六花精 叶牡丹"],"chain":[{"p":0,"text":"CL1 兽带斗神“百合”胃宿二"}],"gy":["六花绚烂"],"removed":[],"note":"","chainCount":2,"stats":{},"emzSide":null,"title":"放置到魔法·陷阱区 S2","desc":"装备联动区域 S2 记录完成。"},{"lp":[8000,8000],"phase":"第 1 回合 · 主要阶段 1","m":[null,{"name":"兽带斗神“百合”胃宿二","meta":"★8 · DEF 2500","kind":"monster"},null,null,null],"emz":[{"name":"圣天树之幼精","meta":"LINK-1 · ATK 0","kind":"link"},null],"s":[null,null,{"name":"圣种之地灵","meta":"表侧魔法","kind":"monster"},null,null,null],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":["圣蔓的播种","六花的白姬","六花精 雪花莲","六花精 叶牡丹"],"chain":[{"p":0,"text":"CL1 兽带斗神“百合”胃宿二"}],"gy":["六花绚烂"],"removed":[],"note":"","chainCount":3,"stats":{},"emzSide":null,"title":"发动《兽带斗神“百合”胃宿二》的装备效果","desc":"《兽带斗神“百合”胃宿二》再次发动，进入装备联动。"},{"lp":[8000,8000],"phase":"第 1 回合 · 主要阶段 1","m":[null,null,null,null,null],"emz":[{"name":"圣天树之幼精","meta":"LINK-1 · ATK 0","kind":"link"},null],"s":[null,null,{"name":"圣种之地灵","meta":"表侧魔法","kind":"monster"},null,null,null],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":["圣蔓的播种","六花的白姬","六花精 雪花莲","六花精 叶牡丹"],"chain":[{"p":0,"text":"CL1 兽带斗神“百合”胃宿二"}],"gy":["六花绚烂","兽带斗神“百合”胃宿二"],"removed":[],"note":"","chainCount":3,"stats":{},"emzSide":null,"title":"以《兽带斗神“百合”胃宿二》为对象","desc":"效果对象确认，装备关系建立。"},{"lp":[8000,8000],"phase":"第 1 回合 · 主要阶段 1","m":[null,null,null,null,null],"emz":[{"name":"圣天树之幼精","meta":"LINK-1 · ATK 0","kind":"link"},null],"s":[null,null,null,null,null,null],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":["圆盘斗技场 兽带斗神环形擂台","六花的白姬","六花精 雪花莲","六花精 叶牡丹","圣蔓的播种"],"chain":[],"gy":["六花绚烂","兽带斗神“百合”胃宿二","圣种之地灵"],"removed":[],"note":"","chainCount":3,"stats":{},"emzSide":null,"title":"盖放《圆盘斗技场 兽带斗神环形擂台》","desc":"盖放《圆盘斗技场 兽带斗神环形擂台》，为《兽带斗神“王者”轩辕十四》的检索与装备做准备。"},{"lp":[8000,8000],"phase":"第 1 回合 · 主要阶段 1","m":[null,null,null,null,null],"emz":[{"name":"圣天树之幼精","meta":"LINK-1 · ATK 0","kind":"link"},null],"s":[null,null,null,null,null,{"name":"圆盘斗技场 兽带斗神环形擂台","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":["六花的白姬","六花精 雪花莲","六花精 叶牡丹","圣蔓的播种"],"chain":[],"gy":["六花绚烂","兽带斗神“百合”胃宿二","圣种之地灵"],"removed":[],"note":"","chainCount":3,"stats":{},"emzSide":null,"title":"发动《圆盘斗技场 兽带斗神环形擂台》","desc":"《圆盘斗技场 兽带斗神环形擂台》发动；第 5 次连锁。"},{"lp":[8000,8000],"phase":"第 1 回合 · 主要阶段 1","m":[null,null,null,null,null],"emz":[{"name":"圣天树之幼精","meta":"LINK-1 · ATK 0","kind":"link"},null],"s":[null,null,null,null,null,{"name":"圆盘斗技场 兽带斗神环形擂台","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":["六花的白姬","六花精 雪花莲","六花精 叶牡丹","圣蔓的播种"],"chain":[{"p":0,"text":"CL1 圆盘斗技场 兽带斗神环形擂台"}],"gy":["六花绚烂","兽带斗神“百合”胃宿二","圣种之地灵"],"removed":[],"note":"","chainCount":3,"stats":{},"emzSide":null,"title":"确认：是","desc":"确认发动，场地效果进入结算。"},{"lp":[8000,8000],"phase":"第 1 回合 · 主要阶段 1","m":[null,null,null,null,null],"emz":[{"name":"圣天树之幼精","meta":"LINK-1 · ATK 0","kind":"link"},null],"s":[null,null,null,null,null,{"name":"圆盘斗技场 兽带斗神环形擂台","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":["兽带斗神“王者”轩辕十四","六花的白姬","圣蔓的播种","六花精 雪花莲","六花精 叶牡丹"],"chain":[{"p":0,"text":"CL1 兽带斗神“王者”轩辕十四"}],"gy":["六花绚烂","兽带斗神“百合”胃宿二","圣种之地灵"],"removed":[],"note":"","chainCount":4,"stats":{},"emzSide":null,"title":"发动《兽带斗神“王者”轩辕十四》","desc":"《兽带斗神“王者”轩辕十四》登场，形成 ATK 3500 的终端压制点；第 6 次连锁。"},{"lp":[8000,8000],"phase":"第 1 回合 · 主要阶段 1","m":[null,null,null,null,null],"emz":[{"name":"圣天树之幼精","meta":"LINK-1 · ATK 0","kind":"link"},null],"s":[null,null,null,null,null,{"name":"圆盘斗技场 兽带斗神环形擂台","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":["兽带斗神“王者”轩辕十四","六花的白姬","圣蔓的播种","六花精 雪花莲","六花精 叶牡丹"],"chain":[{"p":0,"text":"CL1 兽带斗神“王者”轩辕十四"}],"gy":["六花绚烂","兽带斗神“百合”胃宿二","圣种之地灵"],"removed":[],"note":"","chainCount":4,"stats":{},"emzSide":null,"title":"放置到主怪兽区 M4","desc":"《兽带斗神“王者”轩辕十四》落在 M4，主怪兽区核心就位。"},{"lp":[8000,8000],"phase":"第 1 回合 · 主要阶段 1","m":[null,null,null,null,{"name":"兽带斗神“王者”轩辕十四","meta":"★8 · ATK 2800","kind":"monster"}],"emz":[{"name":"圣天树之幼精","meta":"LINK-1 · ATK 0","kind":"link"},null],"s":[null,null,null,null,null,{"name":"圆盘斗技场 兽带斗神环形擂台","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":["六花的白姬","圣蔓的播种","六花精 雪花莲","六花精 叶牡丹"],"chain":[{"p":0,"text":"CL1 兽带斗神“王者”轩辕十四"}],"gy":["六花绚烂","兽带斗神“百合”胃宿二","圣种之地灵"],"removed":[],"note":"","chainCount":4,"stats":{},"emzSide":null,"title":"确认《兽带斗神“王者”轩辕十四》的表示形式","desc":"攻击表示确认，兽带斗神终端站定。"},{"lp":[8000,8000],"phase":"第 1 回合 · 主要阶段 1","m":[null,null,null,null,{"name":"兽带斗神“王者”轩辕十四","meta":"★8 · ATK 2800","kind":"monster"}],"emz":[{"name":"圣天树之幼精","meta":"LINK-1 · ATK 0","kind":"link"},null],"s":[null,null,null,null,{"name":"兽带斗神“百合”胃宿二","meta":"装备魔法","kind":"monster"},{"name":"圆盘斗技场 兽带斗神环形擂台","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":["六花的白姬","圣蔓的播种","六花精 雪花莲","六花精 叶牡丹"],"chain":[{"p":0,"text":"CL1 兽带斗神“王者”轩辕十四"}],"gy":["六花绚烂","圣种之地灵"],"removed":[],"note":"","chainCount":4,"stats":{},"emzSide":null,"title":"放置到魔法·陷阱区 S4","desc":"《兽带斗神“百合”胃宿二》转为装备，落在 S4。"},{"lp":[8000,8000],"phase":"第 1 回合 · 主要阶段 1","m":[null,null,null,null,{"name":"兽带斗神“王者”轩辕十四","meta":"★8 · ATK 3500","kind":"monster"}],"emz":[{"name":"圣天树之幼精","meta":"LINK-1 · ATK 0","kind":"link"},null],"s":[null,null,null,null,{"name":"兽带斗神“百合”胃宿二","meta":"表侧魔法","kind":"monster"},{"name":"圆盘斗技场 兽带斗神环形擂台","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":["六花的白姬","圣蔓的播种","六花精 雪花莲","六花精 叶牡丹"],"chain":[],"gy":["六花绚烂","圣种之地灵"],"removed":[],"note":"","chainCount":4,"stats":{},"emzSide":null,"title":"发动《圣蔓的播种》","desc":"《圣蔓的播种》发动，开始第二次圣种展开；第 7 次连锁。"},{"lp":[8000,8000],"phase":"第 1 回合 · 主要阶段 1","m":[null,null,null,null,{"name":"兽带斗神“王者”轩辕十四","meta":"★8 · ATK 3500","kind":"monster"}],"emz":[{"name":"圣天树之幼精","meta":"LINK-1 · ATK 0","kind":"link"},null],"s":[null,{"name":"圣蔓的播种","meta":"表侧魔法","kind":"spell"},null,null,{"name":"兽带斗神“百合”胃宿二","meta":"表侧魔法","kind":"monster"},{"name":"圆盘斗技场 兽带斗神环形擂台","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":["六花的白姬","六花精 雪花莲","六花精 叶牡丹"],"chain":[],"gy":["六花绚烂","圣种之地灵"],"removed":[],"note":"","chainCount":4,"stats":{},"emzSide":null,"title":"放置到魔法·陷阱区 S1","desc":"《圣蔓的播种》占用 S1，魔法区记录同步。"},{"lp":[8000,8000],"phase":"第 1 回合 · 主要阶段 1","m":[null,null,null,null,{"name":"兽带斗神“王者”轩辕十四","meta":"★8 · ATK 3500","kind":"monster"}],"emz":[{"name":"圣天树之幼精","meta":"LINK-1 · ATK 0","kind":"link"},null],"s":[null,{"name":"圣蔓的播种","meta":"表侧魔法","kind":"spell"},null,null,{"name":"兽带斗神“百合”胃宿二","meta":"表侧魔法","kind":"monster"},{"name":"圆盘斗技场 兽带斗神环形擂台","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":["六花的白姬","六花精 雪花莲","六花精 叶牡丹"],"chain":[{"p":0,"text":"CL1 圣蔓的播种"}],"gy":["六花绚烂","圣种之地灵"],"removed":[],"note":"","chainCount":4,"stats":{},"emzSide":null,"title":"挑选《圣种之天双芽》","desc":"挑选《圣种之天双芽》，准备补充场值与连接素材。"},{"lp":[8000,8000],"phase":"第 1 回合 · 主要阶段 1","m":[null,null,null,null,{"name":"兽带斗神“王者”轩辕十四","meta":"★8 · ATK 3500","kind":"monster"}],"emz":[{"name":"圣天树之幼精","meta":"LINK-1 · ATK 0","kind":"link"},null],"s":[null,{"name":"圣蔓的播种","meta":"表侧魔法","kind":"spell"},null,null,{"name":"兽带斗神“百合”胃宿二","meta":"表侧魔法","kind":"monster"},{"name":"圆盘斗技场 兽带斗神环形擂台","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":["六花的白姬","六花精 雪花莲","六花精 叶牡丹"],"chain":[{"p":0,"text":"CL1 圣蔓的播种"}],"gy":["六花绚烂","圣种之地灵"],"removed":[],"note":"","chainCount":4,"stats":{},"emzSide":null,"title":"放置到主怪兽区 M0","desc":"《圣种之天双芽》落在 M0。"},{"lp":[8000,8000],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"圣种之天双芽","meta":"★2 · DEF 800","kind":"monster"},null,null,null,{"name":"兽带斗神“王者”轩辕十四","meta":"★8 · ATK 3500","kind":"monster"}],"emz":[{"name":"圣天树之幼精","meta":"LINK-1 · ATK 0","kind":"link"},null],"s":[null,{"name":"圣蔓的播种","meta":"表侧魔法","kind":"spell"},null,null,{"name":"兽带斗神“百合”胃宿二","meta":"表侧魔法","kind":"monster"},{"name":"圆盘斗技场 兽带斗神环形擂台","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":["六花的白姬","六花精 雪花莲","六花精 叶牡丹"],"chain":[{"p":0,"text":"CL1 圣蔓的播种"}],"gy":["六花绚烂","圣种之地灵"],"removed":[],"note":"","chainCount":4,"stats":{},"emzSide":null,"title":"确认《圣种之天双芽》的表示形式","desc":"表示形式确认，圣种轴继续铺场。"},{"lp":[7000,8000],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"圣种之天双芽","meta":"★2 · DEF 800","kind":"monster"},null,null,null,{"name":"兽带斗神“王者”轩辕十四","meta":"★8 · ATK 3500","kind":"monster"}],"emz":[{"name":"圣天树之幼精","meta":"LINK-1 · ATK 0","kind":"link"},null],"s":[null,null,null,null,{"name":"兽带斗神“百合”胃宿二","meta":"表侧魔法","kind":"monster"},{"name":"圆盘斗技场 兽带斗神环形擂台","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":["六花的白姬","六花精 雪花莲","六花精 叶牡丹"],"chain":[{"p":0,"text":"CL1 圣种之天双芽"}],"gy":["六花绚烂","圣种之地灵","圣蔓的播种"],"removed":[],"note":"","chainCount":5,"stats":{},"emzSide":null,"title":"连锁《圣种之天双芽》","desc":"《圣种之天双芽》连锁成立；第 8 次连锁。"},{"lp":[7000,8000],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"圣种之天双芽","meta":"★2 · DEF 800","kind":"monster"},null,null,null,{"name":"兽带斗神“王者”轩辕十四","meta":"★8 · ATK 3500","kind":"monster"}],"emz":[{"name":"圣天树之幼精","meta":"LINK-1 · ATK 0","kind":"link"},null],"s":[null,null,null,null,{"name":"兽带斗神“百合”胃宿二","meta":"表侧魔法","kind":"monster"},{"name":"圆盘斗技场 兽带斗神环形擂台","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":["六花的白姬","六花精 雪花莲","六花精 叶牡丹"],"chain":[{"p":0,"text":"CL1 圣种之天双芽"},{"p":0,"text":"CL2 圣天树之幼精"}],"gy":["六花绚烂","圣种之地灵","圣蔓的播种"],"removed":[],"note":"","chainCount":6,"stats":{},"emzSide":null,"title":"连锁《圣天树之幼精》","desc":"《圣天树之幼精》接上连锁；第 9 次连锁。"},{"lp":[8000,8000],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"圣种之天双芽","meta":"★2 · DEF 800","kind":"monster"},{"name":"圣蔓之治愈者","meta":"LINK-1 · ATK 600","kind":"link"},null,null,{"name":"兽带斗神“王者”轩辕十四","meta":"★8 · ATK 3500","kind":"monster"}],"emz":[{"name":"圣天树之幼精","meta":"LINK-1 · ATK 0","kind":"link"},null],"s":[null,null,null,null,{"name":"兽带斗神“百合”胃宿二","meta":"表侧魔法","kind":"monster"},{"name":"圆盘斗技场 兽带斗神环形擂台","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":["六花的白姬","六花精 雪花莲","六花精 叶牡丹"],"chain":[{"p":0,"text":"CL1 圣种之天双芽"},{"p":0,"text":"CL2 圣天树之幼精"}],"gy":["六花绚烂","圣种之地灵","圣蔓的播种"],"removed":[],"note":"","chainCount":6,"stats":{},"emzSide":null,"title":"放置到主怪兽区 M3","desc":"《圣种之地灵》被重新放置到 M3。"},{"lp":[8000,8000],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"圣种之天双芽","meta":"★2 · DEF 800","kind":"monster"},{"name":"圣蔓之治愈者","meta":"LINK-1 · ATK 600","kind":"link"},null,{"name":"圣种之地灵","meta":"★1 · ATK 0","kind":"monster"},{"name":"兽带斗神“王者”轩辕十四","meta":"★8 · ATK 3500","kind":"monster"}],"emz":[{"name":"圣天树之幼精","meta":"LINK-1 · ATK 0","kind":"link"},null],"s":[null,null,null,null,{"name":"兽带斗神“百合”胃宿二","meta":"表侧魔法","kind":"monster"},{"name":"圆盘斗技场 兽带斗神环形擂台","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":["六花的白姬","六花精 雪花莲","六花精 叶牡丹"],"chain":[{"p":0,"text":"CL1 圣种之天双芽"},{"p":0,"text":"CL2 圣天树之幼精"}],"gy":["六花绚烂","圣蔓的播种"],"removed":[],"note":"","chainCount":6,"stats":{},"emzSide":null,"title":"确认《圣种之地灵》的表示形式","desc":"《圣种之地灵》表示形式确认，场值回收成功。"},{"lp":[8000,8000],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"圣种之天双芽","meta":"★2 · DEF 800","kind":"monster"},{"name":"圣蔓之治愈者","meta":"LINK-1 · ATK 600","kind":"link"},null,{"name":"圣种之地灵","meta":"★1 · ATK 0","kind":"monster"},{"name":"兽带斗神“王者”轩辕十四","meta":"★8 · ATK 3500","kind":"monster"}],"emz":[{"name":"圣天树之幼精","meta":"LINK-1 · ATK 0","kind":"link"},null],"s":[null,null,null,null,{"name":"兽带斗神“百合”胃宿二","meta":"表侧魔法","kind":"monster"},{"name":"圆盘斗技场 兽带斗神环形擂台","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":["六花的白姬","六花精 雪花莲","六花精 叶牡丹"],"chain":[{"p":0,"text":"CL1 圣蔓之治愈者"}],"gy":["六花绚烂","圣蔓的播种"],"removed":[],"note":"","chainCount":7,"stats":{},"emzSide":null,"title":"确认发动《圣蔓之治愈者》的触发效果","desc":"《圣蔓之治愈者》触发，回复 LP 至 8800；第 10 次连锁。"},{"lp":[8300,8000],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"圣种之天双芽","meta":"★2 · DEF 800","kind":"monster"},{"name":"圣蔓之治愈者","meta":"LINK-1 · ATK 600","kind":"link"},null,{"name":"圣种之地灵","meta":"★1 · ATK 0","kind":"monster"},{"name":"兽带斗神“王者”轩辕十四","meta":"★8 · ATK 3500","kind":"monster"}],"emz":[{"name":"圣天树之幼精","meta":"LINK-1 · ATK 0","kind":"link"},null],"s":[null,null,null,null,{"name":"兽带斗神“百合”胃宿二","meta":"表侧魔法","kind":"monster"},{"name":"圆盘斗技场 兽带斗神环形擂台","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":["六花的白姬","六花精 雪花莲","六花精 叶牡丹"],"chain":[{"p":0,"text":"CL1 六花精 叶牡丹"}],"gy":["六花绚烂","圣蔓的播种"],"removed":[],"note":"","chainCount":8,"stats":{},"emzSide":null,"title":"发动《六花精 叶牡丹》","desc":"《六花精 叶牡丹》发动，补充植物族等级；第 11 次连锁。"},{"lp":[8300,8000],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"圣种之天双芽","meta":"★2 · DEF 800","kind":"monster"},null,null,{"name":"圣种之地灵","meta":"★1 · ATK 0","kind":"monster"},{"name":"兽带斗神“王者”轩辕十四","meta":"★8 · ATK 3500","kind":"monster"}],"emz":[{"name":"圣天树之幼精","meta":"LINK-1 · ATK 0","kind":"link"},null],"s":[null,null,null,null,{"name":"兽带斗神“百合”胃宿二","meta":"表侧魔法","kind":"monster"},{"name":"圆盘斗技场 兽带斗神环形擂台","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":["六花的白姬","六花精 雪花莲","六花精 叶牡丹"],"chain":[{"p":0,"text":"CL1 六花精 叶牡丹"}],"gy":["六花绚烂","圣蔓的播种","圣蔓之治愈者"],"removed":[],"note":"","chainCount":8,"stats":{},"emzSide":null,"title":"以《圣蔓之治愈者》为对象","desc":"效果对象锁定《圣蔓之治愈者》。"},{"lp":[8300,8000],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"圣种之天双芽","meta":"★2 · DEF 800","kind":"monster"},null,null,{"name":"圣种之地灵","meta":"★1 · ATK 0","kind":"monster"},{"name":"兽带斗神“王者”轩辕十四","meta":"★8 · ATK 3500","kind":"monster"}],"emz":[{"name":"圣天树之幼精","meta":"LINK-1 · ATK 0","kind":"link"},null],"s":[null,null,null,null,{"name":"兽带斗神“百合”胃宿二","meta":"表侧魔法","kind":"monster"},{"name":"圆盘斗技场 兽带斗神环形擂台","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":["六花的白姬","六花精 雪花莲","六花精 叶牡丹"],"chain":[{"p":0,"text":"CL1 六花精 叶牡丹"}],"gy":["六花绚烂","圣蔓的播种","圣蔓之治愈者"],"removed":[],"note":"","chainCount":8,"stats":{},"emzSide":null,"title":"放置到主怪兽区 M1","desc":"《六花精 叶牡丹》落在 M1，场值继续增加。"},{"lp":[8300,8000],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"圣种之天双芽","meta":"★2 · DEF 800","kind":"monster"},{"name":"六花精 叶牡丹","meta":"★6 · DEF 2400","kind":"monster"},null,{"name":"圣种之地灵","meta":"★1 · ATK 0","kind":"monster"},{"name":"兽带斗神“王者”轩辕十四","meta":"★8 · ATK 3500","kind":"monster"}],"emz":[{"name":"圣天树之幼精","meta":"LINK-1 · ATK 0","kind":"link"},null],"s":[null,null,null,null,{"name":"兽带斗神“百合”胃宿二","meta":"表侧魔法","kind":"monster"},{"name":"圆盘斗技场 兽带斗神环形擂台","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":["六花的白姬","六花精 雪花莲"],"chain":[{"p":0,"text":"CL1 六花精 叶牡丹"}],"gy":["六花绚烂","圣蔓的播种","圣蔓之治愈者"],"removed":[],"note":"","chainCount":8,"stats":{},"emzSide":null,"title":"确认《六花精 叶牡丹》的表示形式","desc":"《六花精 叶牡丹》表示形式确认。"},{"lp":[8300,8000],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"圣种之天双芽","meta":"★2 · DEF 800","kind":"monster"},{"name":"六花精 叶牡丹","meta":"★6 · DEF 2400","kind":"monster"},null,{"name":"圣种之地灵","meta":"★1 · ATK 0","kind":"monster"},{"name":"兽带斗神“王者”轩辕十四","meta":"★8 · ATK 3500","kind":"monster"}],"emz":[{"name":"圣天树之幼精","meta":"LINK-1 · ATK 0","kind":"link"},null],"s":[null,null,null,null,{"name":"兽带斗神“百合”胃宿二","meta":"表侧魔法","kind":"monster"},{"name":"圆盘斗技场 兽带斗神环形擂台","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":["六花的白姬","六花精 雪花莲"],"chain":[{"p":0,"text":"CL1 六花精 叶牡丹"}],"gy":["六花绚烂","圣蔓的播种","圣蔓之治愈者"],"removed":[],"note":"","chainCount":9,"stats":{},"emzSide":null,"title":"确认发动《六花精 叶牡丹》的触发效果","desc":"《六花精 叶牡丹》触发；第 12 次连锁。"},{"lp":[8300,8000],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"圣种之天双芽","meta":"★2 · DEF 800","kind":"monster"},{"name":"六花精 叶牡丹","meta":"★6 · DEF 2400","kind":"monster"},null,{"name":"圣种之地灵","meta":"★1 · ATK 0","kind":"monster"},{"name":"兽带斗神“王者”轩辕十四","meta":"★8 · ATK 3500","kind":"monster"}],"emz":[{"name":"圣天树之幼精","meta":"LINK-1 · ATK 0","kind":"link"},null],"s":[null,null,null,null,{"name":"兽带斗神“百合”胃宿二","meta":"表侧魔法","kind":"monster"},{"name":"圆盘斗技场 兽带斗神环形擂台","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":["六花的白姬","六花精 雪花莲","六花来来"],"chain":[{"p":0,"text":"CL1 六花精 叶牡丹"}],"gy":["六花绚烂","圣蔓的播种","圣蔓之治愈者"],"removed":[],"note":"","chainCount":9,"stats":{},"emzSide":null,"title":"挑选《六花来来》","desc":"挑选场地魔法《六花来来》，准备把植物族场面转成六花终端。"},{"lp":[8300,8000],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"圣种之天双芽","meta":"★2 · DEF 800","kind":"monster"},{"name":"六花精 叶牡丹","meta":"★6 · DEF 2400","kind":"monster"},null,{"name":"圣种之地灵","meta":"★1 · ATK 0","kind":"monster"},{"name":"兽带斗神“王者”轩辕十四","meta":"★8 · ATK 3500","kind":"monster"}],"emz":[{"name":"圣天树之幼精","meta":"LINK-1 · ATK 0","kind":"link"},null],"s":[null,null,null,null,{"name":"兽带斗神“百合”胃宿二","meta":"表侧魔法","kind":"monster"},null],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":["六花的白姬","六花精 雪花莲","六花来来"],"chain":[],"gy":["六花绚烂","圣蔓的播种","圣蔓之治愈者","圆盘斗技场 兽带斗神环形擂台"],"removed":[],"note":"","chainCount":9,"stats":{},"emzSide":null,"title":"发动《六花来来》","desc":"《六花来来》发动，场地进入六花轴；第 13 次连锁。"},{"lp":[8300,8000],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"圣种之天双芽","meta":"★2 · DEF 800","kind":"monster"},{"name":"六花精 叶牡丹","meta":"★6 · DEF 2400","kind":"monster"},null,{"name":"圣种之地灵","meta":"★1 · ATK 0","kind":"monster"},{"name":"兽带斗神“王者”轩辕十四","meta":"★8 · ATK 3500","kind":"monster"}],"emz":[{"name":"圣天树之幼精","meta":"LINK-1 · ATK 0","kind":"link"},null],"s":[null,null,null,null,{"name":"兽带斗神“百合”胃宿二","meta":"表侧魔法","kind":"monster"},{"name":"六花来来","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":["六花的白姬","六花精 雪花莲"],"chain":[],"gy":["六花绚烂","圣蔓的播种","圣蔓之治愈者","圆盘斗技场 兽带斗神环形擂台"],"removed":[],"note":"","chainCount":9,"stats":{},"emzSide":null,"title":"特殊召唤《芳香炽天使-茉莉》(#1)","desc":"在 M0/M1/M3/M4 与 EMZ0 就绪后，开始连接召唤第 1 张《芳香炽天使-茉莉》。"},{"lp":[8300,8000],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"圣种之天双芽","meta":"★2 · DEF 800","kind":"monster"},{"name":"六花精 叶牡丹","meta":"★6 · DEF 2400","kind":"monster"},null,{"name":"圣种之地灵","meta":"★1 · ATK 0","kind":"monster"},{"name":"兽带斗神“王者”轩辕十四","meta":"★8 · ATK 3500","kind":"monster"}],"emz":[{"name":"圣天树之幼精","meta":"LINK-1 · ATK 0","kind":"link"},null],"s":[null,null,null,null,{"name":"兽带斗神“百合”胃宿二","meta":"表侧魔法","kind":"monster"},{"name":"六花来来","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":["六花的白姬","六花精 雪花莲"],"chain":[],"gy":["六花绚烂","圣蔓的播种","圣蔓之治愈者","圆盘斗技场 兽带斗神环形擂台"],"removed":[],"note":"","chainCount":9,"stats":{},"emzSide":null,"title":"挑选素材：《圣种之地灵》","desc":"连接素材对象一：M3 的《圣种之地灵》。"},{"lp":[8300,8000],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"圣种之天双芽","meta":"★2 · DEF 800","kind":"monster"},null,null,{"name":"圣种之地灵","meta":"★1 · ATK 0","kind":"monster"},{"name":"兽带斗神“王者”轩辕十四","meta":"★8 · ATK 3500","kind":"monster"}],"emz":[{"name":"圣天树之幼精","meta":"LINK-1 · ATK 0","kind":"link"},null],"s":[null,null,null,null,{"name":"兽带斗神“百合”胃宿二","meta":"表侧魔法","kind":"monster"},{"name":"六花来来","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":["六花的白姬","六花精 雪花莲"],"chain":[],"gy":["六花绚烂","圣蔓的播种","圣蔓之治愈者","圆盘斗技场 兽带斗神环形擂台","六花精 叶牡丹"],"removed":[],"note":"","chainCount":9,"stats":{},"emzSide":null,"title":"挑选素材：《六花精 叶牡丹》","desc":"连接素材对象二：M1 的《六花精 叶牡丹》；随后《茉莉 #1》落入《幼精》箭头所指的 M1（隐藏自动落格步 F105）。"},{"lp":[8300,8000],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"圣种之天双芽","meta":"★2 · DEF 800","kind":"monster"},{"name":"芳香炽天使-茉莉","meta":"LINK-2 · ATK 1800","kind":"link"},null,null,{"name":"兽带斗神“王者”轩辕十四","meta":"★8 · ATK 3500","kind":"monster"}],"emz":[{"name":"圣天树之幼精","meta":"LINK-1 · ATK 0","kind":"link"},null],"s":[null,null,null,null,{"name":"兽带斗神“百合”胃宿二","meta":"表侧魔法","kind":"monster"},{"name":"六花来来","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":["六花的白姬","六花精 雪花莲"],"chain":[],"gy":["六花绚烂","圣蔓的播种","圣蔓之治愈者","圆盘斗技场 兽带斗神环形擂台","六花精 叶牡丹","圣种之地灵"],"removed":[],"note":"","chainCount":9,"stats":{},"emzSide":null,"title":"特殊召唤《芳香炽天使-茉莉》(#2)","desc":"M1 上的《茉莉 #1》已着地，接着再将其与 EMZ0 的《圣天树之幼精》连接召唤第 2 张《芳香炽天使-茉莉》。"},{"lp":[8300,8000],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"圣种之天双芽","meta":"★2 · DEF 800","kind":"monster"},{"name":"芳香炽天使-茉莉","meta":"LINK-2 · ATK 1800","kind":"link"},null,null,{"name":"兽带斗神“王者”轩辕十四","meta":"★8 · ATK 3500","kind":"monster"}],"emz":[{"name":"圣天树之幼精","meta":"LINK-1 · ATK 0","kind":"link"},null],"s":[null,null,null,null,{"name":"兽带斗神“百合”胃宿二","meta":"表侧魔法","kind":"monster"},{"name":"六花来来","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":["六花的白姬","六花精 雪花莲"],"chain":[],"gy":["六花绚烂","圣蔓的播种","圣蔓之治愈者","圆盘斗技场 兽带斗神环形擂台","六花精 叶牡丹","圣种之地灵"],"removed":[],"note":"","chainCount":9,"stats":{},"emzSide":null,"title":"挑选素材：M1《芳香炽天使-茉莉》","desc":"连接素材对象一：M1 的第 1 张《芳香炽天使-茉莉》。"},{"lp":[8300,8000],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"圣种之天双芽","meta":"★2 · DEF 800","kind":"monster"},null,null,null,{"name":"兽带斗神“王者”轩辕十四","meta":"★8 · ATK 3500","kind":"monster"}],"emz":[{"name":"圣天树之幼精","meta":"LINK-1 · ATK 0","kind":"link"},null],"s":[null,null,null,null,{"name":"兽带斗神“百合”胃宿二","meta":"表侧魔法","kind":"monster"},{"name":"六花来来","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":["六花的白姬","六花精 雪花莲"],"chain":[],"gy":["六花绚烂","圣蔓的播种","圣蔓之治愈者","圆盘斗技场 兽带斗神环形擂台","六花精 叶牡丹","圣种之地灵","芳香炽天使-茉莉"],"removed":[],"note":"","chainCount":9,"stats":{},"emzSide":null,"title":"挑选素材：EMZ0《圣天树之幼精》","desc":"连接素材对象二：额外怪兽区左侧的《圣天树之幼精》（腾空 EMZ 左准备接手）。"},{"lp":[8300,8000],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"圣种之天双芽","meta":"★2 · DEF 800","kind":"monster"},null,null,null,{"name":"兽带斗神“王者”轩辕十四","meta":"★8 · ATK 3500","kind":"monster"}],"emz":[{"name":"芳香炽天使-茉莉","meta":"LINK-2 · ATK 1800","kind":"link"},null],"s":[null,null,null,null,{"name":"兽带斗神“百合”胃宿二","meta":"表侧魔法","kind":"monster"},{"name":"六花来来","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":["六花的白姬","六花精 雪花莲"],"chain":[],"gy":["六花绚烂","圣蔓的播种","圣蔓之治愈者","圆盘斗技场 兽带斗神环形擂台","六花精 叶牡丹","圣种之地灵","芳香炽天使-茉莉","圣天树之幼精"],"removed":[],"note":"","chainCount":9,"stats":{},"emzSide":null,"title":"放置到额外怪兽区左侧（M5 / EMZ 左）","desc":"第 2 张《芳香炽天使-茉莉》落入额外怪兽区左侧（M5），双斜下箭头指向我方 M0 与 M2（全场仍仅占单侧 EMZ）。"},{"lp":[8300,8000],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"圣种之天双芽","meta":"★2 · DEF 800","kind":"monster"},null,null,null,{"name":"兽带斗神“王者”轩辕十四","meta":"★8 · ATK 3500","kind":"monster"}],"emz":[{"name":"芳香炽天使-茉莉","meta":"LINK-2 · ATK 1800","kind":"link"},null],"s":[null,null,null,null,{"name":"兽带斗神“百合”胃宿二","meta":"表侧魔法","kind":"monster"},{"name":"六花来来","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":["六花的白姬","六花精 雪花莲"],"chain":[],"gy":["六花绚烂","圣蔓的播种","圣蔓之治愈者","圆盘斗技场 兽带斗神环形擂台","六花精 叶牡丹","圣种之地灵","芳香炽天使-茉莉","圣天树之幼精"],"removed":[],"note":"","chainCount":9,"stats":{},"emzSide":null,"title":"特殊召唤《圣天树之幼精》(#2)","desc":"以 M0 的《圣种之天双芽》为素材连接召唤第 2 张《圣天树之幼精》，准备落到《茉莉》箭头所指主怪兽区。"},{"lp":[8300,8000],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"圣天树之幼精","meta":"LINK-1 · ATK 0","kind":"link"},null,null,null,{"name":"兽带斗神“王者”轩辕十四","meta":"★8 · ATK 3500","kind":"monster"}],"emz":[{"name":"芳香炽天使-茉莉","meta":"LINK-2 · ATK 1800","kind":"link"},null],"s":[null,null,null,null,{"name":"兽带斗神“百合”胃宿二","meta":"表侧魔法","kind":"monster"},{"name":"六花来来","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":["六花的白姬","六花精 雪花莲"],"chain":[],"gy":["六花绚烂","圣蔓的播种","圣蔓之治愈者","圆盘斗技场 兽带斗神环形擂台","六花精 叶牡丹","圣种之地灵","芳香炽天使-茉莉","圣天树之幼精","圣种之天双芽"],"removed":[],"note":"","chainCount":9,"stats":{},"emzSide":null,"title":"放置到主怪兽区 M0","desc":"第 2 张《圣天树之幼精》合法落入被 EMZ0《芳香炽天使-茉莉》箭头指向的主怪兽区 M0（非额外怪兽区）。"},{"lp":[8300,8000],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"圣天树之幼精","meta":"LINK-1 · ATK 0","kind":"link"},null,null,null,{"name":"兽带斗神“王者”轩辕十四","meta":"★8 · ATK 3500","kind":"monster"}],"emz":[{"name":"芳香炽天使-茉莉","meta":"LINK-2 · ATK 1800","kind":"link"},null],"s":[null,null,null,null,{"name":"兽带斗神“百合”胃宿二","meta":"表侧魔法","kind":"monster"},{"name":"六花来来","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":["六花的白姬","六花精 雪花莲"],"chain":[{"p":0,"text":"CL1 芳香炽天使-茉莉"}],"gy":["六花绚烂","圣蔓的播种","圣蔓之治愈者","圆盘斗技场 兽带斗神环形擂台","六花精 叶牡丹","圣种之地灵","芳香炽天使-茉莉","圣天树之幼精","圣种之天双芽"],"removed":[],"note":"","chainCount":10,"stats":{},"emzSide":null,"title":"发动《芳香炽天使-茉莉》","desc":"《芳香炽天使-茉莉》发动，解放植物族检索芳香组件；第 15 次连锁。"},{"lp":[8300,8000],"phase":"第 1 回合 · 主要阶段 1","m":[null,null,null,null,{"name":"兽带斗神“王者”轩辕十四","meta":"★8 · ATK 3500","kind":"monster"}],"emz":[{"name":"芳香炽天使-茉莉","meta":"LINK-2 · ATK 1800","kind":"link"},null],"s":[null,null,null,null,{"name":"兽带斗神“百合”胃宿二","meta":"表侧魔法","kind":"monster"},{"name":"六花来来","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":["六花的白姬","六花精 雪花莲"],"chain":[{"p":0,"text":"CL1 芳香炽天使-茉莉"}],"gy":["六花绚烂","圣蔓的播种","圣蔓之治愈者","圆盘斗技场 兽带斗神环形擂台","六花精 叶牡丹","圣种之地灵","芳香炽天使-茉莉","圣天树之幼精","圣种之天双芽","圣天树之幼精"],"removed":[],"note":"","chainCount":10,"stats":{},"emzSide":null,"title":"挑选《芳香莉莉丝-石楠叶白千层》","desc":"《芳香莉莉丝-石楠叶白千层》加入手牌；第 16 次连锁。"},{"lp":[8300,8000],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"芳香莉莉丝-石楠叶白千层","meta":"★1 · DEF 0 · 调整","kind":"monster"},null,null,null,{"name":"兽带斗神“王者”轩辕十四","meta":"★8 · ATK 3500","kind":"monster"}],"emz":[{"name":"芳香炽天使-茉莉","meta":"LINK-2 · ATK 1800","kind":"link"},null],"s":[null,null,null,null,{"name":"兽带斗神“百合”胃宿二","meta":"表侧魔法","kind":"monster"},{"name":"六花来来","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":["六花的白姬","六花精 雪花莲"],"chain":[{"p":0,"text":"CL1 芳香炽天使-茉莉"}],"gy":["六花绚烂","圣蔓的播种","圣蔓之治愈者","圆盘斗技场 兽带斗神环形擂台","六花精 叶牡丹","圣种之地灵","芳香炽天使-茉莉","圣天树之幼精","圣种之天双芽","圣天树之幼精"],"removed":[],"note":"","chainCount":10,"stats":{},"emzSide":null,"title":"放置到主怪兽区 M0","desc":"《芳香莉莉丝-石楠叶白千层》落在 M0，替换刚才的圣天树位置。"},{"lp":[8300,8000],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"芳香莉莉丝-石楠叶白千层","meta":"★1 · DEF 0 · 调整","kind":"monster"},null,null,null,{"name":"兽带斗神“王者”轩辕十四","meta":"★8 · ATK 3500","kind":"monster"}],"emz":[{"name":"芳香炽天使-茉莉","meta":"LINK-2 · ATK 1800","kind":"link"},null],"s":[null,null,null,null,{"name":"兽带斗神“百合”胃宿二","meta":"表侧魔法","kind":"monster"},{"name":"六花来来","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":["六花的白姬","六花精 雪花莲"],"chain":[{"p":0,"text":"CL1 芳香莉莉丝-石楠叶白千层"}],"gy":["六花绚烂","圣蔓的播种","圣蔓之治愈者","圆盘斗技场 兽带斗神环形擂台","六花精 叶牡丹","圣种之地灵","芳香炽天使-茉莉","圣天树之幼精","圣种之天双芽","圣天树之幼精"],"removed":[],"note":"","chainCount":11,"stats":{},"emzSide":null,"title":"确认发动《芳香莉莉丝-石楠叶白千层》的触发效果","desc":"《芳香莉莉丝-石楠叶白千层》触发，继续检索芳香组件。"},{"lp":[8300,8000],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"芳香莉莉丝-石楠叶白千层","meta":"★1 · DEF 0 · 调整","kind":"monster"},null,null,null,{"name":"兽带斗神“王者”轩辕十四","meta":"★8 · ATK 3500","kind":"monster"}],"emz":[{"name":"芳香炽天使-茉莉","meta":"LINK-2 · ATK 1800","kind":"link"},null],"s":[null,null,null,null,{"name":"兽带斗神“百合”胃宿二","meta":"表侧魔法","kind":"monster"},{"name":"六花来来","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":["六花的白姬","六花精 雪花莲"],"chain":[{"p":0,"text":"CL1 芳香莉莉丝-石楠叶白千层"}],"gy":["六花绚烂","圣蔓的播种","圣蔓之治愈者","圆盘斗技场 兽带斗神环形擂台","六花精 叶牡丹","圣种之地灵","芳香炽天使-茉莉","圣天树之幼精","圣种之天双芽","圣天树之幼精"],"removed":[],"note":"","chainCount":11,"stats":{},"emzSide":null,"title":"挑选《芳香法师-月桂叶》","desc":"《芳香法师-月桂叶》加入手牌，芳香轴补点到位。"},{"lp":[8300,8000],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"芳香莉莉丝-石楠叶白千层","meta":"★1 · DEF 0 · 调整","kind":"monster"},null,null,null,{"name":"兽带斗神“王者”轩辕十四","meta":"★8 · ATK 3500","kind":"monster"}],"emz":[{"name":"芳香炽天使-茉莉","meta":"LINK-2 · ATK 1800","kind":"link"},null],"s":[null,null,null,null,{"name":"兽带斗神“百合”胃宿二","meta":"表侧魔法","kind":"monster"},{"name":"六花来来","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":["六花的白姬","六花精 雪花莲"],"chain":[{"p":0,"text":"CL1 芳香莉莉丝-石楠叶白千层"}],"gy":["六花绚烂","圣蔓的播种","圣蔓之治愈者","圆盘斗技场 兽带斗神环形擂台","六花精 叶牡丹","圣种之地灵","芳香炽天使-茉莉","圣天树之幼精","圣种之天双芽","圣天树之幼精"],"removed":[],"note":"","chainCount":11,"stats":{},"emzSide":null,"title":"放置到主怪兽区 M2","desc":"《芳香法师-月桂叶》落在 M2。"},{"lp":[8300,8000],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"芳香莉莉丝-石楠叶白千层","meta":"★1 · DEF 0 · 调整","kind":"monster"},null,{"name":"芳香法师-月桂叶","meta":"★1 · DEF 0","kind":"monster"},null,{"name":"兽带斗神“王者”轩辕十四","meta":"★8 · ATK 3500","kind":"monster"}],"emz":[{"name":"芳香炽天使-茉莉","meta":"LINK-2 · ATK 1800","kind":"link"},null],"s":[null,null,null,null,{"name":"兽带斗神“百合”胃宿二","meta":"表侧魔法","kind":"monster"},{"name":"六花来来","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":["六花的白姬","六花精 雪花莲"],"chain":[{"p":0,"text":"CL1 芳香莉莉丝-石楠叶白千层"}],"gy":["六花绚烂","圣蔓的播种","圣蔓之治愈者","圆盘斗技场 兽带斗神环形擂台","六花精 叶牡丹","圣种之地灵","芳香炽天使-茉莉","圣天树之幼精","圣种之天双芽","圣天树之幼精"],"removed":[],"note":"","chainCount":11,"stats":{},"emzSide":null,"title":"确认《芳香法师-月桂叶》的表示形式","desc":"《芳香法师-月桂叶》表示形式确认。"},{"lp":[8300,8000],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"芳香莉莉丝-石楠叶白千层","meta":"★1 · DEF 0 · 调整","kind":"monster"},null,{"name":"芳香法师-月桂叶","meta":"★1 · DEF 0","kind":"monster"},null,{"name":"兽带斗神“王者”轩辕十四","meta":"★8 · ATK 3500","kind":"monster"}],"emz":[{"name":"芳香炽天使-茉莉","meta":"LINK-2 · ATK 1800","kind":"link"},null],"s":[null,null,null,null,{"name":"兽带斗神“百合”胃宿二","meta":"表侧魔法","kind":"monster"},{"name":"六花来来","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":["六花的白姬","六花精 雪花莲"],"chain":[],"gy":["六花绚烂","圣蔓的播种","圣蔓之治愈者","圆盘斗技场 兽带斗神环形擂台","六花精 叶牡丹","圣种之地灵","芳香炽天使-茉莉","圣天树之幼精","圣种之天双芽","圣天树之幼精"],"removed":[],"note":"","chainCount":11,"stats":{},"emzSide":null,"title":"特殊召唤《蕾祸之武者髑髅》","desc":"《蕾祸之武者髑髅》特殊召唤，提供 LINK 值。"},{"lp":[8300,8000],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"芳香莉莉丝-石楠叶白千层","meta":"★1 · DEF 0 · 调整","kind":"monster"},null,{"name":"芳香法师-月桂叶","meta":"★1 · DEF 0","kind":"monster"},null,{"name":"兽带斗神“王者”轩辕十四","meta":"★8 · ATK 3500","kind":"monster"}],"emz":[{"name":"芳香炽天使-茉莉","meta":"LINK-2 · ATK 1800","kind":"link"},null],"s":[null,null,null,null,{"name":"兽带斗神“百合”胃宿二","meta":"表侧魔法","kind":"monster"},{"name":"六花来来","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":["六花的白姬","六花精 雪花莲"],"chain":[],"gy":["六花绚烂","圣蔓的播种","圣蔓之治愈者","圆盘斗技场 兽带斗神环形擂台","六花精 叶牡丹","圣种之地灵","芳香炽天使-茉莉","圣天树之幼精","圣种之天双芽","圣天树之幼精"],"removed":[],"note":"","chainCount":11,"stats":{},"emzSide":null,"title":"以《芳香法师-月桂叶》为对象","desc":"效果对象一：《芳香法师-月桂叶》。"},{"lp":[8300,8000],"phase":"第 1 回合 · 主要阶段 1","m":[null,null,{"name":"芳香法师-月桂叶","meta":"★1 · DEF 0","kind":"monster"},null,{"name":"兽带斗神“王者”轩辕十四","meta":"★8 · ATK 3500","kind":"monster"}],"emz":[{"name":"芳香炽天使-茉莉","meta":"LINK-2 · ATK 1800","kind":"link"},null],"s":[null,null,null,null,{"name":"兽带斗神“百合”胃宿二","meta":"表侧魔法","kind":"monster"},{"name":"六花来来","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":["六花的白姬","六花精 雪花莲"],"chain":[],"gy":["六花绚烂","圣蔓的播种","圣蔓之治愈者","圆盘斗技场 兽带斗神环形擂台","六花精 叶牡丹","圣种之地灵","芳香炽天使-茉莉","圣天树之幼精","圣种之天双芽","圣天树之幼精","芳香莉莉丝-石楠叶白千层"],"removed":[],"note":"","chainCount":11,"stats":{},"emzSide":null,"title":"以《芳香莉莉丝-石楠叶白千层》为对象","desc":"效果对象二：《芳香莉莉丝-石楠叶白千层》。"},{"lp":[8300,8000],"phase":"第 1 回合 · 主要阶段 1","m":[null,null,{"name":"蕾祸之武者髑髅","meta":"LINK-2 · ATK 1600","kind":"link"},null,{"name":"兽带斗神“王者”轩辕十四","meta":"★8 · ATK 3500","kind":"monster"}],"emz":[{"name":"芳香炽天使-茉莉","meta":"LINK-2 · ATK 1800","kind":"link"},null],"s":[null,null,null,null,{"name":"兽带斗神“百合”胃宿二","meta":"表侧魔法","kind":"monster"},{"name":"六花来来","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":["六花的白姬","六花精 雪花莲"],"chain":[],"gy":["六花绚烂","圣蔓的播种","圣蔓之治愈者","圆盘斗技场 兽带斗神环形擂台","六花精 叶牡丹","圣种之地灵","芳香炽天使-茉莉","圣天树之幼精","圣种之天双芽","圣天树之幼精","芳香莉莉丝-石楠叶白千层","芳香法师-月桂叶"],"removed":[],"note":"","chainCount":11,"stats":{},"emzSide":null,"title":"放置到主怪兽区 M2","desc":"《芳香法师-月桂叶》区域确认。"},{"lp":[8300,8000],"phase":"第 1 回合 · 主要阶段 1","m":[null,null,{"name":"蕾祸之武者髑髅","meta":"LINK-2 · ATK 1600","kind":"link"},null,{"name":"兽带斗神“王者”轩辕十四","meta":"★8 · ATK 3500","kind":"monster"}],"emz":[{"name":"芳香炽天使-茉莉","meta":"LINK-2 · ATK 1800","kind":"link"},null],"s":[null,null,null,null,{"name":"兽带斗神“百合”胃宿二","meta":"表侧魔法","kind":"monster"},{"name":"六花来来","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":["六花的白姬","六花精 雪花莲"],"chain":[{"p":0,"text":"CL1 芳香法师-月桂叶"}],"gy":["六花绚烂","圣蔓的播种","圣蔓之治愈者","圆盘斗技场 兽带斗神环形擂台","六花精 叶牡丹","圣种之地灵","芳香炽天使-茉莉","圣天树之幼精","圣种之天双芽","圣天树之幼精","芳香莉莉丝-石楠叶白千层","芳香法师-月桂叶"],"removed":[],"note":"","chainCount":12,"stats":{},"emzSide":null,"title":"确认发动《芳香法师-月桂叶》的触发效果","desc":"《芳香法师-月桂叶》触发，检索《孤火花》；第 17 次连锁。"},{"lp":[8800,8000],"phase":"第 1 回合 · 主要阶段 1","m":[null,null,{"name":"蕾祸之武者髑髅","meta":"LINK-2 · ATK 1600","kind":"link"},null,{"name":"兽带斗神“王者”轩辕十四","meta":"★8 · ATK 3500","kind":"monster"}],"emz":[{"name":"芳香炽天使-茉莉","meta":"LINK-2 · ATK 1800","kind":"link"},null],"s":[null,null,null,null,{"name":"兽带斗神“百合”胃宿二","meta":"表侧魔法","kind":"monster"},{"name":"六花来来","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":["六花的白姬","六花精 雪花莲","孤火花"],"chain":[{"p":0,"text":"CL1 芳香炽天使-茉莉"}],"gy":["六花绚烂","圣蔓的播种","圣蔓之治愈者","圆盘斗技场 兽带斗神环形擂台","六花精 叶牡丹","圣种之地灵","芳香炽天使-茉莉","圣天树之幼精","圣种之天双芽","圣天树之幼精","芳香莉莉丝-石楠叶白千层","芳香法师-月桂叶"],"removed":[],"note":"","chainCount":12,"stats":{},"emzSide":null,"title":"挑选《孤火花》","desc":"《孤火花》加入手牌，作为最后的植物族补点。"},{"lp":[8800,8000],"phase":"第 1 回合 · 主要阶段 1","m":[null,null,{"name":"蕾祸之武者髑髅","meta":"LINK-2 · ATK 1600","kind":"link"},null,{"name":"兽带斗神“王者”轩辕十四","meta":"★8 · ATK 3500","kind":"monster"}],"emz":[{"name":"芳香炽天使-茉莉","meta":"LINK-2 · ATK 1800","kind":"link"},null],"s":[null,null,null,null,{"name":"兽带斗神“百合”胃宿二","meta":"表侧魔法","kind":"monster"},{"name":"六花来来","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":["孤火花","六花精 雪花莲","六花的白姬"],"chain":[],"gy":["六花绚烂","圣蔓的播种","圣蔓之治愈者","圆盘斗技场 兽带斗神环形擂台","六花精 叶牡丹","圣种之地灵","芳香炽天使-茉莉","圣天树之幼精","圣种之天双芽","圣天树之幼精","芳香莉莉丝-石楠叶白千层","芳香法师-月桂叶"],"removed":[],"note":"","chainCount":12,"stats":{},"emzSide":null,"title":"特殊召唤《回生之铁丹尼拘律树》","desc":"《回生之铁丹尼拘律树》登场，LINK-4 终端开始成形；第 18 次连锁。"},{"lp":[8800,8000],"phase":"第 1 回合 · 主要阶段 1","m":[null,null,{"name":"蕾祸之武者髑髅","meta":"LINK-2 · ATK 1600","kind":"link"},null,{"name":"兽带斗神“王者”轩辕十四","meta":"★8 · ATK 3500","kind":"monster"}],"emz":[{"name":"芳香炽天使-茉莉","meta":"LINK-2 · ATK 1800","kind":"link"},null],"s":[null,null,null,null,{"name":"兽带斗神“百合”胃宿二","meta":"表侧魔法","kind":"monster"},{"name":"六花来来","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":["孤火花","六花精 雪花莲","六花的白姬"],"chain":[],"gy":["六花绚烂","圣蔓的播种","圣蔓之治愈者","圆盘斗技场 兽带斗神环形擂台","六花精 叶牡丹","圣种之地灵","芳香炽天使-茉莉","圣天树之幼精","圣种之天双芽","圣天树之幼精","芳香莉莉丝-石楠叶白千层","芳香法师-月桂叶"],"removed":[],"note":"","chainCount":12,"stats":{},"emzSide":null,"title":"以《蕾祸之武者髑髅》为对象","desc":"以《蕾祸之武者髑髅》为连接素材对象。"},{"lp":[8800,8000],"phase":"第 1 回合 · 主要阶段 1","m":[null,null,null,null,{"name":"兽带斗神“王者”轩辕十四","meta":"★8 · ATK 3500","kind":"monster"}],"emz":[null,{"name":"回生之铁丹尼拘律树","meta":"LINK-4 · ATK 2500","kind":"link"}],"s":[null,null,null,null,{"name":"兽带斗神“百合”胃宿二","meta":"表侧魔法","kind":"monster"},{"name":"六花来来","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":["孤火花","六花精 雪花莲","六花的白姬"],"chain":[],"gy":["六花绚烂","圣蔓的播种","圣蔓之治愈者","圆盘斗技场 兽带斗神环形擂台","六花精 叶牡丹","圣种之地灵","芳香炽天使-茉莉","圣天树之幼精","圣种之天双芽","圣天树之幼精","芳香莉莉丝-石楠叶白千层","芳香法师-月桂叶","蕾祸之武者髑髅","芳香炽天使-茉莉"],"removed":[],"note":"","chainCount":12,"stats":{},"emzSide":null,"title":"放置到额外怪兽区右侧（M6 / EMZ 右）","desc":"作为连接素材的 EMZ0《芳香炽天使-茉莉》与 M2《骸骨武者》均已送墓；《回生之铁丹尼拘律树》合法落入单侧 EMZ 右（M6）。"},{"lp":[8800,8000],"phase":"第 1 回合 · 主要阶段 1","m":[null,null,null,null,{"name":"兽带斗神“王者”轩辕十四","meta":"★8 · ATK 3500","kind":"monster"}],"emz":[null,{"name":"回生之铁丹尼拘律树","meta":"LINK-4 · ATK 2500","kind":"link"}],"s":[null,null,null,null,{"name":"兽带斗神“百合”胃宿二","meta":"表侧魔法","kind":"monster"},{"name":"六花来来","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":["孤火花","六花精 雪花莲","六花的白姬"],"chain":[{"p":0,"text":"CL1 六花的白姬"}],"gy":["六花绚烂","圣蔓的播种","圣蔓之治愈者","圆盘斗技场 兽带斗神环形擂台","六花精 叶牡丹","圣种之地灵","芳香炽天使-茉莉","圣天树之幼精","圣种之天双芽","圣天树之幼精","芳香莉莉丝-石楠叶白千层","芳香法师-月桂叶","蕾祸之武者髑髅","芳香炽天使-茉莉"],"removed":[],"note":"","chainCount":13,"stats":{},"emzSide":null,"title":"发动《六花的白姬》","desc":"《六花的白姬》发动，墓地资源开始转化为场面；第 19 次连锁。"},{"lp":[8800,8000],"phase":"第 1 回合 · 主要阶段 1","m":[null,null,null,null,{"name":"兽带斗神“王者”轩辕十四","meta":"★8 · ATK 3500","kind":"monster"}],"emz":[null,{"name":"回生之铁丹尼拘律树","meta":"LINK-4 · ATK 2500","kind":"link"}],"s":[null,null,null,null,{"name":"兽带斗神“百合”胃宿二","meta":"表侧魔法","kind":"monster"},{"name":"六花来来","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":["孤火花","六花精 雪花莲","六花的白姬"],"chain":[{"p":0,"text":"CL1 六花的白姬"}],"gy":["六花绚烂","圣蔓的播种","圣蔓之治愈者","圆盘斗技场 兽带斗神环形擂台","六花精 叶牡丹","圣种之地灵","芳香炽天使-茉莉","圣天树之幼精","圣种之天双芽","圣天树之幼精","芳香莉莉丝-石楠叶白千层","芳香法师-月桂叶","蕾祸之武者髑髅","芳香炽天使-茉莉"],"removed":[],"note":"","chainCount":13,"stats":{},"emzSide":null,"title":"放置到主怪兽区 M3","desc":"《六花的白姬》落在 M3。"},{"lp":[8800,8000],"phase":"第 1 回合 · 主要阶段 1","m":[null,null,null,{"name":"六花的白姬","meta":"★4 · ATK 0","kind":"monster"},{"name":"兽带斗神“王者”轩辕十四","meta":"★8 · ATK 3500","kind":"monster"}],"emz":[null,{"name":"回生之铁丹尼拘律树","meta":"LINK-4 · ATK 2500","kind":"link"}],"s":[null,null,null,null,{"name":"兽带斗神“百合”胃宿二","meta":"表侧魔法","kind":"monster"},{"name":"六花来来","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":["孤火花","六花精 雪花莲"],"chain":[{"p":0,"text":"CL1 六花的白姬"}],"gy":["六花绚烂","圣蔓的播种","圣蔓之治愈者","圆盘斗技场 兽带斗神环形擂台","六花精 叶牡丹","圣种之地灵","芳香炽天使-茉莉","圣天树之幼精","圣种之天双芽","圣天树之幼精","芳香莉莉丝-石楠叶白千层","芳香法师-月桂叶","蕾祸之武者髑髅","芳香炽天使-茉莉"],"removed":[],"note":"","chainCount":13,"stats":{},"emzSide":null,"title":"确认《六花的白姬》的表示形式","desc":"《六花的白姬》表示形式确认。"},{"lp":[8800,8000],"phase":"第 1 回合 · 主要阶段 1","m":[null,null,null,{"name":"六花的白姬","meta":"★4 · ATK 0","kind":"monster"},{"name":"兽带斗神“王者”轩辕十四","meta":"★8 · ATK 3500","kind":"monster"}],"emz":[null,{"name":"回生之铁丹尼拘律树","meta":"LINK-4 · ATK 2500","kind":"link"}],"s":[null,null,null,null,{"name":"兽带斗神“百合”胃宿二","meta":"表侧魔法","kind":"monster"},{"name":"六花来来","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":["孤火花","六花精 雪花莲"],"chain":[{"p":0,"text":"CL1 六花精 雪花莲"}],"gy":["六花绚烂","圣蔓的播种","圣蔓之治愈者","圆盘斗技场 兽带斗神环形擂台","六花精 叶牡丹","圣种之地灵","芳香炽天使-茉莉","圣天树之幼精","圣种之天双芽","圣天树之幼精","芳香莉莉丝-石楠叶白千层","芳香法师-月桂叶","蕾祸之武者髑髅","芳香炽天使-茉莉"],"removed":[],"note":"","chainCount":14,"stats":{},"emzSide":null,"title":"发动《六花精 雪花莲》","desc":"《六花精 雪花莲》发动，等级调整进入六花超量路线；第 20 次连锁。"},{"lp":[8800,8000],"phase":"第 1 回合 · 主要阶段 1","m":[null,null,null,null,{"name":"兽带斗神“王者”轩辕十四","meta":"★8 · ATK 3500","kind":"monster"}],"emz":[null,{"name":"回生之铁丹尼拘律树","meta":"LINK-4 · ATK 2500","kind":"link"}],"s":[null,null,null,null,{"name":"兽带斗神“百合”胃宿二","meta":"表侧魔法","kind":"monster"},{"name":"六花来来","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":["孤火花","六花精 雪花莲"],"chain":[{"p":0,"text":"CL1 六花精 雪花莲"}],"gy":["六花绚烂","圣蔓的播种","圣蔓之治愈者","圆盘斗技场 兽带斗神环形擂台","六花精 叶牡丹","圣种之地灵","芳香炽天使-茉莉","圣天树之幼精","圣种之天双芽","圣天树之幼精","芳香莉莉丝-石楠叶白千层","芳香法师-月桂叶","蕾祸之武者髑髅","芳香炽天使-茉莉","六花的白姬"],"removed":[],"note":"","chainCount":14,"stats":{},"emzSide":null,"title":"以《六花的白姬》为对象","desc":"以《六花的白姬》为对象，准备叠放。"},{"lp":[8800,8000],"phase":"第 1 回合 · 主要阶段 1","m":[null,null,null,null,{"name":"兽带斗神“王者”轩辕十四","meta":"★8 · ATK 3500","kind":"monster"}],"emz":[null,{"name":"回生之铁丹尼拘律树","meta":"LINK-4 · ATK 2500","kind":"link"}],"s":[null,null,null,null,{"name":"兽带斗神“百合”胃宿二","meta":"表侧魔法","kind":"monster"},{"name":"六花来来","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":["孤火花","六花精 雪花莲"],"chain":[{"p":0,"text":"CL1 六花精 雪花莲"}],"gy":["六花绚烂","圣蔓的播种","圣蔓之治愈者","圆盘斗技场 兽带斗神环形擂台","六花精 叶牡丹","圣种之地灵","芳香炽天使-茉莉","圣天树之幼精","圣种之天双芽","圣天树之幼精","芳香莉莉丝-石楠叶白千层","芳香法师-月桂叶","蕾祸之武者髑髅","芳香炽天使-茉莉","六花的白姬"],"removed":[],"note":"","chainCount":14,"stats":{},"emzSide":null,"title":"放置到主怪兽区 M3","desc":"《六花精 雪花莲》落在 M3。"},{"lp":[8800,8000],"phase":"第 1 回合 · 主要阶段 1","m":[null,null,null,{"name":"孤火花","meta":"★3 · DEF 1400","kind":"monster"},{"name":"兽带斗神“王者”轩辕十四","meta":"★8 · ATK 3500","kind":"monster"}],"emz":[null,{"name":"回生之铁丹尼拘律树","meta":"LINK-4 · ATK 2500","kind":"link"}],"s":[null,null,null,null,{"name":"兽带斗神“百合”胃宿二","meta":"表侧魔法","kind":"monster"},{"name":"六花来来","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":["六花精 雪花莲"],"chain":[{"p":0,"text":"CL1 六花精 雪花莲"}],"gy":["六花绚烂","圣蔓的播种","圣蔓之治愈者","圆盘斗技场 兽带斗神环形擂台","六花精 叶牡丹","圣种之地灵","芳香炽天使-茉莉","圣天树之幼精","圣种之天双芽","圣天树之幼精","芳香莉莉丝-石楠叶白千层","芳香法师-月桂叶","蕾祸之武者髑髅","芳香炽天使-茉莉","六花的白姬"],"removed":[],"note":"","chainCount":14,"stats":{},"emzSide":null,"title":"确认《孤火花》的表示形式","desc":"《孤火花》表示形式确认。"},{"lp":[8800,8000],"phase":"第 1 回合 · 主要阶段 1","m":[null,null,null,{"name":"孤火花","meta":"★3 · DEF 1400","kind":"monster"},{"name":"兽带斗神“王者”轩辕十四","meta":"★8 · ATK 3500","kind":"monster"}],"emz":[null,{"name":"回生之铁丹尼拘律树","meta":"LINK-4 · ATK 2500","kind":"link"}],"s":[null,null,null,null,{"name":"兽带斗神“百合”胃宿二","meta":"表侧魔法","kind":"monster"},{"name":"六花来来","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":["六花精 雪花莲"],"chain":[{"p":0,"text":"CL1 六花精 雪花莲"}],"gy":["六花绚烂","圣蔓的播种","圣蔓之治愈者","圆盘斗技场 兽带斗神环形擂台","六花精 叶牡丹","圣种之地灵","芳香炽天使-茉莉","圣天树之幼精","圣种之天双芽","圣天树之幼精","芳香莉莉丝-石楠叶白千层","芳香法师-月桂叶","蕾祸之武者髑髅","芳香炽天使-茉莉","六花的白姬"],"removed":[],"note":"","chainCount":14,"stats":{},"emzSide":null,"title":"放置到主怪兽区 M1","desc":"《孤火花》落在 M1。"},{"lp":[8800,8000],"phase":"第 1 回合 · 主要阶段 1","m":[null,{"name":"六花精 雪花莲","meta":"★8 · DEF 2600","kind":"monster"},null,{"name":"孤火花","meta":"★3 · DEF 1400","kind":"monster"},{"name":"兽带斗神“王者”轩辕十四","meta":"★8 · ATK 3500","kind":"monster"}],"emz":[null,{"name":"回生之铁丹尼拘律树","meta":"LINK-4 · ATK 2500","kind":"link"}],"s":[null,null,null,null,{"name":"兽带斗神“百合”胃宿二","meta":"表侧魔法","kind":"monster"},{"name":"六花来来","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":0,"text":"CL1 六花精 雪花莲"}],"gy":["六花绚烂","圣蔓的播种","圣蔓之治愈者","圆盘斗技场 兽带斗神环形擂台","六花精 叶牡丹","圣种之地灵","芳香炽天使-茉莉","圣天树之幼精","圣种之天双芽","圣天树之幼精","芳香莉莉丝-石楠叶白千层","芳香法师-月桂叶","蕾祸之武者髑髅","芳香炽天使-茉莉","六花的白姬"],"removed":[],"note":"","chainCount":14,"stats":{},"emzSide":null,"title":"确认《六花精 雪花莲》的表示形式","desc":"《六花精 雪花莲》表示形式确认。"},{"lp":[8800,8000],"phase":"第 1 回合 · 主要阶段 1","m":[null,{"name":"六花精 雪花莲","meta":"★8 · DEF 2600","kind":"monster"},null,{"name":"孤火花","meta":"★3 · DEF 1400","kind":"monster"},{"name":"兽带斗神“王者”轩辕十四","meta":"★8 · ATK 3500","kind":"monster"}],"emz":[null,{"name":"回生之铁丹尼拘律树","meta":"LINK-4 · ATK 2500","kind":"link"}],"s":[null,null,null,null,{"name":"兽带斗神“百合”胃宿二","meta":"表侧魔法","kind":"monster"},{"name":"六花来来","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":0,"text":"CL1 六花精 雪花莲"}],"gy":["六花绚烂","圣蔓的播种","圣蔓之治愈者","圆盘斗技场 兽带斗神环形擂台","六花精 叶牡丹","圣种之地灵","芳香炽天使-茉莉","圣天树之幼精","圣种之天双芽","圣天树之幼精","芳香莉莉丝-石楠叶白千层","芳香法师-月桂叶","蕾祸之武者髑髅","芳香炽天使-茉莉","六花的白姬"],"removed":[],"note":"","chainCount":15,"stats":{},"emzSide":null,"title":"发动《六花精 雪花莲》","desc":"《六花精 雪花莲》再次发动；第 21 次连锁。"},{"lp":[8800,8000],"phase":"第 1 回合 · 主要阶段 1","m":[null,{"name":"六花精 雪花莲","meta":"★8 · DEF 2600","kind":"monster"},null,{"name":"孤火花","meta":"★3 · DEF 1400","kind":"monster"},{"name":"兽带斗神“王者”轩辕十四","meta":"★8 · ATK 3500","kind":"monster"}],"emz":[null,{"name":"回生之铁丹尼拘律树","meta":"LINK-4 · ATK 2500","kind":"link"}],"s":[null,null,null,null,{"name":"兽带斗神“百合”胃宿二","meta":"表侧魔法","kind":"monster"},{"name":"六花来来","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":0,"text":"CL1 六花精 雪花莲"}],"gy":["六花绚烂","圣蔓的播种","圣蔓之治愈者","圆盘斗技场 兽带斗神环形擂台","六花精 叶牡丹","圣种之地灵","芳香炽天使-茉莉","圣天树之幼精","圣种之天双芽","圣天树之幼精","芳香莉莉丝-石楠叶白千层","芳香法师-月桂叶","蕾祸之武者髑髅","芳香炽天使-茉莉","六花的白姬"],"removed":[],"note":"","chainCount":15,"stats":{},"emzSide":null,"title":"以《六花精 雪花莲》为对象","desc":"以自身为对象，完成最后的等级调整。"},{"lp":[8800,8000],"phase":"第 1 回合 · 主要阶段 1","m":[null,{"name":"六花精 雪花莲","meta":"★8 · DEF 2600","kind":"monster"},null,{"name":"孤火花","meta":"★8 · DEF 1400","kind":"monster"},{"name":"兽带斗神“王者”轩辕十四","meta":"★8 · ATK 3500","kind":"monster"}],"emz":[null,{"name":"回生之铁丹尼拘律树","meta":"LINK-4 · ATK 2500","kind":"link"}],"s":[null,null,null,null,{"name":"兽带斗神“百合”胃宿二","meta":"表侧魔法","kind":"monster"},{"name":"六花来来","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":0,"text":"CL1 六花来来"}],"gy":["六花绚烂","圣蔓的播种","圣蔓之治愈者","圆盘斗技场 兽带斗神环形擂台","六花精 叶牡丹","圣种之地灵","芳香炽天使-茉莉","圣天树之幼精","圣种之天双芽","圣天树之幼精","芳香莉莉丝-石楠叶白千层","芳香法师-月桂叶","蕾祸之武者髑髅","芳香炽天使-茉莉","六花的白姬"],"removed":[],"note":"","chainCount":16,"stats":{},"emzSide":null,"title":"《六花来来》效果盖放魔陷","desc":"《六花来来》效果处理：准备从卡组选第 2 张《六花绚烂》里侧盖放；此时场上的《六花来来》仍在场地格。"},{"lp":[8800,8000],"phase":"第 1 回合 · 主要阶段 1","m":[null,{"name":"六花精 雪花莲","meta":"★8 · DEF 2600","kind":"monster"},null,{"name":"孤火花","meta":"★8 · DEF 1400","kind":"monster"},{"name":"兽带斗神“王者”轩辕十四","meta":"★8 · ATK 3500","kind":"monster"}],"emz":[null,{"name":"回生之铁丹尼拘律树","meta":"LINK-4 · ATK 2500","kind":"link"}],"s":[{"name":"六花绚烂","meta":"盖放 · 魔陷","kind":"spell"},null,null,null,{"name":"兽带斗神“百合”胃宿二","meta":"表侧魔法","kind":"monster"},{"name":"六花来来","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":0,"text":"CL1 六花来来"}],"gy":["六花绚烂","圣蔓的播种","圣蔓之治愈者","圆盘斗技场 兽带斗神环形擂台","六花精 叶牡丹","圣种之地灵","芳香炽天使-茉莉","圣天树之幼精","圣种之天双芽","圣天树之幼精","芳香莉莉丝-石楠叶白千层","芳香法师-月桂叶","蕾祸之武者髑髅","芳香炽天使-茉莉","六花的白姬"],"removed":[],"note":"","chainCount":16,"stats":{},"emzSide":null,"title":"放置到魔法·陷阱区 S0（里侧盖放）","desc":"第 2 张《六花绚烂》里侧盖放到 S0；场地格仍为《六花来来》。"},{"lp":[8800,8000],"phase":"第 1 回合 · 主要阶段 1","m":[null,{"name":"六花精 雪花莲","meta":"★8 · DEF 2600","kind":"monster"},null,{"name":"孤火花","meta":"★8 · DEF 1400","kind":"monster"},{"name":"兽带斗神“王者”轩辕十四","meta":"★8 · ATK 3500","kind":"monster"}],"emz":[null,{"name":"回生之铁丹尼拘律树","meta":"LINK-4 · ATK 2500","kind":"link"}],"s":[{"name":"六花绚烂","meta":"盖放 · 魔陷","kind":"spell"},null,null,null,{"name":"兽带斗神“百合”胃宿二","meta":"表侧魔法","kind":"monster"},{"name":"六花来来","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[],"gy":["六花绚烂","圣蔓的播种","圣蔓之治愈者","圆盘斗技场 兽带斗神环形擂台","六花精 叶牡丹","圣种之地灵","芳香炽天使-茉莉","圣天树之幼精","圣种之天双芽","圣天树之幼精","芳香莉莉丝-石楠叶白千层","芳香法师-月桂叶","蕾祸之武者髑髅","芳香炽天使-茉莉","六花的白姬"],"removed":[],"note":"","chainCount":16,"stats":{},"emzSide":null,"title":"超量召唤《六花圣 泪滴花束》","desc":"以 2 只星级变化后的 8★ 植物族叠放，准备超量召唤《六花圣 泪滴花束》。（第 23 次连锁在结算前先建立）"},{"lp":[8800,8000],"phase":"第 1 回合 · 主要阶段 1","m":[null,null,null,null,{"name":"兽带斗神“王者”轩辕十四","meta":"★8 · ATK 3500","kind":"monster"}],"emz":[null,{"name":"回生之铁丹尼拘律树","meta":"LINK-4 · ATK 2500","kind":"link"}],"s":[{"name":"六花绚烂","meta":"盖放 · 魔陷","kind":"spell"},null,null,null,{"name":"兽带斗神“百合”胃宿二","meta":"表侧魔法","kind":"monster"},{"name":"六花来来","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[],"gy":["六花绚烂","圣蔓的播种","圣蔓之治愈者","圆盘斗技场 兽带斗神环形擂台","六花精 叶牡丹","圣种之地灵","芳香炽天使-茉莉","圣天树之幼精","圣种之天双芽","圣天树之幼精","芳香莉莉丝-石楠叶白千层","芳香法师-月桂叶","蕾祸之武者髑髅","芳香炽天使-茉莉","六花的白姬"],"removed":[],"note":"","chainCount":16,"stats":{},"emzSide":null,"title":"放置到主怪兽区 M3","desc":"《六花圣 泪滴花束》落入 M3（2 素材超量）。"},{"lp":[8800,8000],"phase":"第 1 回合 · 主要阶段 1","m":[null,null,null,{"name":"六花圣 泪滴花束","meta":"R8 · ATK 2800 · 2 素材","kind":"xyz"},{"name":"兽带斗神“王者”轩辕十四","meta":"★8 · ATK 3500","kind":"monster"}],"emz":[null,{"name":"回生之铁丹尼拘律树","meta":"LINK-4 · ATK 2500","kind":"link"}],"s":[{"name":"六花绚烂","meta":"盖放 · 魔陷","kind":"spell"},null,null,null,{"name":"兽带斗神“百合”胃宿二","meta":"表侧魔法","kind":"monster"},{"name":"六花来来","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[],"gy":["六花绚烂","圣蔓的播种","圣蔓之治愈者","圆盘斗技场 兽带斗神环形擂台","六花精 叶牡丹","圣种之地灵","芳香炽天使-茉莉","圣天树之幼精","圣种之天双芽","圣天树之幼精","芳香莉莉丝-石楠叶白千层","芳香法师-月桂叶","蕾祸之武者髑髅","芳香炽天使-茉莉","六花的白姬"],"removed":[],"note":"","chainCount":16,"stats":{},"emzSide":null,"title":"确认《六花圣 泪滴花束》表示形式","desc":"确认表侧攻击表示（ATK 2800，2 素材）。"},{"lp":[8800,8000],"phase":"第 1 回合 · 主要阶段 1","m":[null,null,null,{"name":"六花圣 泪滴花束","meta":"R8 · ATK 2800 · 2 素材","kind":"xyz"},{"name":"兽带斗神“王者”轩辕十四","meta":"★8 · ATK 3500","kind":"monster"}],"emz":[null,{"name":"回生之铁丹尼拘律树","meta":"LINK-4 · ATK 2500","kind":"link"}],"s":[{"name":"六花绚烂","meta":"盖放 · 魔陷","kind":"spell"},null,null,null,{"name":"兽带斗神“百合”胃宿二","meta":"表侧魔法","kind":"monster"},{"name":"六花来来","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":0,"text":"CL1 六花圣 泪滴花束"}],"gy":["六花绚烂","圣蔓的播种","圣蔓之治愈者","圆盘斗技场 兽带斗神环形擂台","六花精 叶牡丹","圣种之地灵","芳香炽天使-茉莉","圣天树之幼精","圣种之天双芽","圣天树之幼精","芳香莉莉丝-石楠叶白千层","芳香法师-月桂叶","蕾祸之武者髑髅","芳香炽天使-茉莉","六花的白姬"],"removed":[],"note":"","chainCount":17,"stats":{},"emzSide":null,"title":"连锁《六花圣 泪滴花束》","desc":"《六花圣 泪滴花束》连锁成立，终场压制链完成。"},{"lp":[8800,8000],"phase":"第 1 回合 · 主要阶段 1","m":[null,null,null,{"name":"六花圣 泪滴花束","meta":"R8 · ATK 2800 · 1 素材","kind":"xyz"},{"name":"兽带斗神“王者”轩辕十四","meta":"★8 · ATK 3500","kind":"monster"}],"emz":[null,{"name":"回生之铁丹尼拘律树","meta":"LINK-4 · ATK 2500","kind":"link"}],"s":[{"name":"六花绚烂","meta":"盖放 · 魔陷","kind":"spell"},null,null,null,{"name":"兽带斗神“百合”胃宿二","meta":"表侧魔法","kind":"monster"},{"name":"六花来来","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":0,"text":"CL1 六花圣 泪滴花束"}],"gy":["六花绚烂","圣蔓的播种","圣蔓之治愈者","圆盘斗技场 兽带斗神环形擂台","六花精 叶牡丹","圣种之地灵","芳香炽天使-茉莉","圣天树之幼精","圣种之天双芽","圣天树之幼精","芳香莉莉丝-石楠叶白千层","芳香法师-月桂叶","蕾祸之武者髑髅","芳香炽天使-茉莉","六花的白姬","孤火花"],"removed":[],"note":"","chainCount":17,"stats":{},"emzSide":null,"title":"以《孤火花》为对象","desc":"以《孤火花》为对象，处理最后的植物族资源。"},{"lp":[8800,8000],"phase":"第 1 回合 · 主要阶段 1","m":[null,null,null,{"name":"六花圣 泪滴花束","meta":"R8 · ATK 2800 · 1 素材","kind":"xyz"},{"name":"兽带斗神“王者”轩辕十四","meta":"★8 · ATK 3500","kind":"monster"}],"emz":[null,{"name":"回生之铁丹尼拘律树","meta":"LINK-4 · ATK 2500","kind":"link"}],"s":[{"name":"六花绚烂","meta":"盖放 · 魔陷","kind":"spell"},null,null,null,{"name":"兽带斗神“百合”胃宿二","meta":"表侧魔法","kind":"monster"},{"name":"六花来来","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":0,"text":"CL1 六花圣 泪滴花束"}],"gy":["六花绚烂","圣蔓的播种","圣蔓之治愈者","圆盘斗技场 兽带斗神环形擂台","六花精 叶牡丹","圣种之地灵","芳香炽天使-茉莉","圣天树之幼精","圣种之天双芽","圣天树之幼精","芳香莉莉丝-石楠叶白千层","芳香法师-月桂叶","蕾祸之武者髑髅","芳香炽天使-茉莉","六花的白姬","孤火花"],"removed":[],"note":"","chainCount":17,"stats":{},"emzSide":null,"title":"以《回生之铁丹尼拘律树》为对象","desc":"以《回生之铁丹尼拘律树》为对象，准备收束终端。"},{"lp":[8800,8000],"phase":"第 1 回合 · 主要阶段 1","m":[null,null,null,{"name":"六花圣 泪滴花束","meta":"R8 · ATK 3000 · 1 素材","kind":"xyz"},{"name":"兽带斗神“王者”轩辕十四","meta":"★8 · ATK 3500","kind":"monster"}],"emz":[null,null],"s":[{"name":"六花绚烂","meta":"盖放 · 魔陷","kind":"spell"},null,null,null,{"name":"兽带斗神“百合”胃宿二","meta":"表侧魔法","kind":"monster"},{"name":"六花来来","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":0,"text":"CL1 回生之铁丹尼拘律树"}],"gy":["六花绚烂","圣蔓的播种","圣蔓之治愈者","圆盘斗技场 兽带斗神环形擂台","六花精 叶牡丹","圣种之地灵","芳香炽天使-茉莉","圣天树之幼精","圣种之天双芽","圣天树之幼精","芳香莉莉丝-石楠叶白千层","芳香法师-月桂叶","蕾祸之武者髑髅","芳香炽天使-茉莉","六花的白姬","孤火花","回生之铁丹尼拘律树"],"removed":[],"note":"","chainCount":18,"stats":{},"emzSide":null,"title":"发动《回生之铁丹尼拘律树》","desc":"《回生之铁丹尼拘律树》发动；第 24 次连锁，终场锁定。"},{"lp":[8800,8000],"phase":"第 1 回合 · 主要阶段 1","m":[null,null,null,{"name":"六花圣 泪滴花束","meta":"R8 · ATK 3000 · 1 素材","kind":"xyz"},{"name":"兽带斗神“王者”轩辕十四","meta":"★8 · ATK 3500","kind":"monster"}],"emz":[null,null],"s":[{"name":"六花绚烂","meta":"盖放 · 魔陷","kind":"spell"},null,null,null,{"name":"兽带斗神“百合”胃宿二","meta":"表侧魔法","kind":"monster"},{"name":"六花来来","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":0,"text":"CL1 回生之铁丹尼拘律树"}],"gy":["六花绚烂","圣蔓的播种","圣蔓之治愈者","圆盘斗技场 兽带斗神环形擂台","六花精 叶牡丹","圣种之地灵","芳香炽天使-茉莉","圣天树之幼精","圣种之天双芽","圣天树之幼精","芳香莉莉丝-石楠叶白千层","芳香法师-月桂叶","蕾祸之武者髑髅","六花的白姬","孤火花","回生之铁丹尼拘律树"],"removed":["芳香炽天使-茉莉"],"note":"","chainCount":18,"stats":{},"emzSide":null,"title":"素材合计：芳香炽天使-茉莉 / 圣天树之幼精 / 圣蔓之治愈者","desc":"连接素材合计完成：茉莉、幼精、治愈者依次送墓，LINK-4 素材数核验通过。"},{"lp":[8800,8000],"phase":"第 1 回合 · 主要阶段 1","m":[null,null,{"name":"回生之铁丹尼拘律树","meta":"LINK-4 · ATK 2500","kind":"link"},{"name":"六花圣 泪滴花束","meta":"R8 · ATK 3000 · 1 素材","kind":"xyz"},{"name":"兽带斗神“王者”轩辕十四","meta":"★8 · ATK 3500","kind":"monster"}],"emz":[null,null],"s":[{"name":"六花绚烂","meta":"盖放 · 魔陷","kind":"spell"},null,null,null,{"name":"兽带斗神“百合”胃宿二","meta":"表侧魔法","kind":"monster"},{"name":"六花来来","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":0,"text":"CL1 回生之铁丹尼拘律树"}],"gy":["六花绚烂","圣蔓的播种","圆盘斗技场 兽带斗神环形擂台","六花精 叶牡丹","圣种之地灵","芳香炽天使-茉莉","圣种之天双芽","圣天树之幼精","芳香莉莉丝-石楠叶白千层","芳香法师-月桂叶","蕾祸之武者髑髅","六花的白姬","孤火花"],"removed":["芳香炽天使-茉莉","圣天树之幼精","圣蔓之治愈者"],"note":"","chainCount":18,"stats":{},"emzSide":null,"title":"放置到主怪兽区 M2","desc":"《回生之铁丹尼拘律树》与素材一同清理并重落入主怪兽区 M2，终场三核心 M2/M3/M4 并列齐整。"},{"lp":[8800,8000],"phase":"第 1 回合 · 结束阶段","m":[null,null,{"name":"回生之铁丹尼拘律树","meta":"LINK-4 · ATK 2500","kind":"link"},{"name":"六花圣 泪滴花束","meta":"R8 · ATK 3000 · 1 素材","kind":"xyz"},{"name":"兽带斗神“王者”轩辕十四","meta":"★8 · ATK 3500","kind":"monster"}],"emz":[null,null],"s":[{"name":"六花绚烂","meta":"盖放 · 魔陷","kind":"spell"},null,null,null,{"name":"兽带斗神“百合”胃宿二","meta":"表侧魔法","kind":"monster"},{"name":"六花来来","meta":"场地魔法","kind":"field"}],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":0,"text":"终场核验 · 216 响应 / 0 次重试"}],"gy":["六花绚烂","圣蔓的播种","圆盘斗技场 兽带斗神环形擂台","六花精 叶牡丹","圣种之地灵","芳香炽天使-茉莉","圣种之天双芽","圣天树之幼精","芳香莉莉丝-石楠叶白千层","芳香法师-月桂叶","蕾祸之武者髑髅","六花的白姬","孤火花"],"removed":["芳香炽天使-茉莉","圣天树之幼精","圣蔓之治愈者"],"note":"","chainCount":18,"stats":{"responses":216,"chains":24},"emzSide":null,"title":"进入结束阶段","desc":"进入结束阶段；终场快照与引擎核验逐项对齐，88 步全部完成。"}],"lp":[8800,8000],"chainsTotal":18,"p1HandUnknown":true,"emzSide":"p0","p0HandUnknown":true,"deckKey":"plant","shortTitle":"植物均 · 88 步","shortSub":"24 次连锁 · 基准 5 件套终场"},{"id":"anti_nibiru","title":"场景 2 · Tier 1 相剑天威：5 步前鲜花护航防陨实战","subtitle":"27 个编号动作 · 28 条轨迹 · 7 次连锁 · 第 19 步尼比鲁 CL1，第 20 步鲜花 CL2 反制","side0":"我方 · 相剑天威","side1":"对手 · 陨石位","p1Label":"对手手牌 / 场面","note":"对应卡组：相剑天威（40 主卡组 + 15 额外），第 5 次召唤前站出鲜花女男爵并 CL2 无效破坏原始生命态 尼比鲁。","milestones":[["龙渊起手",0],["防陨鲜花",7],["第 5 步召唤",12],["陨石 CL1",18],["鲜花 CL2",19],["赤霄终场",27]],"steps":[{"lp":[8000,6800],"phase":"第 1 回合 · 主要阶段 1","m":[null,null,null,null,null],"emz":[null,null],"s":[null,null,null,null,null,null],"p1":[null,null,null,null,null],"p1Hand":["原始生命态 尼比鲁（捏住）"],"p0Hand":[],"chain":[{"p":0,"text":"CL1 相剑军师-龙渊"}],"gy":[],"removed":[],"note":"","chainCount":1,"stats":{},"emzSide":null,"title":"发动《相剑军师-龙渊》","desc":"《相剑军师-龙渊》从手牌发动，丢弃《龙相剑现》作为代价，准备在第 5 次召唤前做出鲜花女男爵。"},{"lp":[8000,6800],"phase":"第 1 回合 · 主要阶段 1","m":[null,null,null,null,null],"emz":[null,null],"s":[null,null,null,null,null,null],"p1":[null,null,null,null,null],"p1Hand":["原始生命态 尼比鲁（捏住）"],"p0Hand":[],"chain":[{"p":0,"text":"CL1 相剑军师-龙渊"}],"gy":["龙相剑现"],"removed":[],"note":"","chainCount":1,"stats":{},"emzSide":null,"title":"将《龙相剑现》送入墓地作为发动代价","desc":"《龙相剑现》送入墓地，龙渊的召唤窗口打开。"},{"lp":[8000,6800],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"相剑军师-龙渊","meta":"等级 6 · 调整","kind":"monster"},null,null,null,null],"emz":[null,null],"s":[null,null,null,null,null,null],"p1":[null,null,null,null,null],"p1Hand":["原始生命态 尼比鲁（捏住）"],"p0Hand":[],"chain":[{"p":0,"text":"CL1 相剑军师-龙渊"}],"gy":["龙相剑现"],"removed":[],"note":"","chainCount":1,"stats":{},"emzSide":null,"title":"放置到主怪兽区 M0","desc":"《相剑军师-龙渊》落在 M0。"},{"lp":[8000,6800],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"相剑军师-龙渊","meta":"等级 6 · 调整","kind":"monster"},null,null,null,null],"emz":[null,null],"s":[null,null,null,null,null,null],"p1":[null,null,null,null,null],"p1Hand":["原始生命态 尼比鲁（捏住）"],"p0Hand":[],"chain":[{"p":0,"text":"CL1 相剑军师-龙渊"}],"gy":["龙相剑现"],"removed":[],"note":"","chainCount":1,"stats":{},"emzSide":null,"title":"确认《相剑军师-龙渊》的表示形式","desc":"龙渊攻击表示确认。"},{"lp":[8000,6800],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"相剑军师-龙渊","meta":"等级 6 · 调整","kind":"monster"},null,null,null,null],"emz":[null,null],"s":[null,null,null,null,null,null],"p1":[null,null,null,null,null],"p1Hand":["原始生命态 尼比鲁（捏住）"],"p0Hand":[],"chain":[{"p":0,"text":"CL1 相剑军师-龙渊"}],"gy":["龙相剑现"],"removed":[],"note":"","chainCount":1,"stats":{},"emzSide":null,"title":"确认：是","desc":"确认发动，龙渊与相剑衍生物进入场面。"},{"lp":[8000,6800],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"相剑军师-龙渊","meta":"等级 6 · 调整","kind":"monster"},null,{"name":"相剑衍生物","meta":"等级 4 · 调整","kind":"monster"},null,null],"emz":[null,null],"s":[null,null,null,null,null,null],"p1":[null,null,null,null,null],"p1Hand":["原始生命态 尼比鲁（捏住）"],"p0Hand":[],"chain":[{"p":0,"text":"CL1 相剑军师-龙渊"}],"gy":["龙相剑现"],"removed":[],"note":"","chainCount":1,"stats":{},"emzSide":null,"title":"放置到主怪兽区 M2","desc":"相剑衍生物落在 M2。"},{"lp":[8000,6800],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"相剑军师-龙渊","meta":"等级 6 · 调整","kind":"monster"},null,{"name":"相剑衍生物","meta":"等级 4 · 调整","kind":"monster"},null,null],"emz":[null,null],"s":[null,null,null,null,null,null],"p1":[null,null,null,null,null],"p1Hand":["原始生命态 尼比鲁（捏住）"],"p0Hand":[],"chain":[{"p":0,"text":"CL1 相剑军师-龙渊"}],"gy":["龙相剑现"],"removed":[],"note":"","chainCount":1,"stats":{},"emzSide":null,"title":"确认《相剑衍生物》的表示形式","desc":"相剑衍生物作为调整确认，等级 4。"},{"lp":[8000,6800],"phase":"第 1 回合 · 主要阶段 1","m":[null,null,null,null,null],"emz":[{"name":"鲜花女男爵","meta":"等级 10 · ATK 3000","kind":"synchro"},null],"s":[null,null,null,null,null,null],"p1":[null,null,null,null,null],"p1Hand":["原始生命态 尼比鲁（捏住）"],"p0Hand":[],"chain":[{"p":0,"text":"CL1 相剑军师-龙渊"}],"gy":["龙相剑现","相剑军师-龙渊"],"removed":[],"note":"","chainCount":1,"stats":{},"emzSide":null,"title":"特殊召唤《鲜花女男爵》","desc":"龙渊 + 相剑衍生物同调召唤《鲜花女男爵》，在第 5 次召唤前完成护航。"},{"lp":[8000,6800],"phase":"第 1 回合 · 主要阶段 1","m":[null,null,null,null,null],"emz":[{"name":"鲜花女男爵","meta":"等级 10 · ATK 3000","kind":"synchro"},null],"s":[null,null,null,null,null,null],"p1":[null,null,null,null,null],"p1Hand":["原始生命态 尼比鲁（捏住）"],"p0Hand":[],"chain":[{"p":0,"text":"CL1 相剑军师-龙渊"}],"gy":["龙相剑现","相剑军师-龙渊"],"removed":[],"note":"","chainCount":1,"stats":{},"emzSide":null,"title":"放置到额外怪兽区左侧（M5）","desc":"《鲜花女男爵》进入额外怪兽区左侧，EMZ 压制点就位。"},{"lp":[8000,6800],"phase":"第 1 回合 · 主要阶段 1","m":[null,null,null,null,null],"emz":[{"name":"鲜花女男爵","meta":"等级 10 · ATK 3000","kind":"synchro"},null],"s":[null,null,null,null,null,null],"p1":[null,null,null,null,null],"p1Hand":["原始生命态 尼比鲁（捏住）"],"p0Hand":[],"chain":[{"p":0,"text":"CL1 相剑军师-龙渊"}],"gy":["龙相剑现","相剑军师-龙渊"],"removed":[],"note":"","chainCount":1,"stats":{},"emzSide":null,"title":"确认《鲜花女男爵》的表示形式","desc":"鲜花女男爵攻击表示确认。"},{"lp":[8000,6800],"phase":"第 1 回合 · 主要阶段 1","m":[null,null,null,null,null],"emz":[{"name":"鲜花女男爵","meta":"等级 10 · ATK 3000","kind":"synchro"},null],"s":[null,null,null,null,null,null],"p1":[null,null,null,null,null],"p1Hand":["原始生命态 尼比鲁（捏住）"],"p0Hand":[],"chain":[{"p":0,"text":"CL1 相剑军师-龙渊"}],"gy":["龙相剑现","相剑军师-龙渊"],"removed":[],"note":"","chainCount":2,"stats":{},"emzSide":null,"title":"确认发动《相剑军师-龙渊》的触发效果","desc":"龙渊触发，处理检索与 削血效果；第 2 次连锁。"},{"lp":[8000,6800],"phase":"第 1 回合 · 主要阶段 1","m":[null,null,null,null,null],"emz":[{"name":"鲜花女男爵","meta":"等级 10 · ATK 3000","kind":"synchro"},null],"s":[null,null,null,null,null,null],"p1":[null,null,null,null,null],"p1Hand":["原始生命态 尼比鲁（捏住）"],"p0Hand":[],"chain":[{"p":0,"text":"CL1 相剑军师-龙渊"}],"gy":["龙相剑现","相剑军师-龙渊"],"removed":[],"note":"","chainCount":2,"stats":{},"emzSide":null,"title":"让过连锁","desc":"让过连锁，鲜花女男爵保持可用状态。"},{"lp":[8000,6800],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"相剑师-莫邪","meta":"等级 4 · 幻龙族","kind":"monster"},null,null,null,null],"emz":[{"name":"鲜花女男爵","meta":"等级 10 · ATK 3000","kind":"synchro"},null],"s":[null,null,null,null,null,null],"p1":[null,null,null,null,null],"p1Hand":["原始生命态 尼比鲁（捏住）"],"p0Hand":[],"chain":[{"p":0,"text":"CL1 相剑军师-龙渊"}],"gy":["龙相剑现","相剑军师-龙渊"],"removed":[],"note":"","chainCount":2,"stats":{},"emzSide":null,"title":"通常召唤《相剑师-莫邪》","desc":"通常召唤《相剑师-莫邪》，这是本回合第 5 次召唤，也是尼比鲁的经典触发点。"},{"lp":[8000,6800],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"相剑师-莫邪","meta":"等级 4 · 幻龙族","kind":"monster"},null,null,null,null],"emz":[{"name":"鲜花女男爵","meta":"等级 10 · ATK 3000","kind":"synchro"},null],"s":[null,null,null,null,null,null],"p1":[null,null,null,null,null],"p1Hand":["原始生命态 尼比鲁（捏住）"],"p0Hand":[],"chain":[{"p":0,"text":"CL1 相剑军师-龙渊"}],"gy":["龙相剑现","相剑军师-龙渊"],"removed":[],"note":"","chainCount":2,"stats":{},"emzSide":null,"title":"放置到主怪兽区 M0","desc":"《相剑师-莫邪》落在 M0。"},{"lp":[8000,6800],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"相剑师-莫邪","meta":"等级 4 · 幻龙族","kind":"monster"},null,null,null,null],"emz":[{"name":"鲜花女男爵","meta":"等级 10 · ATK 3000","kind":"synchro"},null],"s":[null,null,null,null,null,null],"p1":[null,null,null,null,null],"p1Hand":["原始生命态 尼比鲁（捏住）"],"p0Hand":[],"chain":[{"p":0,"text":"CL1 相剑师-莫邪"}],"gy":["龙相剑现","相剑军师-龙渊"],"removed":[],"note":"","chainCount":3,"stats":{},"emzSide":null,"title":"确认发动《相剑师-莫邪》的触发效果","desc":"莫邪触发，生成相剑衍生物；第 3 次连锁。"},{"lp":[8000,6800],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"相剑师-莫邪","meta":"等级 4 · 幻龙族","kind":"monster"},null,null,null,null],"emz":[{"name":"鲜花女男爵","meta":"等级 10 · ATK 3000","kind":"synchro"},null],"s":[null,null,null,null,null,null],"p1":[null,null,null,null,null],"p1Hand":["原始生命态 尼比鲁（捏住）"],"p0Hand":[],"chain":[{"p":0,"text":"CL1 相剑师-莫邪"}],"gy":["龙相剑现","相剑军师-龙渊"],"removed":[],"note":"","chainCount":3,"stats":{},"emzSide":null,"title":"让过连锁","desc":"让过连锁，等待莫邪效果结算。"},{"lp":[8000,6800],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"相剑师-莫邪","meta":"等级 4 · 幻龙族","kind":"monster"},null,{"name":"相剑衍生物","meta":"等级 4 · 调整","kind":"monster"},null,null],"emz":[{"name":"鲜花女男爵","meta":"等级 10 · ATK 3000","kind":"synchro"},null],"s":[null,null,null,null,null,null],"p1":[null,null,null,null,null],"p1Hand":["原始生命态 尼比鲁（捏住）"],"p0Hand":[],"chain":[{"p":0,"text":"CL1 相剑师-莫邪"}],"gy":["龙相剑现","相剑军师-龙渊"],"removed":[],"note":"","chainCount":3,"stats":{},"emzSide":null,"title":"放置到主怪兽区 M2","desc":"相剑衍生物落在 M2。"},{"lp":[8000,6800],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"相剑师-莫邪","meta":"等级 4 · 幻龙族","kind":"monster"},null,{"name":"相剑衍生物","meta":"等级 4 · 调整","kind":"monster"},null,null],"emz":[{"name":"鲜花女男爵","meta":"等级 10 · ATK 3000","kind":"synchro"},null],"s":[null,null,null,null,null,null],"p1":[null,null,null,null,null],"p1Hand":["原始生命态 尼比鲁（捏住）"],"p0Hand":[],"chain":[{"p":0,"text":"CL1 相剑师-莫邪"}],"gy":["龙相剑现","相剑军师-龙渊"],"removed":[],"note":"","chainCount":3,"stats":{},"emzSide":null,"title":"确认《相剑衍生物》的表示形式","desc":"相剑衍生物确认，等级 4 调整。"},{"lp":[8000,6800],"phase":"第 1 回合 · 连锁窗口","m":[{"name":"相剑师-莫邪","meta":"等级 4 · 幻龙族","kind":"monster"},null,{"name":"相剑衍生物","meta":"等级 4 · 调整","kind":"monster"},null,null],"emz":[{"name":"鲜花女男爵","meta":"等级 10 · ATK 3000","kind":"synchro"},null],"s":[null,null,null,null,null,null],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":1,"text":"CL1 原始生命态 尼比鲁"}],"gy":["龙相剑现","相剑军师-龙渊"],"removed":[],"note":"对手在《相剑衍生物》上发动尼比鲁：CL1，目标清场。","chainCount":4,"stats":{},"emzSide":null,"title":"⚠ 对手发动《原始生命态 尼比鲁》——CL1","desc":"对手在第 5 次召唤后立刻砸下《原始生命态 尼比鲁》，以《相剑衍生物》为触发对象。此处为原始轨迹第 19 条插入动作，因此显示为第 19 / 28 步；后续条目编号顺延。"},{"lp":[8000,6800],"phase":"第 1 回合 · 鲜花反制","m":[{"name":"相剑师-莫邪","meta":"等级 4 · 幻龙族","kind":"monster"},null,{"name":"相剑衍生物","meta":"等级 4 · 调整","kind":"monster"},null,null],"emz":[{"name":"鲜花女男爵","meta":"等级 10 · ATK 3000","kind":"synchro"},null],"s":[null,null,null,null,null,null],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":1,"text":"CL1 原始生命态 尼比鲁"},{"p":0,"text":"CL2 鲜花女男爵"}],"gy":["龙相剑现","相剑军师-龙渊"],"removed":[],"note":"鲜花女男爵 CL2：无效并破坏尼比鲁，保住场面。","chainCount":5,"stats":{},"emzSide":null,"title":"《鲜花女男爵》连锁——CL2","desc":"《鲜花女男爵》作为 CL2 连锁，无效并破坏《原始生命态 尼比鲁》。这是本局最关键的防陨窗口。"},{"lp":[8000,6800],"phase":"第 1 回合 · 鲜花反制","m":[null,null,{"name":"相剑大师-赤霄","meta":"ATK 2800 · 幻龙族","kind":"synchro"},null,null],"emz":[{"name":"鲜花女男爵","meta":"等级 10 · ATK 3000","kind":"synchro"},null],"s":[null,null,null,null,null,null],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":1,"text":"CL1 原始生命态 尼比鲁"},{"p":0,"text":"CL2 鲜花女男爵"}],"gy":["龙相剑现","相剑军师-龙渊","相剑师-莫邪","相剑衍生物"],"removed":[],"note":"鲜花女男爵 CL2：无效并破坏尼比鲁，保住场面。","chainCount":5,"stats":{},"emzSide":null,"title":"特殊召唤《相剑大师-赤霄》","desc":"尼比鲁被处理后，莫邪 + 相剑衍生物同调召唤《相剑大师-赤霄》。"},{"lp":[8000,6800],"phase":"第 1 回合 · 鲜花反制","m":[null,null,{"name":"相剑大师-赤霄","meta":"ATK 2800 · 幻龙族","kind":"synchro"},null,null],"emz":[{"name":"鲜花女男爵","meta":"等级 10 · ATK 3000","kind":"synchro"},null],"s":[null,null,null,null,null,null],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":1,"text":"CL1 原始生命态 尼比鲁"},{"p":0,"text":"CL2 鲜花女男爵"}],"gy":["龙相剑现","相剑军师-龙渊","相剑师-莫邪","相剑衍生物"],"removed":[],"note":"鲜花女男爵 CL2：无效并破坏尼比鲁，保住场面。","chainCount":5,"stats":{},"emzSide":null,"title":"放置到主怪兽区 M2","desc":"《相剑大师-赤霄》落在 M2。"},{"lp":[8000,6800],"phase":"第 1 回合 · 鲜花反制","m":[null,null,{"name":"相剑大师-赤霄","meta":"ATK 2800 · 幻龙族","kind":"synchro"},null,null],"emz":[{"name":"鲜花女男爵","meta":"等级 10 · ATK 3000","kind":"synchro"},null],"s":[null,null,null,null,null,null],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":1,"text":"CL1 原始生命态 尼比鲁"},{"p":0,"text":"CL2 鲜花女男爵"}],"gy":["龙相剑现","相剑军师-龙渊","相剑师-莫邪","相剑衍生物"],"removed":[],"note":"鲜花女男爵 CL2：无效并破坏尼比鲁，保住场面。","chainCount":5,"stats":{},"emzSide":null,"title":"确认《相剑大师-赤霄》的表示形式","desc":"赤霄攻击表示确认，终场双终端成形。"},{"lp":[8000,6800],"phase":"第 1 回合 · 鲜花反制","m":[null,null,{"name":"相剑大师-赤霄","meta":"ATK 2800 · 幻龙族","kind":"synchro"},null,null],"emz":[{"name":"鲜花女男爵","meta":"等级 10 · ATK 3000","kind":"synchro"},null],"s":[null,null,null,null,null,null],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":0,"text":"CL1 相剑师-莫邪"}],"gy":["龙相剑现","相剑军师-龙渊","相剑师-莫邪","相剑衍生物"],"removed":[],"note":"鲜花女男爵 CL2：无效并破坏尼比鲁，保住场面。","chainCount":6,"stats":{},"emzSide":null,"title":"连锁《相剑师-莫邪》","desc":"莫邪作为 CL1 触发，抽 1 张牌；第 6 次连锁。"},{"lp":[8000,6800],"phase":"第 1 回合 · 鲜花反制","m":[null,null,{"name":"相剑大师-赤霄","meta":"ATK 2800 · 幻龙族","kind":"synchro"},null,null],"emz":[{"name":"鲜花女男爵","meta":"等级 10 · ATK 3000","kind":"synchro"},null],"s":[null,null,null,null,null,null],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":0,"text":"CL1 相剑师-莫邪"},{"p":0,"text":"CL2 相剑大师-赤霄"}],"gy":["龙相剑现","相剑军师-龙渊","相剑师-莫邪","相剑衍生物"],"removed":[],"note":"鲜花女男爵 CL2：无效并破坏尼比鲁，保住场面。","chainCount":7,"stats":{},"emzSide":null,"title":"连锁《相剑大师-赤霄》","desc":"赤霄作为 CL2 触发，检索《相剑师-泰阿》；第 7 次连锁。"},{"lp":[8000,6800],"phase":"第 1 回合 · 鲜花反制","m":[null,null,{"name":"相剑大师-赤霄","meta":"ATK 2800 · 幻龙族","kind":"synchro"},null,null],"emz":[{"name":"鲜花女男爵","meta":"等级 10 · ATK 3000","kind":"synchro"},null],"s":[null,null,null,null,null,null],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":0,"text":"CL1 相剑师-莫邪"},{"p":0,"text":"CL2 相剑大师-赤霄"}],"gy":["龙相剑现","相剑军师-龙渊","相剑师-莫邪","相剑衍生物"],"removed":[],"note":"鲜花女男爵 CL2：无效并破坏尼比鲁，保住场面。","chainCount":7,"stats":{},"emzSide":null,"title":"挑选《相剑师-泰阿》","desc":"挑选《相剑师-泰阿》，确认检索目标。"},{"lp":[8000,6800],"phase":"第 1 回合 · 鲜花反制","m":[null,null,{"name":"相剑大师-赤霄","meta":"ATK 2800 · 幻龙族","kind":"synchro"},null,null],"emz":[{"name":"鲜花女男爵","meta":"等级 10 · ATK 3000","kind":"synchro"},null],"s":[null,null,null,null,null,null],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":0,"text":"CL1 相剑师-莫邪"},{"p":0,"text":"CL2 相剑大师-赤霄"}],"gy":["龙相剑现","相剑军师-龙渊","相剑师-莫邪","相剑衍生物"],"removed":[],"note":"鲜花女男爵 CL2：无效并破坏尼比鲁，保住场面。","chainCount":7,"stats":{},"emzSide":null,"title":"选择分支 1（确认检索）","desc":"确认检索分支，《相剑师-泰阿》加入手牌。"},{"lp":[8000,6800],"phase":"第 1 回合 · 结束阶段","m":[null,null,{"name":"相剑大师-赤霄","meta":"ATK 2800 · 幻龙族","kind":"synchro"},null,null],"emz":[{"name":"鲜花女男爵","meta":"等级 10 · ATK 3000","kind":"synchro"},null],"s":[null,null,null,null,null,null],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":["相剑师-莫邪","无限泡影","龙相剑现"],"chain":[{"p":0,"text":"终场核验 · 0 次重试"}],"gy":["龙相剑现","相剑军师-龙渊","相剑师-莫邪"],"removed":["相剑师-泰阿"],"note":"鲜花女男爵 CL2：无效并破坏尼比鲁，保住场面。","chainCount":7,"stats":{"responses":57,"chains":7},"emzSide":null,"title":"进入结束阶段","desc":"进入结束阶段；终场为鲜花女男爵 + 相剑大师-赤霄，LP 8000 : 6800。"}],"lp":[8000,6800],"chainsTotal":7,"p1HandUnknown":false,"emzSide":"p0","p0HandUnknown":false,"deckKey":"swordsoul","shortTitle":"相剑天威 · 28 步","shortSub":"5 步前鲜花护航防陨实录"},{"id":"psro_hold","title":"场景 3 · 双边对抗 2 手坑实战：真实连锁与捏坑反打","subtitle":"6 条真实连锁事件 · 3 次合法手坑窗口 · 前置捏坑 1 次 · 最终 2 手坑全部命中","side0":"我方 · 植物均","side1":"对手 · 灰流丽 + 尼比鲁","p1Label":"对手手牌 / 场面","note":"对应卡组：植物均（先攻）vs 隐藏 2 手坑（灰流丽 + 尼比鲁）；对手前置捏坑放行后两段打断。","milestones":[["蕾祸起手",0],["第 5 次召唤",2],["捏坑窗口",3],["陨石清场",4],["播种续航",5],["灰流丽封锁",6],["终局核验",7]],"steps":[{"lp":[8000,8000],"phase":"第 1 回合 · 主要阶段 1","m":[{"name":"蕾祸之毬首","meta":"LINK-1 · 植物族","kind":"monster"},null,null,null,null],"emz":[null,null],"s":[null,null,null,null,null,null],"p1":[null,null,null,null,null],"p1Hand":["灰流丽","原始生命态 尼比鲁"],"p0Hand":[],"chain":[{"p":0,"text":"CL1 蕾祸之毬首"}],"gy":[],"removed":[],"note":"","chainCount":1,"stats":{"legal":3,"fired":0},"emzSide":null,"title":"第 1 回合 · 蕾祸开局：CL1《蕾祸之毬首》","desc":"我方以《蕾祸之毬首》起手，植物族连接轴开始铺场；对手手牌已知为《灰流丽》与《原始生命态 尼比鲁》。"},{"lp":[8000,8000],"phase":"第 1 回合 · 主要阶段 1","m":[null,{"name":"蕾祸之矢筈天牛","meta":"LINK-2 · 植物族","kind":"monster"},null,null,null],"emz":[null,null],"s":[null,null,null,null,null,null],"p1":[null,null,null,null,null],"p1Hand":["灰流丽","原始生命态 尼比鲁"],"p0Hand":[],"chain":[{"p":0,"text":"CL1 蕾祸之矢筈天牛"}],"gy":[],"removed":[],"note":"","chainCount":2,"stats":{"legal":3,"fired":0},"emzSide":null,"title":"连锁推进：CL1《蕾祸之矢筈天牛》","desc":"《蕾祸之矢筈天牛》接上，连接值继续累加。对手保持捏坑，没有在低价值窗口交出灰流丽。"},{"lp":[8000,8000],"phase":"第 1 回合 · 主要阶段 1","m":[null,null,{"name":"蕾祸之武者髑髅","meta":"LINK-2 · 植物族","kind":"link"},null,null],"emz":[null,null],"s":[null,null,null,null,null,null],"p1":[null,null,null,null,null],"p1Hand":["灰流丽","原始生命态 尼比鲁"],"p0Hand":[],"chain":[{"p":0,"text":"CL1 蕾祸之武者髑髅"}],"gy":[],"removed":[],"note":"第 5 次召唤节点：对手仍按住尼比鲁与灰流丽。","chainCount":3,"stats":{"legal":3,"fired":0},"emzSide":null,"title":"第 5 次召唤节点：CL1《蕾祸之武者髑髅》","desc":"《蕾祸之武者髑髅》登场，进入第 5 次召唤节点；这是尼比鲁的高价值触发点。"},{"lp":[8000,8000],"phase":"第 1 回合 · 主要阶段 1","m":[null,null,{"name":"蕾祸之武者髑髅","meta":"LINK-2 · 植物族","kind":"link"},null,null],"emz":[null,null],"s":[null,null,null,null,null,null],"p1":[null,null,null,null,null],"p1Hand":["灰流丽","原始生命态 尼比鲁"],"p0Hand":[],"chain":[],"gy":[],"removed":[],"note":"对手捏坑：合法窗口 3 次，前置捏坑 1 次，已发 0 次。","chainCount":3,"stats":{"legal":3,"fired":0,"holds":1,"holdBefore":1},"emzSide":null,"title":"对手捏坑：3 次合法窗口，先按住不发","desc":"对手本回合共有 3 次合法手坑窗口，但在前置诱饵阶段选择按住。记录字段：捏坑前置 1 次，已发手坑 0 次。"},{"lp":[8000,8000],"phase":"第 1 回合 · 主要阶段 1","m":[null,null,null,null,null],"emz":[null,null],"s":[null,null,null,null,null,null],"p1":[{"name":"原始生命态 尼比鲁","meta":"ATK 3000 · 光属性","kind":"monster"},null,null,null,null],"p1Hand":["灰流丽"],"p0Hand":[],"chain":[{"p":1,"text":"CL1 原始生命态 尼比鲁"}],"gy":[],"removed":[],"note":"关键节点砸陨石：我方场面 4 → 0，零场面崩塌。","chainCount":4,"stats":{"legal":3,"fired":1,"holds":1,"zeroCollapse":true},"emzSide":null,"title":"CL1《原始生命态 尼比鲁》——清场","desc":"对手在关键节点砸下《原始生命态 尼比鲁》，我方场面被完全清空；零场面崩塌标记为真。"},{"lp":[8000,8000],"phase":"第 1 回合 · 主要阶段 1","m":[null,null,null,null,null],"emz":[null,null],"s":[null,{"name":"圣蔓的播种","meta":"已发动","kind":"spell"},null,null,null,null],"p1":[{"name":"原始生命态 尼比鲁","meta":"ATK 3000 · 光属性","kind":"monster"},null,null,null,null],"p1Hand":["灰流丽"],"p0Hand":[],"chain":[{"p":0,"text":"CL1 圣蔓的播种"}],"gy":[],"removed":[],"note":"关键节点砸陨石：我方场面 4 → 0，零场面崩塌。","chainCount":5,"stats":{"legal":3,"fired":1,"holds":1,"zeroCollapse":true},"emzSide":null,"title":"CL1《圣蔓的播种》——尝试续航","desc":"我方从墓地与卡组调度《圣蔓的播种》，试图在空场后重新建立植物族续航。"},{"lp":[8000,8000],"phase":"第 1 回合 · 主要阶段 1","m":[null,null,null,null,null],"emz":[null,null],"s":[null,{"name":"圣蔓的播种","meta":"已发动","kind":"spell"},null,null,null,null],"p1":[{"name":"原始生命态 尼比鲁","meta":"ATK 3000 · 光属性","kind":"monster"},null,null,null,{"name":"灰流丽","meta":"ATK 0 · 炎属性","kind":"monster"}],"p1Hand":[],"p0Hand":[],"chain":[{"p":0,"text":"CL1 圣蔓的播种"},{"p":1,"text":"CL2 灰流丽"}],"gy":[],"removed":[],"note":"灰流丽 CL2：康掉《圣蔓的播种》，我方续航被截断。","chainCount":6,"stats":{"legal":3,"fired":2,"holds":1,"zeroCollapse":true},"emzSide":null,"title":"CL2《灰流丽》——康掉续航","desc":"对手立刻交出一直捏着的《灰流丽》作为 CL2，无效《圣蔓的播种》的检索与特殊召唤。"},{"lp":[8000,8000],"phase":"第 3 回合 · 记录终态","m":[null,null,null,null,null],"emz":[null,null],"s":[null,null,null,null,null,null],"p1":[{"name":"原始生命态 尼比鲁","meta":"ATK 3000 · 光属性","kind":"monster"},null,null,null,{"name":"灰流丽","meta":"ATK 0 · 炎属性","kind":"monster"}],"p1Hand":[],"p0Hand":[],"chain":[{"p":1,"text":"终局核验 · 双边交换完成"}],"gy":[],"removed":[],"note":"终态：我方空场，对手保留尼比鲁 3000 + 灰流丽 0；T1 目标未达成。","chainCount":6,"stats":{"legal":3,"fired":2,"holds":1,"holdBefore":1,"zeroCollapse":true,"t1Goal":false,"turn":3,"planB":0},"emzSide":null,"title":"终局核验：第 3 回合 · 双边零和交换","desc":"记录终态：我方主怪兽区与魔法·陷阱区均为空，对手场上保留《原始生命态 尼比鲁》ATK 3000 与《灰流丽》ATK 0；T1 目标未达成，计划 B 干扰值 0.0。"}],"lp":[8000,8000],"chainsTotal":6,"p1HandUnknown":false,"emzSide":"p0","p0HandUnknown":true,"deckKey":"plant","shortTitle":"双边 2 手坑 · 8 阶段","shortSub":"捏坑放行后陨石+灰双杀"},{"id":"tenpai_otk","title":"场景 4 · 后攻天杯龙破相剑满场：5 次诱坑后 8000 OTK","subtitle":"相剑 4 阻抗满场 → 天杯龙 5+1 起手 → 5 次对手连锁 → 场面 4 → 0 → 8000 斩杀","side0":"先攻 · 相剑","side1":"后攻 · 天杯龙","p1Label":"后攻手牌 / 场面","note":"对应卡组：后攻天杯龙（5+1 起手）vs 先攻相剑天威（赤霄 + 鲜花 + 暗转 + 泡影）；诱发对手 5 次连锁全部空炮后 8000 OTK。","milestones":[["相剑满场",0],["天杯龙起手",1],["诱坑拆场",3],["场面清零",4],["战斗阶段",5],["8000 OTK",6],["终局验真",7]],"steps":[{"lp":[8000,6800],"phase":"第 1 回合 · 结束阶段","m":[null,null,{"name":"相剑大师-赤霄","meta":"ATK 2800 · 幻龙族","kind":"synchro"},null,null],"emz":[{"name":"鲜花女男爵","meta":"等级 10 · ATK 3000","kind":"synchro"},null],"s":[{"name":"相剑暗转","meta":"盖放 · 反击陷阱","kind":"trap"},{"name":"无限泡影","meta":"盖放 · 通常陷阱","kind":"trap"},null,null,null,null],"p1":[null,null,null,null,null],"p1Hand":["天杯龙 发龙","禁忌的一滴","杯满的灿幻庄","金满而谦虚之壶","天杯龙 中龙"],"p0Hand":[],"chain":[],"gy":[],"removed":[],"note":"","chainCount":0,"stats":{"t1Units":4,"hand":5},"emzSide":"p0","title":"阶段 1 · 先攻相剑满场：赤霄 + 鲜花 + 暗转 + 泡影","desc":"第 1 回合结束，相剑做出 4 件阻抗满场：《相剑大师-赤霄》ATK 2800、《鲜花女男爵》ATK 3000、盖放《相剑暗转》与《无限泡影》；LP 8000 : 6800。"},{"lp":[8000,6800],"phase":"第 2 回合 · 抽牌阶段","m":[null,null,{"name":"相剑大师-赤霄","meta":"ATK 2800 · 幻龙族","kind":"synchro"},null,null],"emz":[{"name":"鲜花女男爵","meta":"等级 10 · ATK 3000","kind":"synchro"},null],"s":[{"name":"相剑暗转","meta":"盖放 · 反击陷阱","kind":"trap"},{"name":"无限泡影","meta":"盖放 · 通常陷阱","kind":"trap"},null,null,null,null],"p1":[null,null,null,null,null],"p1Hand":["天杯龙 发龙","禁忌的一滴","杯满的灿幻庄","金满而谦虚之壶","天杯龙 中龙","灰流丽"],"p0Hand":[],"chain":[],"gy":[],"removed":[],"note":"","chainCount":0,"stats":{"t1Units":4,"hand":6,"drawn":"灰流丽"},"emzSide":"p0","title":"阶段 1 · 后攻天杯龙抽牌阶段：5 张起手 + 1 张抽取","desc":"天杯龙后攻起手为《天杯龙 发龙》《禁忌的一滴》《杯满的灿幻庄》《金满而谦虚之壶》《天杯龙 中龙》，抽牌阶段再抽到《灰流丽》。"},{"lp":[8000,6800],"phase":"第 2 回合 · 主要阶段 1","m":[null,null,{"name":"相剑大师-赤霄","meta":"ATK 2800 · 幻龙族","kind":"synchro"},null,null],"emz":[{"name":"鲜花女男爵","meta":"等级 10 · ATK 3000","kind":"synchro"},null],"s":[{"name":"相剑暗转","meta":"盖放 · 反击陷阱","kind":"trap"},{"name":"无限泡影","meta":"盖放 · 通常陷阱","kind":"trap"},null,null,null,null],"p1":[null,null,null,null,null],"p1Hand":["天杯龙 发龙","禁忌的一滴","杯满的灿幻庄","金满而谦虚之壶","天杯龙 中龙","灰流丽"],"p0Hand":[],"chain":[],"gy":[],"removed":[],"note":"","chainCount":0,"stats":{"t1Units":4,"hand":6,"budget":96,"used":79,"valid":true,"t1Verified":true},"emzSide":"p0","title":"阶段 2 · 因果序列破局搜索启动：预算 96 / 使用 79","desc":"因果序列破局搜索开始处理相剑满场；搜索预算 96，实际使用 79 个节点，记录标记为有效且 T1 终场已复核。"},{"lp":[8000,6800],"phase":"第 2 回合 · 主要阶段 1","m":[null,null,{"name":"相剑大师-赤霄","meta":"ATK 2800 · 幻龙族","kind":"synchro"},null,null],"emz":[{"name":"鲜花女男爵","meta":"等级 10 · ATK 3000","kind":"synchro"},null],"s":[{"name":"相剑暗转","meta":"盖放 · 反击陷阱","kind":"trap"},{"name":"无限泡影","meta":"盖放 · 通常陷阱","kind":"trap"},null,null,null,null],"p1":[null,null,null,null,null],"p1Hand":["天杯龙 发龙","禁忌的一滴","杯满的灿幻庄","金满而谦虚之壶","天杯龙 中龙","灰流丽"],"p0Hand":[],"chain":[{"p":1,"text":"鲜花女男爵 ×2"},{"p":1,"text":"相剑大师-赤霄"},{"p":1,"text":"相剑暗转"},{"p":1,"text":"无限泡影"}],"gy":[],"removed":[],"note":"对手 5 次连锁：鲜花 ×2、赤霄、暗转、泡影；己方主动连锁 13 次。","chainCount":18,"stats":{"p0Chains":5,"p1Chains":13,"negates":0},"emzSide":"p0","title":"阶段 2 · 诱坑：对手交出 5 次连锁","desc":"破局搜索主动诱发对手交出 5 次连锁：《鲜花女男爵》×2、《相剑大师-赤霄》、《相剑暗转》、《无限泡影》。己方在同一主战阶主动连锁 13 次。"},{"lp":[8000,6800],"phase":"第 2 回合 · 主要阶段 1","m":[null,null,null,null,null],"emz":[null,null],"s":[null,null,null,null,null,null],"p1":[null,null,null,null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":1,"text":"鲜花女男爵 ×2"},{"p":1,"text":"相剑大师-赤霄"},{"p":1,"text":"相剑暗转"},{"p":1,"text":"无限泡影"}],"gy":[],"removed":[],"note":"对手场面 4 → 0，全部清空。","chainCount":18,"stats":{"p0Chains":5,"p1Chains":13,"p0EndUnits":0,"cleared":4,"negates":0},"emzSide":"p0","title":"阶段 2 · 对手有效康命中 0 次，场面 4 → 0","desc":"对手 5 次连锁全部被处理，有效康命中数为 0；相剑场上 4 个单位全部清空，后场也一并拔除。"},{"lp":[8000,6800],"phase":"第 2 回合 · 战斗阶段","m":[null,null,null,null,null],"emz":[null,{"name":"三叉戟龙军王","meta":"ATK 6000 · 龙族","kind":"synchro"}],"s":[null,null,null,null,null,null],"p1":[null,null,{"name":"灿幻升龙 双叉戟龙军王","meta":"ATK 2600 · 龙族","kind":"synchro"},null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":1,"text":"鲜花女男爵 ×2"},{"p":1,"text":"相剑大师-赤霄"},{"p":1,"text":"相剑暗转"},{"p":1,"text":"无限泡影"}],"gy":[],"removed":[],"note":"对手场面 4 → 0，全部清空。","chainCount":18,"stats":{"p0EndUnits":0,"cleared":4,"negates":0,"bp":true,"fullBreak":true},"emzSide":"p1","title":"阶段 3 · 战斗阶段：双叉戟龙军王 + 三叉戟龙军王","desc":"进入战斗阶段，场上终局为《灿幻升龙 双叉戟龙军王》ATK 2600 与《三叉戟龙军王》ATK 6000。"},{"lp":[-1000,6800],"phase":"第 2 回合 · 战斗阶段","m":[null,null,null,null,null],"emz":[null,{"name":"三叉戟龙军王","meta":"ATK 6000 · 龙族","kind":"synchro"}],"s":[null,null,null,null,null,null],"p1":[null,null,{"name":"灿幻升龙 双叉戟龙军王","meta":"ATK 2600 · 龙族","kind":"synchro"},null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":1,"text":"鲜花女男爵 ×2"},{"p":1,"text":"相剑大师-赤霄"},{"p":1,"text":"相剑暗转"},{"p":1,"text":"无限泡影"}],"gy":[],"removed":[],"note":"对手场面 4 → 0，全部清空。","chainCount":18,"stats":{"cleared":4,"negates":0,"bp":true,"fullBreak":true,"damage":8000,"otk":true},"emzSide":"p1","title":"阶段 3 · 8000 斩杀：LP -1000 : 6800","desc":"两只龙打足 8000 伤害，LP 变为 -1000 : 6800；OTK 标记与全场突破标记同时为真。"},{"lp":[-1000,6800],"phase":"第 2 回合 · 战斗阶段结束","m":[null,null,null,null,null],"emz":[null,{"name":"三叉戟龙军王","meta":"ATK 6000 · 龙族","kind":"synchro"}],"s":[null,null,null,null,null,null],"p1":[null,null,{"name":"灿幻升龙 双叉戟龙军王","meta":"ATK 2600 · 龙族","kind":"synchro"},null,null],"p1Hand":[],"p0Hand":[],"chain":[{"p":1,"text":"终局核验 · 0 次重试"}],"gy":[],"removed":[],"note":"对手场面 4 → 0，全部清空。","chainCount":18,"stats":{"bp":true,"fullBreak":true,"damage":8000,"otk":true,"responses":239,"retries":0,"winner":1},"emzSide":"p1","title":"终局核验：239 次决策响应，0 重试","desc":"整段后攻由 239 次决策响应组成，0 次重试通过双核心逐格验真；胜者记录为后攻天杯龙。"}],"lp":[-1000,6800],"chainsTotal":18,"p1HandUnknown":false,"emzSide":"p0","p0HandUnknown":true,"deckKey":"tenpai","shortTitle":"后攻天杯龙 · 8000 OTK","shortSub":"5 次诱坑后清场双龙斩杀"}];
-    const DECKS = {"plant":{"title":"植物均（圣天树 · 六花 · 芳香 · 蕾祸）","monster":[{"name":"圣种之地灵","cnt":3,"kind":"monster"},{"name":"圣种之影芽","cnt":1,"kind":"monster"},{"name":"圣种之天双芽","cnt":1,"kind":"monster"},{"name":"蕾祸之毬首","cnt":3,"kind":"monster"},{"name":"蕾祸之矢筈天牛","cnt":1,"kind":"monster"},{"name":"六花的一瓣","cnt":3,"kind":"monster"},{"name":"六花的白姬","cnt":2,"kind":"monster"},{"name":"六花精 叶牡丹","cnt":2,"kind":"monster"},{"name":"六花精 雪花莲","cnt":1,"kind":"monster"},{"name":"六花精 樱草","cnt":2,"kind":"monster"},{"name":"芳香莉莉丝-石楠叶白千层","cnt":2,"kind":"monster"},{"name":"芳香法师-月桂叶","cnt":2,"kind":"monster"},{"name":"兽带斗神“百合”胃宿二","cnt":1,"kind":"monster"},{"name":"兽带斗神“王者”轩辕十四","cnt":1,"kind":"monster"},{"name":"孤火花","cnt":3,"kind":"monster"},{"name":"光界王战 玛多尔女王","cnt":1,"kind":"monster"}],"spell":[{"name":"蕾祸缭乱狂咲","cnt":1,"kind":"spell"},{"name":"粗人预料","cnt":2,"kind":"spell"},{"name":"圣蔓的播种","cnt":2,"kind":"spell"},{"name":"六花来来","cnt":2,"kind":"field"},{"name":"六花绚烂","cnt":2,"kind":"spell"},{"name":"芳香混合","cnt":1,"kind":"spell"},{"name":"圆盘斗技场 兽带斗神环形擂台","cnt":1,"kind":"field"}],"trap":[],"extra":[{"name":"圣天树之幼精","cnt":2,"kind":"link"},{"name":"圣天树之灰树精","cnt":1,"kind":"link"},{"name":"圣天树之月桂精","cnt":1,"kind":"link"},{"name":"圣蔓之治愈者","cnt":1,"kind":"link"},{"name":"芳香炽天使-茉莉","cnt":2,"kind":"link"},{"name":"芳香莉莉丝-迷迭香","cnt":1,"kind":"link"},{"name":"芳香莉莉丝-木兰","cnt":1,"kind":"fusion"},{"name":"六花圣 力量女神花环","cnt":1,"kind":"xyz"},{"name":"六花圣 泪滴花束","cnt":1,"kind":"xyz"},{"name":"神树兽 许珀利冬","cnt":1,"kind":"xyz"},{"name":"回生之铁丹尼拘律树","cnt":1,"kind":"link"},{"name":"蕾祸之武者髑髅","cnt":1,"kind":"link"},{"name":"蕾祸之玄神凭月","cnt":1,"kind":"link"}],"counts":{"main":40,"extra":15}},"swordsoul":{"title":"相剑天威","monster":[{"name":"相剑师-莫邪","cnt":3,"kind":"monster"},{"name":"相剑师-泰阿","cnt":3,"kind":"monster"},{"name":"相剑军师-龙渊","cnt":3,"kind":"monster"},{"name":"白之圣女 艾克莉西娅","cnt":2,"kind":"monster"},{"name":"天威龙-大同蟠龙","cnt":3,"kind":"monster"},{"name":"天威龙-宽恕蟠龙","cnt":3,"kind":"monster"},{"name":"天威龙-纯真蟠龙","cnt":2,"kind":"monster"},{"name":"天威龙-真知蟠龙","cnt":1,"kind":"monster"},{"name":"大星义初始龙","cnt":1,"kind":"monster"},{"name":"灰流丽","cnt":3,"kind":"monster"},{"name":"增殖的G","cnt":2,"kind":"monster"}],"spell":[{"name":"龙相剑现","cnt":3,"kind":"spell"},{"name":"虚空之龙轮","cnt":2,"kind":"spell"},{"name":"天幻之龙轮","cnt":2,"kind":"spell"},{"name":"大灵峰相剑门","cnt":1,"kind":"spell"},{"name":"墓穴的指名者","cnt":2,"kind":"spell"}],"trap":[{"name":"相剑暗转","cnt":2,"kind":"trap"},{"name":"无限泡影","cnt":2,"kind":"trap"}],"extra":[{"name":"相剑大师-赤霄","cnt":2,"kind":"synchro"},{"name":"鲜花女男爵","cnt":1,"kind":"synchro"},{"name":"相剑大邪-七星龙渊","cnt":1,"kind":"synchro"},{"name":"相剑大公-承影","cnt":1,"kind":"synchro"},{"name":"天威之龙鬼神","cnt":1,"kind":"synchro"},{"name":"辉龙星-蚣蝮","cnt":2,"kind":"synchro"},{"name":"邪龙星-睚眦","cnt":1,"kind":"synchro"},{"name":"幻龙星-嘲风","cnt":1,"kind":"synchro"},{"name":"魔救之奇迹-巨龙晶石","cnt":1,"kind":"synchro"},{"name":"天威之拳僧","cnt":2,"kind":"link"},{"name":"天威之龙仙女","cnt":1,"kind":"link"},{"name":"天威之鬼神","cnt":1,"kind":"link"}],"counts":{"main":40,"extra":15}},"tenpai":{"title":"后攻天杯龙","monster":[{"name":"天杯龙 中龙","cnt":3,"kind":"monster"},{"name":"天杯龙 白龙","cnt":3,"kind":"monster"},{"name":"天杯龙 发龙","cnt":3,"kind":"monster"},{"name":"幻禄之天杯龙","cnt":1,"kind":"monster"},{"name":"灰流丽","cnt":3,"kind":"monster"},{"name":"效果遮蒙者","cnt":2,"kind":"monster"},{"name":"原始生命态 尼比鲁","cnt":1,"kind":"monster"}],"spell":[{"name":"杯满的灿幻庄","cnt":3,"kind":"field"},{"name":"灿幻开门","cnt":3,"kind":"spell"},{"name":"灿幻封炉","cnt":1,"kind":"spell"},{"name":"鹰身女妖的羽毛扫","cnt":1,"kind":"spell"},{"name":"闪电风暴","cnt":3,"kind":"spell"},{"name":"禁忌的一滴","cnt":2,"kind":"spell"},{"name":"日全食之书","cnt":2,"kind":"spell"},{"name":"金满而谦虚之壶","cnt":3,"kind":"spell"},{"name":"墓穴的指名者","cnt":2,"kind":"spell"},{"name":"封印之黄金柜","cnt":1,"kind":"spell"}],"trap":[{"name":"灿幻开花","cnt":1,"kind":"trap"},{"name":"无限泡影","cnt":2,"kind":"trap"}],"extra":[{"name":"灿幻升龙 双叉戟龙军王","cnt":3,"kind":"synchro"},{"name":"灿幻超龙 三超戟龙军王","cnt":1,"kind":"synchro"},{"name":"三叉戟龙军王","cnt":2,"kind":"synchro"},{"name":"黑蔷薇龙","cnt":1,"kind":"synchro"},{"name":"月华龙 黑蔷薇","cnt":2,"kind":"synchro"},{"name":"异色眼陨火龙","cnt":1,"kind":"synchro"},{"name":"鬼动武者","cnt":1,"kind":"synchro"},{"name":"S：P小夜骑士","cnt":1,"kind":"link"},{"name":"I：P百变莱娜","cnt":1,"kind":"link"},{"name":"梦幻崩影·凤凰","cnt":1,"kind":"link"},{"name":"梦幻崩影·地狱犬","cnt":1,"kind":"link"}],"counts":{"main":40,"extra":15}}};
+  <!-- Zones Modal: GY / Removed / Extra / Opp Seen / Side Swaps -->
+  <div class="modal-backdrop" id="zoneModal">
+    <div class="modal-box">
+      <div class="modal-head">
+        <div>
+          <h3 id="zoneModalTitle" style="font-size:1.05rem;">区域卡片检视</h3>
+          <p id="zoneModalSub" style="font-size:12px;color:var(--muted);margin-top:2px;"></p>
+        </div>
+        <button class="btn" id="closeZoneBtn">关闭</button>
+      </div>
+      <div class="modal-tabs" id="zoneModalTabs"></div>
+      <div id="zoneModalBody"></div>
+    </div>
+  </div>
 
+  <!-- Single Card Detail Modal (Topmost) -->
+  <div class="modal-backdrop card-modal-backdrop" id="cardModal">
+    <div class="modal-box card-modal-box">
+      <div class="modal-head">
+        <div>
+          <h3 id="cardModalTitle" style="font-size:1.08rem;">卡片详情</h3>
+          <p id="cardModalSub" style="font-size:12px;color:var(--muted);margin-top:2px;"></p>
+        </div>
+        <button class="btn" id="closeCardBtn">关闭</button>
+      </div>
+      <div id="cardModalBody"></div>
+    </div>
+  </div>
+
+  <script src="assets/replays_data.js"></script>
+  <script>
+    const SCENARIOS = window.SCENARIOS || [];
+    const DECKS = window.DECKS || {};
+    const CARD_DB = window.CARD_DB || {};
+
+    let activeCategory = "all";
     let activeScenarioIdx = 0;
     let activeStepIdx = 0;
+    let activeDeckTab = "my";
+    let activeZoneTab = "p0Gy";
     let timer = null;
     const SPEEDS = [1, 2, 4];
     let speedIdx = 0;
     const BASE_MS = 2000;
 
+    const filtersEl = document.getElementById("scenarioFilters");
     const tabsEl = document.getElementById("scenarioTabs");
     const sliderEl = document.getElementById("stepSlider");
     const playBtn = document.getElementById("playBtn");
@@ -206,12 +248,69 @@
     const handBtn = document.getElementById("handBtn");
     const handDrawer = document.getElementById("handDrawer");
     const deckModal = document.getElementById("deckModal");
+    const zoneModal = document.getElementById("zoneModal");
+    const cardModal = document.getElementById("cardModal");
     const playmatBox = document.getElementById("playmatBox");
     const matToggleBtn = document.getElementById("matToggleBtn");
 
     const esc = (s) => String(s == null ? "" : s)
       .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
       .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+
+    function inferKindFromCard(cardName, explicitKind) {
+      if (explicitKind) return explicitKind;
+      const info = CARD_DB[cardName];
+      const tp = String(info?.types || "");
+      if (tp.includes("连接")) return "link";
+      if (tp.includes("超量")) return "xyz";
+      if (tp.includes("同调")) return "synchro";
+      if (tp.includes("融合")) return "fusion";
+      if (tp.includes("场地")) return "field";
+      if (tp.includes("陷阱")) return "trap";
+      if (tp.includes("魔法")) return "spell";
+      return "monster";
+    }
+
+    function openCardModal(cardName, zoneContext = "", cardObj = null) {
+      const nm = typeof cardName === "string" ? cardName : (cardName?.name || "未知卡片");
+      if (/里侧怪兽|里侧魔陷/.test(nm)) {
+        document.getElementById("cardModalTitle").textContent = nm;
+        document.getElementById("cardModalSub").textContent = zoneContext || "盖放状态";
+        document.getElementById("cardModalBody").innerHTML = `
+          <div class="card-desc-box">该卡片当前处于里侧覆盖状态（未公开），真实视角下无法提前获知其精确卡名。</div>
+        `;
+        cardModal.classList.add("open");
+        return;
+      }
+      const dbEntry = CARD_DB[nm] || {};
+      const code = cardObj?.code || dbEntry.id || 0;
+      document.getElementById("cardModalTitle").textContent = nm;
+      const subParts = [dbEntry.enName || "", code ? `#${code}` : "", zoneContext].filter(Boolean);
+      document.getElementById("cardModalSub").textContent = subParts.join(" · ");
+
+      const stats = [];
+      if (dbEntry.types) stats.push(dbEntry.types);
+      else if (cardObj?.meta) stats.push(cardObj.meta);
+      if (dbEntry.atk !== null && dbEntry.atk !== undefined && dbEntry.atk >= 0) stats.push(`ATK ${dbEntry.atk}`);
+      if (dbEntry.def !== null && dbEntry.def !== undefined && dbEntry.def >= 0 && !String(dbEntry.types || "").includes("连接")) {
+        stats.push(`DEF ${dbEntry.def}`);
+      }
+      if (cardObj?.meta && (!dbEntry.types || !cardObj.meta.includes(dbEntry.types))) {
+        stats.push(`当前表示: ${cardObj.meta}`);
+      }
+
+      const pdescBlock = dbEntry.pdesc
+        ? `<div class="card-desc-box" style="margin-bottom:8px;border-color:rgba(56,189,248,.35);"><b>【灵摆效果】</b>\n${esc(dbEntry.pdesc)}</div>`
+        : "";
+      const descText = dbEntry.desc || "暂无本地卡文缓存（仍可在当前对局轨迹中追踪该卡调度情况）。";
+
+      document.getElementById("cardModalBody").innerHTML = `
+        ${stats.length ? `<div class="card-stat-row">${stats.map((s) => `<span class="card-stat-pill">${esc(s)}</span>`).join("")}</div>` : ""}
+        ${pdescBlock}
+        <div class="card-desc-box">${esc(descText)}</div>
+      `;
+      cardModal.classList.add("open");
+    }
 
     function renderZone(id, wm, card, opt = {}) {
       const el = document.getElementById(id);
@@ -221,42 +320,111 @@
       if (!card) {
         el.className = `zone ${base} empty`;
         el.removeAttribute("title");
+        el.onclick = null;
         el.innerHTML = `${pip}<div class="zone-wm">${esc(wm)}</div>`;
         return;
       }
-      const isFacedown = /盖放/.test(card.meta || "") && !/已使用/.test(card.meta || "");
+      const isFacedown = Boolean(card.facedown) || (/盖放/.test(card.meta || "") && !/已使用/.test(card.meta || ""));
       const kind = isFacedown ? "facedown" : (card.kind || "monster");
-      el.className = `zone ${base} filled ${kind}${opt.opp ? " opp-owned" : ""}`;
-      el.title = card.name + (card.meta ? " · " + card.meta : "");
+      el.className = `zone ${base} filled clickable-card ${kind}${opt.opp ? " opp-owned" : ""}`;
+      el.title = card.name + (card.meta ? " · " + card.meta : "") + "（点击查看卡文）";
       el.innerHTML = `${pip}<div class="c-tag">${esc(wm)}</div><div class="c-name">${esc(card.name)}</div><div class="c-meta">${esc(card.meta || "")}</div>`;
+      el.onclick = () => openCardModal(card.name, `${opt.opp ? "对手" : "我方"} · ${wm}`, card);
     }
 
-    function renderPile(id, title, countText, topCard) {
+    function renderPile(id, title, countText, topCard, onClick) {
       const el = document.getElementById(id);
       if (!el) return;
-      el.className = "zone pile empty";
-      el.innerHTML = `<div class="zone-wm">${esc(title)}${countText ? `<b>${esc(countText)}</b>` : ""}${topCard ? `<small>${esc(topCard)}</small>` : ""}</div>`;
+      el.className = "zone pile clickable empty";
+      el.innerHTML = `<div class="zone-wm">${esc(title)}${countText !== "" ? `<b>${esc(countText)}</b>` : ""}${topCard ? `<small>${esc(topCard)}</small>` : ""}<span class="pile-cta">点开</span></div>`;
+      el.onclick = onClick || null;
     }
 
-    function renderHandList(el, cards, emptyMsg, isOpp) {
+    function renderHandList(el, cards, emptyMsg, isOpp, oppHandCount = null) {
       if (!cards || !cards.length) {
-        el.innerHTML = `<span style="font-size:11px;color:var(--muted);">${esc(emptyMsg)}</span>`;
+        if (isOpp && oppHandCount != null) {
+          el.innerHTML = `<span class="hand-pill opp">对手未知暗牌 ×${oppHandCount}（实战盲手牌）</span>`;
+        } else {
+          el.innerHTML = `<span style="font-size:11px;color:var(--muted);">${esc(emptyMsg)}</span>`;
+        }
         return;
       }
-      el.innerHTML = cards.map((c) => {
+      el.innerHTML = "";
+      cards.forEach((c) => {
         const nm = typeof c === "string" ? c : c.name;
-        return `<span class="hand-pill${isOpp ? " opp" : ""}">${esc(nm)}</span>`;
-      }).join("");
+        const btn = document.createElement("span");
+        btn.className = `hand-pill clickable${isOpp ? " opp" : ""}`;
+        btn.textContent = nm;
+        btn.title = "点击查看卡片详情";
+        btn.onclick = () => openCardModal(nm, isOpp ? "对手手牌" : "我方手牌");
+        el.appendChild(btn);
+      });
+    }
+
+    function getStepZones(sc, step) {
+      const myGy = step.gy || [];
+      const oppGy = step.oppGy || [];
+      const oppGyCount = step.oppGyCount != null ? Number(step.oppGyCount) : oppGy.length;
+      const myRemoved = step.removed || [];
+      const oppRemoved = step.oppRemoved || [];
+      let myExtraCards = step.myExtraCards;
+      if (!Array.isArray(myExtraCards)) {
+        const dk = DECKS[sc.deckKey || "plant"];
+        myExtraCards = [];
+        if (dk && Array.isArray(dk.extra)) {
+          dk.extra.forEach((c) => { for (let i = 0; i < (c.cnt || 1); i++) myExtraCards.push(c.name); });
+        }
+      }
+      const myDeckCount = step.myDeckCount != null ? step.myDeckCount : (DECKS[sc.deckKey || "plant"]?.counts?.main ?? 40);
+      const oppSeen = sc.oppDeckSeen || [];
+      const sideSwaps = sc.sideSwaps || [];
+      return { myGy, oppGy, oppGyCount, myRemoved, oppRemoved, myExtraCards, myDeckCount, oppSeen, sideSwaps };
+    }
+
+    function renderZoneStrip(sc, step, z) {
+      const strip = document.getElementById("zoneStrip");
+      strip.innerHTML = "";
+      const items = [
+        { key: "p0Gy", label: "我方墓地", count: z.myGy.length, cls: z.myGy.length ? "hot" : "" },
+        { key: "oppGy", label: "对手墓地", count: z.oppGyCount, cls: z.oppGyCount ? "opp" : "" },
+        { key: "p0Rm", label: "我方除外", count: z.myRemoved.length, cls: z.myRemoved.length ? "hot" : "" },
+        { key: "oppRm", label: "对手除外", count: z.oppRemoved.length, cls: z.oppRemoved.length ? "opp" : "" },
+        { key: "p0Extra", label: "我方额外", count: z.myExtraCards.length, cls: "" },
+        { key: "oppSeen", label: "对手已亮牌", count: z.oppSeen.length, cls: z.oppSeen.length ? "opp" : "" },
+      ];
+      if (z.sideSwaps.length) {
+        items.push({ key: "side", label: "Bo3 换备", count: z.sideSwaps.length, cls: "swap" });
+      }
+      items.forEach((it) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = `zone-chip ${it.cls}`;
+        btn.innerHTML = `<span>${esc(it.label)}</span><b>${it.count}</b>`;
+        btn.onclick = () => openZoneModal(it.key);
+        strip.appendChild(btn);
+      });
+      if (z.myGy.length || z.oppGy.length) {
+        const tail = document.createElement("span");
+        tail.style.cssText = "font-size:11px;color:var(--muted);margin-left:auto;";
+        const topMy = z.myGy.length ? `我方墓地顶：${z.myGy[z.myGy.length - 1]}` : "";
+        const topOpp = z.oppGy.length ? `对手墓地顶：${z.oppGy[z.oppGy.length - 1]}` : "";
+        tail.textContent = [topMy, topOpp].filter(Boolean).join(" · ");
+        strip.appendChild(tail);
+      }
     }
 
     function emzSideOf(step, sc) { return (step && step.emzSide) || (sc && sc.emzSide) || "p0"; }
 
     function render() {
       const sc = SCENARIOS[activeScenarioIdx];
+      if (!sc) return;
       const step = sc.steps[activeStepIdx];
       const total = sc.steps.length;
+      const z = getStepZones(sc, step);
 
-      document.querySelectorAll("#scenarioTabs .tab-btn").forEach((b, i) => b.classList.toggle("active", i === activeScenarioIdx));
+      document.querySelectorAll("#scenarioTabs .tab-btn").forEach((b) => {
+        b.classList.toggle("active", Number(b.dataset.scIdx) === activeScenarioIdx);
+      });
       document.getElementById("scTitle").textContent = sc.title;
       document.getElementById("scSubtitle").textContent = sc.subtitle;
       document.getElementById("scNote").textContent = sc.note || "";
@@ -267,43 +435,47 @@
       document.getElementById("lp1").textContent = step.lp[1];
       document.getElementById("phasePill").textContent = step.phase;
 
+      const p0HandArr = step.p0Hand || [];
+      handBtn.textContent = `当前手牌 (${p0HandArr.length})`;
       document.getElementById("p1HandWho").textContent = sc.side1;
       document.getElementById("p0HandWho").textContent = sc.side0;
-      renderHandList(document.getElementById("p1HandList"), step.p1Hand, sc.p1HandUnknown ? "隐藏未知" : "本阶段未单列", true);
-      renderHandList(document.getElementById("p0HandList"), step.p0Hand, "本步未单独记录手牌快照（可点“完整卡组”查看全表）", false);
+      renderHandList(document.getElementById("p1HandList"), step.p1Hand, sc.p1HandUnknown ? "隐藏未知（可点“对手已亮牌”查看已知构筑）" : "本阶段未单列", true, step.oppHandCount);
+      renderHandList(document.getElementById("p0HandList"), p0HandArr, "本步未单独记录手牌快照（可点“完整卡组”查看全表）", false);
 
-      renderPile("oppDeck", "卡组", "", "");
-      renderZone("oppS4", "S4", null, { base: "st pend-red", pip: "red" });
-      renderZone("oppS3", "S3", null, { base: "st" });
-      renderZone("oppS2", "S2", null, { base: "st" });
-      renderZone("oppS1", "S1", null, { base: "st" });
-      renderZone("oppS0", "S0", null, { base: "st pend-blue", pip: "blue" });
-      renderPile("oppExtra", "额外", "", "");
+      const oppS = step.oppS || [];
+      renderPile("oppDeck", "卡组", z.oppSeen.length ? `已亮${z.oppSeen.length}` : "", "", () => openDeckModal("opp"));
+      renderZone("oppS4", "S4", oppS[4] || null, { base: "st pend-red", pip: "red", opp: true });
+      renderZone("oppS3", "S3", oppS[3] || null, { base: "st", opp: true });
+      renderZone("oppS2", "S2", oppS[2] || null, { base: "st", opp: true });
+      renderZone("oppS1", "S1", oppS[1] || null, { base: "st", opp: true });
+      renderZone("oppS0", "S0", oppS[0] || null, { base: "st pend-blue", pip: "blue", opp: true });
+      renderPile("oppExtra", "额外/亮牌", z.oppSeen.length ? String(z.oppSeen.length) : "", "", () => openZoneModal("oppSeen"));
 
       const p1Arr = step.p1 || [];
-      renderPile("oppGY", "墓地", "", "");
+      renderPile("oppGY", "对手墓地", z.oppGyCount ? String(z.oppGyCount) : "0", z.oppGy.length ? z.oppGy[z.oppGy.length - 1] : "", () => openZoneModal("oppGy"));
       [4, 3, 2, 1, 0].forEach((idx) => renderZone(`oppM${idx}`, `M${idx}`, p1Arr[idx] || null, { base: "mz", opp: true }));
-      renderZone("oppField", "场地", null, { base: "field-z" });
+      renderZone("oppField", "场地", oppS[5] || null, { base: "field-z", opp: true });
 
       const emzSide = emzSideOf(step, sc);
-      renderZone("emz0", "EMZ 左", (step.emz || [])[0] || null, { base: "emz", opp: emzSide === "p1" });
-      renderZone("emz1", "EMZ 右", (step.emz || [])[1] || null, { base: "emz", opp: emzSide === "p1" });
+      const emz0 = (step.emz || [])[0] || null;
+      const emz1 = (step.emz || [])[1] || null;
+      renderZone("emz0", "EMZ 左", emz0, { base: "emz", opp: emz0 ? (emz0.owner ? emz0.owner === "opp" : emzSide === "p1") : false });
+      renderZone("emz1", "EMZ 右", emz1, { base: "emz", opp: emz1 ? (emz1.owner ? emz1.owner === "opp" : emzSide === "p1") : false });
       document.getElementById("matSideNote").textContent = sc.side0 + " vs " + sc.side1;
 
       const sArr = step.s || [];
       const mArr = step.m || [];
-      const gy = step.gy || [];
       renderZone("p0Field", "场地", sArr[5] || null, { base: "field-z" });
       [0, 1, 2, 3, 4].forEach((idx) => renderZone(`p0M${idx}`, `M${idx}`, mArr[idx] || null, { base: "mz" }));
-      renderPile("p0GY", "墓地", gy.length ? String(gy.length) : "", gy.length ? gy[gy.length - 1] : "");
+      renderPile("p0GY", "我方墓地", z.myGy.length ? String(z.myGy.length) : "0", z.myGy.length ? z.myGy[z.myGy.length - 1] : "", () => openZoneModal("p0Gy"));
 
-      renderPile("p0Extra", "额外", "15", "");
+      renderPile("p0Extra", "额外", String(z.myExtraCards.length), z.myExtraCards[0] || "", () => openZoneModal("p0Extra"));
       renderZone("p0S0", "S0", sArr[0] || null, { base: "st pend-blue", pip: "blue" });
       renderZone("p0S1", "S1", sArr[1] || null, { base: "st" });
       renderZone("p0S2", "S2", sArr[2] || null, { base: "st" });
       renderZone("p0S3", "S3", sArr[3] || null, { base: "st" });
       renderZone("p0S4", "S4", sArr[4] || null, { base: "st pend-red", pip: "red" });
-      renderPile("p0Deck", "卡组", "40", "");
+      renderPile("p0Deck", "卡组", String(z.myDeckCount), "", () => openDeckModal("my"));
 
       const hasChain = !!(step.chain && step.chain.length);
       document.getElementById("centerChainOrb").className = `pm-mid-line${hasChain ? " hot" : ""}`;
@@ -311,13 +483,20 @@
       document.getElementById("chainBox").innerHTML = hasChain
         ? step.chain.map((c) => `<span class="chain-pill${c.p === 1 ? " opp" : ""}">${esc(c.text)}</span>`).join("")
         : `<span style="font-size:10px;color:var(--muted);">无新增连锁</span>`;
-      document.getElementById("chainCount").textContent = `累计连锁 ${step.chainCount || 0}${sc.chainsTotal ? " / " + sc.chainsTotal : ""}`;
+      document.getElementById("chainCount").textContent = `累计 ${sc.category === "lab" ? "连锁" : "动作"} ${step.chainCount || (activeStepIdx + 1)}${sc.chainsTotal ? " / " + sc.chainsTotal : ""}`;
 
-      document.getElementById("gyRow").innerHTML = gy.length
-        ? `<span>墓地：</span>` + gy.map((g) => `<span class="grave-pill">${esc(g)}</span>`).join("")
-        : `<span>墓地：暂无</span>`;
+      renderZoneStrip(sc, step, z);
 
       document.getElementById("stepTitle").textContent = step.title;
+      const badge = document.getElementById("stepSrcBadge");
+      const tagText = step.sourceTag || "";
+      if (tagText) {
+        badge.style.display = "inline-block";
+        badge.textContent = tagText;
+        badge.className = "src-badge" + (tagText.includes("HT-PSRO") ? " ht" : tagText.includes("短搜") ? " planner" : tagText.includes("换备") ? " side" : "");
+      } else {
+        badge.style.display = "none";
+      }
       document.getElementById("stepDesc").textContent = step.desc;
       sliderEl.max = total - 1;
       sliderEl.value = activeStepIdx;
@@ -329,24 +508,248 @@
       if (activeRow) logEl.scrollTop = Math.max(0, activeRow.offsetTop - logEl.clientHeight / 2 + activeRow.offsetHeight / 2);
     }
 
-    function openDeckModal() {
+    function buildTileGrid(names, kindFallback, zoneLabel, isOpp = false) {
+      if (!names || !names.length) {
+        return `<div class="zone-notice">当前步该区域暂无公开记录卡片。</div>`;
+      }
+      // Group duplicate card names nicely with counts while preserving first-seen order
+      const map = new Map();
+      names.forEach((nm) => map.set(nm, (map.get(nm) || 0) + 1));
+      const grid = document.createElement("div");
+      grid.className = "zone-cards-grid";
+      for (const [nm, cnt] of map.entries()) {
+        const dbEntry = CARD_DB[nm] || {};
+        const k = inferKindFromCard(nm, kindFallback);
+        const tile = document.createElement("button");
+        tile.type = "button";
+        tile.className = `z-card-tile ${k}`;
+        tile.innerHTML = `
+          <div class="z-card-main">
+            <div class="z-card-name">${esc(nm)}</div>
+            <div class="z-card-sub">${esc(dbEntry.types || (isOpp ? "对手已公开卡" : "点击查看卡文"))}</div>
+          </div>
+          <span class="z-card-cnt">${cnt > 1 ? `×${cnt}` : "详情 →"}</span>
+        `;
+        tile.onclick = () => openCardModal(nm, zoneLabel);
+        grid.appendChild(tile);
+      }
+      return grid;
+    }
+
+    function openZoneModal(tabKey = "p0Gy") {
+      activeZoneTab = tabKey;
+      renderZoneModal();
+      zoneModal.classList.add("open");
+    }
+
+    function renderZoneModal() {
+      const sc = SCENARIOS[activeScenarioIdx];
+      const step = sc.steps[activeStepIdx];
+      const z = getStepZones(sc, step);
+
+      document.getElementById("zoneModalTitle").textContent = `多区域实时检视 · 第 ${activeStepIdx + 1} 步`;
+      document.getElementById("zoneModalSub").textContent = `${sc.side0} vs ${sc.side1} · ${step.phase}（点击任意卡片可查官方效果）`;
+
+      const tabs = [
+        { key: "p0Gy", label: `我方墓地 (${z.myGy.length})` },
+        { key: "oppGy", label: `对手墓地 (${z.oppGyCount})` },
+        { key: "p0Rm", label: `我方除外 (${z.myRemoved.length})` },
+        { key: "oppRm", label: `对手除外 (${z.oppRemoved.length})` },
+        { key: "p0Extra", label: `我方额外 (${z.myExtraCards.length})` },
+        { key: "oppSeen", label: `对手已亮牌 (${z.oppSeen.length})` },
+        { key: "side", label: `Bo3 换备 (${z.sideSwaps.length})` },
+      ];
+      const tabsWrap = document.getElementById("zoneModalTabs");
+      tabsWrap.innerHTML = "";
+      tabs.forEach((tb) => {
+        const b = document.createElement("button");
+        b.type = "button";
+        b.className = `m-tab-btn${activeZoneTab === tb.key ? " active" : ""}`;
+        b.textContent = tb.label;
+        b.onclick = () => { activeZoneTab = tb.key; renderZoneModal(); };
+        tabsWrap.appendChild(b);
+      });
+
+      const body = document.getElementById("zoneModalBody");
+      body.innerHTML = "";
+
+      if (activeZoneTab === "p0Gy") {
+        const res = buildTileGrid([...z.myGy].reverse(), null, "我方墓地");
+        typeof res === "string" ? (body.innerHTML = res) : body.appendChild(res);
+      } else if (activeZoneTab === "oppGy") {
+        if (z.oppGyCount > z.oppGy.length) {
+          const n = document.createElement("div");
+          n.className = "zone-notice";
+          n.textContent = `引擎记录对手墓地共 ${z.oppGyCount} 张；其中已同步采样到精确卡名的有 ${z.oppGy.length} 张（其余 ${z.oppGyCount - z.oppGy.length} 张发生在早期采样间隔间，已真实保留张数计数）。`;
+          body.appendChild(n);
+        }
+        const res = buildTileGrid([...z.oppGy].reverse(), null, "对手墓地", true);
+        if (typeof res === "string") {
+          if (!z.oppGyCount) body.innerHTML = res;
+        } else {
+          body.appendChild(res);
+        }
+      } else if (activeZoneTab === "p0Rm") {
+        const res = buildTileGrid(z.myRemoved, null, "我方除外区");
+        typeof res === "string" ? (body.innerHTML = res) : body.appendChild(res);
+      } else if (activeZoneTab === "oppRm") {
+        const res = buildTileGrid(z.oppRemoved, null, "对手除外区", true);
+        typeof res === "string" ? (body.innerHTML = res) : body.appendChild(res);
+      } else if (activeZoneTab === "p0Extra") {
+        const res = buildTileGrid(z.myExtraCards, "synchro", "我方额外卡组");
+        typeof res === "string" ? (body.innerHTML = res) : body.appendChild(res);
+      } else if (activeZoneTab === "oppSeen") {
+        const names = z.oppSeen.map((c) => c.name);
+        const res = buildTileGrid(names, null, "对手整场已亮明卡表", true);
+        typeof res === "string" ? (body.innerHTML = res) : body.appendChild(res);
+      } else if (activeZoneTab === "side") {
+        if (!z.sideSwaps.length) {
+          body.innerHTML = `<div class="zone-notice">该场景为单局或未触发局间 Bo3 换备。</div>`;
+        } else {
+          z.sideSwaps.forEach((sw) => {
+            const card = document.createElement("div");
+            card.className = "swap-card";
+            card.innerHTML = `
+              <div class="swap-card-head">
+                <span>G${sw.subGame} 结束后 → G${sw.subGame + 1} 换备方案：${esc(sw.archetypeTag)}</span>
+                <span style="font-family:var(--mono);font-size:11px;color:var(--muted);">${esc(sw.mode)} · 共换 ${sw.applied} 张</span>
+              </div>
+              <div class="swap-pairs"></div>
+            `;
+            const pairsBox = card.querySelector(".swap-pairs");
+            (sw.pairs || []).forEach((p) => {
+              const row = document.createElement("div");
+              row.className = "swap-row";
+              const outBtn = document.createElement("button");
+              outBtn.type = "button";
+              outBtn.className = "swap-pill out";
+              outBtn.textContent = `− 换出 ${p.outName}`;
+              outBtn.onclick = () => openCardModal(p.outName, "Bo3 换出副卡");
+              const arr = document.createElement("span");
+              arr.style.color = "var(--muted)";
+              arr.textContent = "→";
+              const inBtn = document.createElement("button");
+              inBtn.type = "button";
+              inBtn.className = "swap-pill in";
+              inBtn.textContent = `+ 换入 ${p.inName}`;
+              inBtn.onclick = () => openCardModal(p.inName, "Bo3 换入副卡");
+              row.append(outBtn, arr, inBtn);
+              pairsBox.appendChild(row);
+            });
+            body.appendChild(card);
+          });
+        }
+      }
+    }
+
+    function openDeckModal(tabKey = "my") {
+      activeDeckTab = tabKey;
+      renderDeckModal();
+      deckModal.classList.add("open");
+    }
+
+    function renderDeckModal() {
       const sc = SCENARIOS[activeScenarioIdx];
       const dk = DECKS[sc.deckKey || "plant"];
-      document.getElementById("deckModalTitle").textContent = `完整卡组 · ${dk.title}`;
-      document.getElementById("deckModalSub").textContent = `主卡组 ${dk.counts.main} 张 · 额外卡组 ${dk.counts.extra} 张（100% YGOCDB 官方中文名）`;
-      const groups = [
-        ["怪兽卡", dk.monster],
-        ["魔法 / 场地", dk.spell],
-        ["陷阱卡", dk.trap],
-        ["额外卡组", dk.extra],
+      const oppSeen = sc.oppDeckSeen || [];
+      const sideSwaps = sc.sideSwaps || [];
+
+      document.getElementById("deckModalTitle").textContent = activeDeckTab === "opp"
+        ? `对手本场已亮明卡表 · ${sc.side1}`
+        : (activeDeckTab === "side" ? `Bo3 换备记录 · ${sc.side0}` : `完整卡组 · ${dk.title}`);
+
+      document.getElementById("deckModalSub").textContent = `主卡组 ${dk.counts.main} 张 · 额外 ${dk.counts.extra} 张${dk.counts.side ? ` · 副卡组 ${dk.counts.side} 张` : ""}（点击任意单卡查看中文效果）`;
+
+      const tabsWrap = document.getElementById("deckModalTabs");
+      tabsWrap.innerHTML = "";
+      const dTabs = [
+        { key: "my", label: `我方完整卡组 (${dk.counts.main}+${dk.counts.extra}${dk.counts.side ? `+${dk.counts.side}` : ""})` },
+        { key: "opp", label: `对手已亮卡表 (${oppSeen.length})` },
+        { key: "side", label: `Bo3 换备 (${sideSwaps.length})` },
       ];
-      document.getElementById("deckModalBody").innerHTML = groups.filter((g) => g[1].length).map(([label, arr]) => `
-        <div class="deck-group">
-          <h4>${label} (${arr.reduce((a, b) => a + b.cnt, 0)})</h4>
-          <ul class="deck-list">${arr.map((c) => `<li><span>${esc(c.name)}</span><span class="deck-cnt">×${c.cnt}</span></li>`).join("")}</ul>
-        </div>
-      `).join("");
-      deckModal.classList.add("open");
+      dTabs.forEach((tb) => {
+        const b = document.createElement("button");
+        b.type = "button";
+        b.className = `m-tab-btn${activeDeckTab === tb.key ? " active" : ""}`;
+        b.textContent = tb.label;
+        b.onclick = () => { activeDeckTab = tb.key; renderDeckModal(); };
+        tabsWrap.appendChild(b);
+      });
+
+      const body = document.getElementById("deckModalBody");
+      body.innerHTML = "";
+
+      if (activeDeckTab === "my") {
+        const groups = [
+          ["怪兽卡", dk.monster || []],
+          ["魔法 / 场地", dk.spell || []],
+          ["陷阱卡", dk.trap || []],
+          ["额外卡组", dk.extra || []],
+          ["副卡组 (Side Deck)", dk.side || []],
+        ].filter((g) => g[1].length);
+
+        const cols = document.createElement("div");
+        cols.className = "deck-cols";
+        groups.forEach(([label, arr]) => {
+          const grp = document.createElement("div");
+          grp.className = "deck-group";
+          const totalCnt = arr.reduce((a, b) => a + b.cnt, 0);
+          grp.innerHTML = `<h4>${esc(label)} (${totalCnt})</h4>`;
+          const ul = document.createElement("ul");
+          ul.className = "deck-list";
+          arr.forEach((c) => {
+            const li = document.createElement("li");
+            li.className = "clickable-item";
+            li.innerHTML = `<span>${esc(c.name)}</span><span class="deck-cnt">×${c.cnt}</span>`;
+            li.onclick = () => openCardModal(c.name, label, c);
+            ul.appendChild(li);
+          });
+          grp.appendChild(ul);
+          cols.appendChild(grp);
+        });
+        body.appendChild(cols);
+      } else if (activeDeckTab === "opp") {
+        const res = buildTileGrid(oppSeen.map((c) => c.name), null, "对手已亮明卡组", true);
+        typeof res === "string" ? (body.innerHTML = res) : body.appendChild(res);
+      } else {
+        if (!sideSwaps.length) {
+          body.innerHTML = `<div class="zone-notice">本场未执行 Bo3 换备（或为单局实验室基准场景）。</div>`;
+        } else {
+          // Reuse zone swap rendering by temporarily rendering swap cards
+          sideSwaps.forEach((sw) => {
+            const card = document.createElement("div");
+            card.className = "swap-card";
+            card.innerHTML = `
+              <div class="swap-card-head">
+                <span>G${sw.subGame} 结束后 → G${sw.subGame + 1} 换备：${esc(sw.archetypeTag)}</span>
+                <span style="font-family:var(--mono);font-size:11px;color:var(--muted);">${esc(sw.mode)} · 共换 ${sw.applied} 张</span>
+              </div>
+              <div class="swap-pairs"></div>
+            `;
+            const pairsBox = card.querySelector(".swap-pairs");
+            (sw.pairs || []).forEach((p) => {
+              const row = document.createElement("div");
+              row.className = "swap-row";
+              const outBtn = document.createElement("button");
+              outBtn.type = "button";
+              outBtn.className = "swap-pill out";
+              outBtn.textContent = `− 换出 ${p.outName}`;
+              outBtn.onclick = () => openCardModal(p.outName, "Bo3 换出副卡");
+              const arr = document.createElement("span");
+              arr.style.color = "var(--muted)";
+              arr.textContent = "→";
+              const inBtn = document.createElement("button");
+              inBtn.type = "button";
+              inBtn.className = "swap-pill in";
+              inBtn.textContent = `+ 换入 ${p.inName}`;
+              inBtn.onclick = () => openCardModal(p.inName, "Bo3 换入副卡");
+              row.append(outBtn, arr, inBtn);
+              pairsBox.appendChild(row);
+            });
+            body.appendChild(card);
+          });
+        }
+      }
     }
 
     function buildScenarioChrome() {
@@ -355,10 +758,66 @@
       mileEl.querySelectorAll(".mile-btn").forEach((b) => b.onclick = () => { stopPlay(); activeStepIdx = Number(b.dataset.idx); render(); });
       logEl.innerHTML = sc.steps.map((s, i) => {
         const isTrap = (s.chain || []).some((c) => c.p === 1);
-        return `<div class="log-row${isTrap ? " trap" : ""}" data-idx="${i}">[${i + 1}/${sc.steps.length}] ${esc(s.title)}</div>`;
+        const tag = s.sourceTag || "";
+        let cls = isTrap ? " trap" : "";
+        if (tag.includes("HT-PSRO 捏坑") || /捏坑/.test(s.title)) cls += " ht-hold";
+        else if (tag.includes("HT-PSRO")) cls += " ht-fire";
+        else if (tag.includes("短搜")) cls += " pl-otk";
+        else if (tag.includes("换备")) cls += " side-row";
+        return `<div class="log-row${cls}" data-idx="${i}">[${i + 1}/${sc.steps.length}] ${esc(s.title)}</div>`;
       }).join("");
       logEl.querySelectorAll(".log-row").forEach((el) => el.onclick = () => { stopPlay(); activeStepIdx = Number(el.dataset.idx); render(); });
       logEl.scrollTop = 0;
+    }
+
+    function renderScenarioTabs() {
+      const visible = SCENARIOS.map((sc, idx) => ({ sc, idx })).filter(({ sc }) => activeCategory === "all" || sc.category === activeCategory);
+      if (!visible.some((x) => x.idx === activeScenarioIdx) && visible.length) {
+        activeScenarioIdx = visible[0].idx;
+        activeStepIdx = 0;
+        buildScenarioChrome();
+      }
+      tabsEl.innerHTML = "";
+      visible.forEach(({ sc, idx }) => {
+        const btn = document.createElement("button");
+        btn.className = `tab-btn${idx === activeScenarioIdx ? " active" : ""}`;
+        btn.dataset.scIdx = String(idx);
+        const badgeCls = sc.category === "win" ? "win" : (sc.category === "loss" ? "loss" : "lab");
+        btn.innerHTML = `<div class="tab-head-line"><span>${esc(sc.shortTitle)}</span><span class="sc-badge ${badgeCls}">${esc(sc.badge || "LAB")}</span></div><small>${esc(sc.shortSub)}</small>`;
+        btn.onclick = () => { stopPlay(); activeScenarioIdx = idx; activeStepIdx = 0; buildScenarioChrome(); render(); };
+        tabsEl.appendChild(btn);
+      });
+    }
+
+    function renderFilterBar() {
+      const counts = {
+        all: SCENARIOS.length,
+        lab: SCENARIOS.filter((s) => s.category === "lab").length,
+        win: SCENARIOS.filter((s) => s.category === "win").length,
+        loss: SCENARIOS.filter((s) => s.category === "loss").length,
+      };
+      const defs = [
+        { key: "all", label: `全部对局 (${counts.all})` },
+        { key: "win", label: `真人排位 · 高光胜局 (${counts.win})` },
+        { key: "loss", label: `真人排位 · 失败复盘 (${counts.loss})` },
+        { key: "lab", label: `离线实验室基准 (${counts.lab})` },
+      ];
+      filtersEl.innerHTML = `<span class="filter-label">筛选分类：</span>`;
+      defs.forEach((d) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = `filter-btn${activeCategory === d.key ? " active" : ""}`;
+        btn.dataset.cat = d.key;
+        btn.textContent = d.label;
+        btn.onclick = () => {
+          stopPlay();
+          activeCategory = d.key;
+          filtersEl.querySelectorAll(".filter-btn").forEach((x) => x.classList.toggle("active", x.dataset.cat === activeCategory));
+          renderScenarioTabs();
+          render();
+        };
+        filtersEl.appendChild(btn);
+      });
     }
 
     function stopPlay() { if (timer) { clearInterval(timer); timer = null; } playBtn.textContent = "播放"; }
@@ -374,14 +833,6 @@
       }, Math.round(BASE_MS / SPEEDS[speedIdx]));
     }
 
-    SCENARIOS.forEach((sc, idx) => {
-      const btn = document.createElement("button");
-      btn.className = "tab-btn";
-      btn.innerHTML = `${esc(sc.shortTitle)}<small>${esc(sc.shortSub)}</small>`;
-      btn.onclick = () => { stopPlay(); activeScenarioIdx = idx; activeStepIdx = 0; buildScenarioChrome(); render(); };
-      tabsEl.appendChild(btn);
-    });
-
     document.getElementById("prevBtn").onclick = () => { stopPlay(); activeStepIdx = Math.max(0, activeStepIdx - 1); render(); };
     document.getElementById("nextBtn").onclick = () => { stopPlay(); activeStepIdx = Math.min(SCENARIOS[activeScenarioIdx].steps.length - 1, activeStepIdx + 1); render(); };
     playBtn.onclick = () => (timer ? stopPlay() : startPlay());
@@ -392,14 +843,29 @@
       const open = handDrawer.classList.toggle("open");
       handBtn.classList.toggle("active", open);
     };
-    document.getElementById("deckBtn").onclick = openDeckModal;
+    document.getElementById("zoneBtn").onclick = () => openZoneModal("p0Gy");
+    document.getElementById("deckBtn").onclick = () => openDeckModal("my");
     document.getElementById("closeDeckBtn").onclick = () => deckModal.classList.remove("open");
+    document.getElementById("closeZoneBtn").onclick = () => zoneModal.classList.remove("open");
+    document.getElementById("closeCardBtn").onclick = () => cardModal.classList.remove("open");
     deckModal.onclick = (e) => { if (e.target === deckModal) deckModal.classList.remove("open"); };
+    zoneModal.onclick = (e) => { if (e.target === zoneModal) zoneModal.classList.remove("open"); };
+    cardModal.onclick = (e) => { if (e.target === cardModal) cardModal.classList.remove("open"); };
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") {
+        if (cardModal.classList.contains("open")) cardModal.classList.remove("open");
+        else if (zoneModal.classList.contains("open")) zoneModal.classList.remove("open");
+        else if (deckModal.classList.contains("open")) deckModal.classList.remove("open");
+      }
+    });
+
     matToggleBtn.onclick = () => {
       const dark = playmatBox.classList.toggle("dark-mat");
       matToggleBtn.textContent = dark ? "酒红桌垫" : "深空桌垫";
     };
 
+    renderFilterBar();
+    renderScenarioTabs();
     buildScenarioChrome();
     render();
   </script>
